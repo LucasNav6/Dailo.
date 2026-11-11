@@ -1,0 +1,5 @@
+packages:
+  - apps/*
+
+# Solo instalar versiones publicadas hace al menos 7 días (en minutos)
+minimumReleaseAge: 10080
