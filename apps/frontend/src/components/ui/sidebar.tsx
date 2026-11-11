@@ -88,20 +88,6 @@ function SidebarProvider({
     (value: boolean | ((value: boolean) => boolean)) => {
       const openState = typeof value === "function" ? value(open) : value
 
-      // Antes de volver inerte el panel colapsado, mueve el foco a un trigger visible.
-      if (!openState) {
-        const container = document.querySelector<HTMLElement>(
-          '[data-slot="sidebar-container"]'
-        )
-        const active = document.activeElement
-        if (container && active instanceof HTMLElement && container.contains(active)) {
-          const triggers = document.querySelectorAll<HTMLElement>(
-            '[data-slot="sidebar-trigger"]'
-          )
-          Array.from(triggers).find((el) => el.offsetParent !== null)?.focus()
-        }
-      }
-
       // Con `open` controlado el estado externo manda; sin él, actualizamos el interno
       // y además notificamos al caller con onOpenChange.
       if (openProp === undefined) {
@@ -183,6 +169,7 @@ function Sidebar({
   side = "left",
   variant = "sidebar",
   collapsible = "offcanvas",
+  ref: forwardedRef,
   className,
   children,
   ...props
@@ -193,6 +180,28 @@ function Sidebar({
 }) {
   const { isMobile, state, openMobile, setOpenMobile, mobileFocusReturnRef } =
     useSidebar()
+  const offcanvasCollapsed = !isMobile && collapsible === "offcanvas" && state === "collapsed"
+  const setDesktopRef = React.useCallback((element: HTMLDivElement | null) => {
+    if (element) {
+      const active = document.activeElement
+      if (offcanvasCollapsed && active instanceof HTMLElement && element.contains(active)) {
+        const wrapper = element.closest('[data-slot="sidebar-wrapper"]')
+        const triggers = wrapper?.querySelectorAll<HTMLElement>('[data-slot="sidebar-trigger"]')
+        Array.from(triggers ?? []).find((trigger) =>
+          !element.contains(trigger) && trigger.getClientRects().length > 0 && !trigger.closest("[inert]")
+        )?.focus()
+      }
+      // Apply inert after relocating focus, including controlled prop changes.
+      element.inert = offcanvasCollapsed
+    }
+    if (typeof forwardedRef === "function") {
+      return forwardedRef(element)
+    }
+    if (forwardedRef) forwardedRef.current = element
+    return () => {
+      if (forwardedRef) forwardedRef.current = null
+    }
+  }, [forwardedRef, offcanvasCollapsed])
 
   if (collapsible === "none") {
     return (
@@ -203,6 +212,7 @@ function Sidebar({
           className
         )}
         {...props}
+        ref={forwardedRef}
       >
         {children}
       </div>
@@ -211,15 +221,16 @@ function Sidebar({
 
   if (isMobile) {
     // Radix genera el id del diálogo; no lo sobrescribimos con el recibido.
-    const { id: _id, style: styleProp, ...mobileProps } = props
+    const { id, style: styleProp, ...mobileProps } = props
     return (
       <Sheet open={openMobile} onOpenChange={setOpenMobile}>
         <SheetContent
           {...mobileProps}
+          ref={forwardedRef}
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+          className={cn("w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden", className)}
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
@@ -241,7 +252,7 @@ function Sidebar({
             <SheetTitle>Sidebar</SheetTitle>
             <SheetDescription>Displays the mobile sidebar.</SheetDescription>
           </SheetHeader>
-          <div className="flex h-full w-full flex-col">{children}</div>
+          <div id={id} className="flex h-full w-full flex-col">{children}</div>
         </SheetContent>
       </Sheet>
     )
@@ -270,7 +281,6 @@ function Sidebar({
       />
       <div
         data-slot="sidebar-container"
-        inert={collapsible === "offcanvas" && state === "collapsed" ? true : undefined}
         className={cn(
           "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex",
           side === "left"
@@ -283,6 +293,7 @@ function Sidebar({
           className
         )}
         {...props}
+        ref={setDesktopRef}
       >
         <div
           data-sidebar="sidebar"
