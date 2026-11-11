@@ -1,6 +1,21 @@
+# Dependencias instaladas por pnpm
+# https://pnpm.io/symlinked-node-modules-structure
 node_modules
+
+# Salida de compilación de Vite y Wrangler
 dist
+
+# Caché local de Turborepo
+# https://turbo.build/repo/docs/crafting-your-repository/caching
 .turbo
+
+# Estado local de Wrangler (D1 simulada y caché)
+# https://developers.cloudflare.com/workers/wrangler/configuration/
 .wrangler
+
+# Secretos para desarrollo local en Cloudflare Workers
+# https://developers.cloudflare.com/workers/configuration/secrets/#local-development-with-secrets
 .dev.vars
-*.log
+
+# Variables de entorno locales
+.env
