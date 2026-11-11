@@ -30,7 +30,7 @@ export function AppShell() {
                   <RiMore2Fill aria-hidden />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" sideOffset={8} collisionPadding={16}>
                 {secondaryNav.map(({ to, label, Icon }) => (
                   <DropdownMenuItem key={to} asChild>
                     <Link to={to}>

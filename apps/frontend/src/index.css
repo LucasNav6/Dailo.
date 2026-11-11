@@ -166,3 +166,21 @@
     animation-duration: 0.01ms !important;
   }
 }
+
+[data-slot="dropdown-menu-content"] {
+  border-color: var(--sidebar-border);
+  border-radius: var(--radius-lg);
+}
+
+[data-slot="dropdown-menu-item"] {
+  padding-block: 0.3125rem;
+  transition: background-color 180ms ease-out, color 180ms ease-out;
+
+  &:active {
+    background-color: color-mix(in oklab, var(--accent), var(--foreground) 12%);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: -2px;
+  }
+}
