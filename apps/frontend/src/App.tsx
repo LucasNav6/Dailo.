@@ -1,34 +1,21 @@
-import { RiComputerFill, RiComputerLine, RiMoonFill, RiMoonLine, RiSunFill, RiSunLine } from "@remixicon/react";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Navigate, Route, Routes } from "react-router";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useTheme, type Theme } from "@/lib/theme";
-
-const options = [
-  { value: "light", label: "Claro", Line: RiSunLine, Fill: RiSunFill },
-  { value: "dark", label: "Oscuro", Line: RiMoonLine, Fill: RiMoonFill },
-  { value: "system", label: "Sistema", Line: RiComputerLine, Fill: RiComputerFill },
-] as const;
+import { AppShell } from "@/components/app-shell";
+import { PagePlaceholder } from "@/components/page-placeholder";
+import { allNav } from "@/lib/navigation";
 
 export default function App() {
-  const { theme, setTheme } = useTheme();
-
   return (
     <TooltipProvider>
-      <main className="flex min-h-svh flex-col items-start gap-6 p-6">
-        <h1 className="text-2xl font-semibold">Dailo</h1>
-        <Tabs value={theme} onValueChange={(value) => setTheme(value as Theme)}>
-          <TabsList>
-            {options.map(({ value, label, Line, Fill }) => (
-              <TabsTrigger key={value} value={value}>
-                {theme === value ? <Fill /> : <Line />}
-                {label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-        <Button>Acción principal</Button>
-      </main>
+      <Routes>
+        <Route element={<AppShell />}>
+          <Route index element={<Navigate to="/today" replace />} />
+          {allNav.map(({ to, label }) => (
+            <Route key={to} path={to} element={<PagePlaceholder description={`Pantalla de ${label} próximamente.`} />} />
+          ))}
+          <Route path="*" element={<Navigate to="/today" replace />} />
+        </Route>
+      </Routes>
     </TooltipProvider>
   );
 }
