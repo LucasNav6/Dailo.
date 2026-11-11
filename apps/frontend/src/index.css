@@ -7,7 +7,7 @@
 /* Paleta neutral con acento menta (#A5F3C5) provisional */
 :root {
   --radius: 0.75rem;
-  --radius-dock: 2rem;
+  --radius-dock: 1.5rem;
 
   --background: #ffffff;
   --foreground: #17212b;
