@@ -1,16 +1,16 @@
 import {
+  RiBookmarkFill,
+  RiBookmarkLine,
+  RiCalendarCheckFill,
+  RiCalendarCheckLine,
     RiDeleteBinFill,
   RiDeleteBinLine,
   RiFolderFill,
   RiFolderLine,
-  RiHourglassFill,
-  RiHourglassLine,
   RiInboxFill,
   RiInboxLine,
   RiSettings3Fill,
   RiSettings3Line,
-  RiSunFill,
-  RiSunLine,
   type RemixiconComponentType,
 } from "@remixicon/react";
 
@@ -22,10 +22,10 @@ export type NavItem = {
 };
 
 export const primaryNav: NavItem[] = [
-  { to: "/today", label: "Hoy", Icon: RiSunLine, ActiveIcon: RiSunFill },
+  { to: "/today", label: "Hoy", Icon: RiCalendarCheckLine, ActiveIcon: RiCalendarCheckFill },
   { to: "/inbox", label: "Inbox", Icon: RiInboxLine, ActiveIcon: RiInboxFill },
   { to: "/projects", label: "Proyectos", Icon: RiFolderLine, ActiveIcon: RiFolderFill },
-  { to: "/someday", label: "Tal vez", Icon: RiHourglassLine, ActiveIcon: RiHourglassFill },
+  { to: "/someday", label: "Tal vez", Icon: RiBookmarkLine, ActiveIcon: RiBookmarkFill },
 ];
 
 export const secondaryNav: NavItem[] = [

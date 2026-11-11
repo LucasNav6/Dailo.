@@ -25,7 +25,7 @@
   --secondary-foreground: #14532d;
 
   --muted: #f1f5f9;
-  --muted-foreground: #334155;
+  --muted-foreground: #293548;
 
   --accent: #e2f8ec;
   --accent-foreground: #14532d;
@@ -63,7 +63,7 @@
   --secondary-foreground: #f8fafc;
 
   --muted: #293241;
-  --muted-foreground: #b9c4d2;
+  --muted-foreground: #cbd5e1;
 
   --accent: #293241;
   --accent-foreground: #f8fafc;
@@ -137,7 +137,7 @@
   border-radius: var(--radius-lg);
   font-size: 0.875rem;
   color: var(--muted-foreground);
-  transition: background-color 150ms, color 150ms;
+  transition: background-color 180ms ease-out, color 180ms ease-out, transform 180ms ease-out;
 
   &:hover {
     color: var(--foreground);
@@ -145,6 +145,9 @@
   &:focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: -2px;
+  }
+  &:active {
+    transform: scale(0.96);
   }
   &[aria-current="page"] {
     background-color: var(--accent);

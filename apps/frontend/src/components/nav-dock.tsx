@@ -10,10 +10,10 @@ export function NavDock() {
       <ul className="grid grid-cols-4">
         {primaryNav.map(({ to, label, Icon, ActiveIcon }) => (
           <li key={to}>
-            <NavLink to={to} className="nav-link min-h-19 flex-col justify-center gap-1 rounded-xl px-1 text-xs aria-[current=page]:text-primary">
+            <NavLink to={to} className="nav-link min-h-16 flex-col justify-center gap-0.5 rounded-xl px-1 text-xs aria-[current=page]:text-primary">
               {({ isActive }) => (
                 <>
-                  {isActive ? <ActiveIcon className="size-7" aria-hidden /> : <Icon className="size-7" aria-hidden />}
+                  {isActive ? <ActiveIcon className="size-6" aria-hidden /> : <Icon className="size-6" aria-hidden />}
                   {label}
                 </>
               )}
