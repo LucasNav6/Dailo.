@@ -15,7 +15,9 @@ dist
 
 # Secretos para desarrollo local en Cloudflare Workers
 # https://developers.cloudflare.com/workers/configuration/secrets/#local-development-with-secrets
-.dev.vars
+.dev.vars*
+!.dev.vars.example
 
 # Variables de entorno locales
-.env
+.env*
+!.env.example
