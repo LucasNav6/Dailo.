@@ -1,0 +1,10 @@
+name = "dailo-backend"
+main = "src/index.ts"
+compatibility_date = "2025-11-01"
+
+# Cloudflare D1 (SQLite). Crear la base con `wrangler d1 create dailo`
+# y reemplazar database_id antes de desplegar.
+[[d1_databases]]
+binding = "DB"
+database_name = "dailo"
+database_id = "00000000-0000-0000-0000-000000000000"
