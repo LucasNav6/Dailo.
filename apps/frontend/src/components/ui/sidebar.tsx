@@ -40,6 +40,7 @@ type SidebarContextProps = {
   setOpenMobile: (open: boolean) => void
   isMobile: boolean
   toggleSidebar: () => void
+  mobileFocusReturnRef: React.RefObject<HTMLElement | null>
 }
 
 const SidebarContext = React.createContext<SidebarContextProps | null>(null)
@@ -67,7 +68,17 @@ function SidebarProvider({
   onOpenChange?: (open: boolean) => void
 }) {
   const isMobile = useIsMobile()
-  const [openMobile, setOpenMobile] = React.useState(false)
+  const [openMobile, _setOpenMobile] = React.useState(false)
+  // Elemento que tenía el foco al abrir el sidebar móvil, para devolverlo al cerrar.
+  const mobileFocusReturnRef = React.useRef<HTMLElement | null>(null)
+  const setOpenMobile = React.useCallback((value: boolean) => {
+    if (value) {
+      const active = document.activeElement
+      mobileFocusReturnRef.current =
+        active instanceof HTMLElement && active !== document.body ? active : null
+    }
+    _setOpenMobile(value)
+  }, [])
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
@@ -76,22 +87,38 @@ function SidebarProvider({
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
       const openState = typeof value === "function" ? value(open) : value
-      if (setOpenProp) {
-        setOpenProp(openState)
-      } else {
+
+      // Antes de volver inerte el panel colapsado, mueve el foco a un trigger visible.
+      if (!openState) {
+        const container = document.querySelector<HTMLElement>(
+          '[data-slot="sidebar-container"]'
+        )
+        const active = document.activeElement
+        if (container && active instanceof HTMLElement && container.contains(active)) {
+          const triggers = document.querySelectorAll<HTMLElement>(
+            '[data-slot="sidebar-trigger"]'
+          )
+          Array.from(triggers).find((el) => el.offsetParent !== null)?.focus()
+        }
+      }
+
+      // Con `open` controlado el estado externo manda; sin él, actualizamos el interno
+      // y además notificamos al caller con onOpenChange.
+      if (openProp === undefined) {
         _setOpen(openState)
       }
+      setOpenProp?.(openState)
 
       // This sets the cookie to keep the sidebar state.
       document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
     },
-    [setOpenProp, open]
+    [openProp, setOpenProp, open]
   )
 
   // Helper to toggle the sidebar.
   const toggleSidebar = React.useCallback(() => {
-    return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open)
-  }, [isMobile, setOpen, setOpenMobile])
+    return isMobile ? setOpenMobile(!openMobile) : setOpen((open) => !open)
+  }, [isMobile, openMobile, setOpen, setOpenMobile])
 
   // Adds a keyboard shortcut to toggle the sidebar.
   React.useEffect(() => {
@@ -122,6 +149,7 @@ function SidebarProvider({
       openMobile,
       setOpenMobile,
       toggleSidebar,
+      mobileFocusReturnRef,
     }),
     [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
   )
@@ -163,7 +191,8 @@ function Sidebar({
   variant?: "sidebar" | "floating" | "inset"
   collapsible?: "offcanvas" | "icon" | "none"
 }) {
-  const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  const { isMobile, state, openMobile, setOpenMobile, mobileFocusReturnRef } =
+    useSidebar()
 
   if (collapsible === "none") {
     return (
@@ -181,9 +210,12 @@ function Sidebar({
   }
 
   if (isMobile) {
+    // Radix genera el id del diálogo; no lo sobrescribimos con el recibido.
+    const { id: _id, style: styleProp, ...mobileProps } = props
     return (
-      <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+      <Sheet open={openMobile} onOpenChange={setOpenMobile}>
         <SheetContent
+          {...mobileProps}
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
@@ -191,9 +223,19 @@ function Sidebar({
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
+              ...styleProp,
             } as React.CSSProperties
           }
           side={side}
+          onCloseAutoFocus={(event) => {
+            // Radix no tiene un trigger registrado: devolvemos el foco nosotros.
+            const target = mobileFocusReturnRef.current
+            if (target?.isConnected) {
+              event.preventDefault()
+              target.focus()
+            }
+            mobileFocusReturnRef.current = null
+          }}
         >
           <SheetHeader className="sr-only">
             <SheetTitle>Sidebar</SheetTitle>
@@ -228,6 +270,7 @@ function Sidebar({
       />
       <div
         data-slot="sidebar-container"
+        inert={collapsible === "offcanvas" && state === "collapsed" ? true : undefined}
         className={cn(
           "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex",
           side === "left"
