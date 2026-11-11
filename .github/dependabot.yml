@@ -1,0 +1,11 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    # Solo actualizaciones de seguridad: desactiva los PR de versiones
+    open-pull-requests-limit: 0
+    # Ignora versiones con menos de 7 días de publicadas
+    cooldown:
+      default-days: 7
