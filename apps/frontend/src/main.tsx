@@ -1,9 +1,13 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
+import App from "./App";
+import { ThemeProvider } from "@/lib/theme";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <h1 className="p-4 text-2xl font-semibold">Dailo</h1>
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
   </StrictMode>,
 );
