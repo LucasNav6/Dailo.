@@ -11,8 +11,21 @@ const ThemeContext = createContext<{
 } | null>(null);
 
 function readTheme(): Theme {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  return stored === "light" || stored === "dark" ? stored : "system";
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored === "light" || stored === "dark" ? stored : "system";
+  } catch {
+    // El almacenamiento puede estar bloqueado por el navegador.
+    return "system";
+  }
+}
+
+function saveTheme(theme: Theme) {
+  try {
+    localStorage.setItem(STORAGE_KEY, theme);
+  } catch {
+    // Si no se puede persistir, el tema sigue aplicándose en memoria.
+  }
 }
 
 function applyTheme(theme: Theme) {
@@ -34,7 +47,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [theme]);
 
   const setTheme = (next: Theme) => {
-    localStorage.setItem(STORAGE_KEY, next);
+    saveTheme(next);
     setThemeState(next);
   };
 
