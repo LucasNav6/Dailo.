@@ -4,42 +4,35 @@ import { cn } from "@/lib/utils";
 import { primaryNav, secondaryNav, type NavItem } from "@/lib/navigation";
 import { Button } from "@/components/ui/button";
 
-function AsideLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
-  const { to, label, Icon, ActiveIcon } = item;
+function AsideLink({ to, label, Icon, ActiveIcon, collapsed }: NavItem & { collapsed: boolean }) {
   return (
-    <NavLink
-      to={to}
-      title={collapsed ? label : undefined}
-      aria-label={collapsed ? label : undefined}
-      className={({ isActive }) =>
-        cn(
-          "flex h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-sidebar-ring motion-reduce:transition-none",
-          collapsed && "justify-center px-0",
-          isActive
-            ? "bg-sidebar-accent text-sidebar-accent-foreground"
-            : "text-sidebar-foreground hover:bg-sidebar-accent/60",
-        )
-      }
-    >
+    <NavLink to={to} title={collapsed ? label : undefined} aria-label={collapsed ? label : undefined} className={cn("nav-link", collapsed && "justify-center")}>
       {({ isActive }) => (
         <>
-          {isActive ? <ActiveIcon className="size-5 shrink-0" aria-hidden /> : <Icon className="size-5 shrink-0" aria-hidden />}
-          {!collapsed && <span>{label}</span>}
+          {isActive ? <ActiveIcon className="size-5" aria-hidden /> : <Icon className="size-5" aria-hidden />}
+          {!collapsed && label}
         </>
       )}
     </NavLink>
   );
 }
 
+function AsideList({ items, collapsed, className }: { items: NavItem[]; collapsed: boolean; className?: string }) {
+  return (
+    <ul className={cn("space-y-1", className)}>
+      {items.map((item) => (
+        <li key={item.to}>
+          <AsideLink {...item} collapsed={collapsed} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function NavAside({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
   const ToggleIcon = collapsed ? RiLayoutRightLine : RiLayoutLeftLine;
   return (
-    <aside
-      className={cn(
-        "hidden shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200 motion-reduce:transition-none lg:flex",
-        collapsed ? "w-[4.5rem]" : "w-64",
-      )}
-    >
+    <aside className={cn("hidden shrink-0 flex-col bg-sidebar text-sidebar-foreground transition-[width] lg:flex", collapsed ? "w-18" : "w-64")}>
       <div className={cn("flex h-16 items-center px-4", collapsed ? "justify-center" : "justify-between")}>
         {!collapsed && <span className="text-xl font-semibold">Dailo</span>}
         <Button
@@ -53,20 +46,8 @@ export function NavAside({ collapsed, onToggle }: { collapsed: boolean; onToggle
         </Button>
       </div>
       <nav aria-label="Navegación principal" className="flex flex-1 flex-col justify-between p-3">
-        <ul className="space-y-1">
-          {primaryNav.map((item) => (
-            <li key={item.to}>
-              <AsideLink item={item} collapsed={collapsed} />
-            </li>
-          ))}
-        </ul>
-        <ul className="space-y-1 border-t border-sidebar-border pt-3">
-          {secondaryNav.map((item) => (
-            <li key={item.to}>
-              <AsideLink item={item} collapsed={collapsed} />
-            </li>
-          ))}
-        </ul>
+        <AsideList items={primaryNav} collapsed={collapsed} />
+        <AsideList items={secondaryNav} collapsed={collapsed} className="border-t border-sidebar-border pt-3" />
       </nav>
     </aside>
   );
