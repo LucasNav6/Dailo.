@@ -7,6 +7,7 @@
 /* Paleta neutral con acento menta (#A5F3C5) provisional */
 :root {
   --radius: 0.75rem;
+  --radius-dock: 1.5rem;
 
   --background: #ffffff;
   --foreground: #17212b;
@@ -24,7 +25,7 @@
   --secondary-foreground: #14532d;
 
   --muted: #f1f5f9;
-  --muted-foreground: #334155;
+  --muted-foreground: #293548;
 
   --accent: #e2f8ec;
   --accent-foreground: #14532d;
@@ -41,7 +42,7 @@
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #e2f8ec;
   --sidebar-accent-foreground: #14532d;
-  --sidebar-border: #94a3b8;
+  --sidebar-border: #cbd5e1;
   --sidebar-ring: #14532d;
 }
 
@@ -62,7 +63,7 @@
   --secondary-foreground: #f8fafc;
 
   --muted: #293241;
-  --muted-foreground: #b9c4d2;
+  --muted-foreground: #cbd5e1;
 
   --accent: #293241;
   --accent-foreground: #f8fafc;
@@ -79,7 +80,7 @@
   --sidebar-primary-foreground: #181c24;
   --sidebar-accent: #293241;
   --sidebar-accent-foreground: #f8fafc;
-  --sidebar-border: #64748b;
+  --sidebar-border: #293241;
   --sidebar-ring: #a5f3c5;
 }
 
@@ -89,6 +90,7 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius-dock: var(--radius-dock);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -123,5 +125,63 @@
   }
   body {
     @apply bg-background font-sans text-foreground antialiased transition-colors duration-200;
+  }
+}
+
+@utility nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.5rem;
+  padding-inline: 0.75rem;
+  border-radius: var(--radius-lg);
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  transition: background-color 180ms ease-out, color 180ms ease-out, transform 180ms ease-out;
+
+  &:hover {
+    background-color: color-mix(in oklab, var(--accent), transparent 50%);
+    color: var(--foreground);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: -2px;
+  }
+  &:active {
+    transform: scale(0.96);
+  }
+  &[aria-current="page"] {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+  }
+  &[aria-current="page"] svg {
+    color: var(--primary);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+[data-slot="dropdown-menu-content"] {
+  border-color: var(--sidebar-border);
+  border-radius: var(--radius-lg);
+}
+
+[data-slot="dropdown-menu-item"] {
+  padding-block: 0.3125rem;
+  transition: background-color 180ms ease-out, color 180ms ease-out;
+
+  &:active {
+    background-color: color-mix(in oklab, var(--accent), var(--foreground) 12%);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: -2px;
   }
 }
