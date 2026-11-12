@@ -1,5 +1,5 @@
 import { useRef, useState, type FormEvent, type KeyboardEvent } from "react";
-import { RiLoader4Line } from "@remixicon/react";
+import { RiArrowUpLine, RiInboxLine, RiLoader4Line } from "@remixicon/react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useQuickCapture } from "@/hooks/use-quick-capture";
 import {
@@ -17,10 +17,9 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 
 type QuickCaptureProps = {
@@ -74,33 +73,37 @@ export function QuickCapture({ open, onOpenChange, onCaptured }: QuickCapturePro
   };
 
   const form = (
-    <form onSubmit={onSubmit} className="grid gap-3">
-      <label htmlFor="quick-capture-text" className="text-sm font-medium">
-        ¿Qué tenés en mente?
-      </label>
+    <form onSubmit={onSubmit} className="grid gap-2">
       <Textarea
-        id="quick-capture-text"
         ref={textareaRef}
         value={capture.text}
         onChange={(event) => capture.setText(event.target.value)}
         onKeyDown={onKeyDown}
-        placeholder="Escribí una idea, tarea o recordatorio..."
+        placeholder="¿Qué tenés en mente?"
+        aria-label="¿Qué tenés en mente?"
         rows={4}
-        className="max-h-[40svh] resize-none"
+        className="max-h-[40svh] min-h-28 resize-none rounded-none border-0 bg-transparent p-0 pr-8 text-lg leading-relaxed shadow-none focus-visible:ring-0 dark:bg-transparent md:text-lg"
         aria-invalid={capture.status === "error"}
-        aria-describedby="quick-capture-hint quick-capture-error"
+        aria-describedby="quick-capture-error"
         disabled={capture.status === "saving"}
       />
       <p id="quick-capture-error" role="alert" className="text-sm text-destructive empty:hidden">
         {capture.status === "error" ? "No se pudo guardar. Tu texto sigue acá, probá de nuevo." : null}
       </p>
       <div className="flex items-center justify-between gap-3">
-        <p id="quick-capture-hint" className="text-sm text-muted-foreground">
-          Se guardará en Inbox
-        </p>
-        <Button type="submit" disabled={!capture.canSubmit} aria-busy={capture.status === "saving"}>
-          {capture.status === "saving" && <RiLoader4Line className="animate-spin" aria-hidden />}
-          Capturar
+        <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <RiInboxLine className="size-4" aria-hidden />
+          Inbox
+        </span>
+        <Button
+          type="submit"
+          size="icon-lg"
+          className="rounded-full"
+          aria-label="Capturar en Inbox"
+          disabled={!capture.canSubmit}
+          aria-busy={capture.status === "saving"}
+        >
+          {capture.status === "saving" ? <RiLoader4Line className="animate-spin" aria-hidden /> : <RiArrowUpLine aria-hidden />}
         </Button>
       </div>
     </form>
@@ -110,11 +113,9 @@ export function QuickCapture({ open, onOpenChange, onCaptured }: QuickCapturePro
     <>
       {isDesktop ? (
         <Dialog open={open} onOpenChange={requestClose}>
-          <DialogContent className="sm:max-w-md" onOpenAutoFocus={focusTextarea}>
-            <DialogHeader>
-              <DialogTitle>Captura rápida</DialogTitle>
-              <DialogDescription className="sr-only">Guardá una idea, tarea o recordatorio en Inbox.</DialogDescription>
-            </DialogHeader>
+          <DialogContent className="sm:max-w-md gap-3" onOpenAutoFocus={focusTextarea}>
+            <DialogTitle className="sr-only">Captura rápida</DialogTitle>
+            <DialogDescription className="sr-only">Guardá una idea, tarea o recordatorio en Inbox.</DialogDescription>
             {form}
           </DialogContent>
         </Dialog>
@@ -122,13 +123,11 @@ export function QuickCapture({ open, onOpenChange, onCaptured }: QuickCapturePro
         <Sheet open={open} onOpenChange={requestClose}>
           <SheetContent
             side="bottom"
-            className="max-h-svh rounded-t-2xl p-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
+            className="max-h-svh rounded-t-2xl px-5 pt-5 pb-[max(1rem,env(safe-area-inset-bottom))]"
             onOpenAutoFocus={focusTextarea}
           >
-            <SheetHeader className="p-0">
-              <SheetTitle>Captura rápida</SheetTitle>
-              <SheetDescription className="sr-only">Guardá una idea, tarea o recordatorio en Inbox.</SheetDescription>
-            </SheetHeader>
+            <SheetTitle className="sr-only">Captura rápida</SheetTitle>
+            <SheetDescription className="sr-only">Guardá una idea, tarea o recordatorio en Inbox.</SheetDescription>
             {form}
           </SheetContent>
         </Sheet>
