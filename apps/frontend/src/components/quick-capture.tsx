@@ -1,5 +1,5 @@
 import { useRef, useState, type FormEvent, type KeyboardEvent } from "react";
-import { RiArrowUpLine, RiInboxLine, RiLoader4Line } from "@remixicon/react";
+import { RiArrowUpLine, RiCloseLine, RiInboxArchiveLine, RiLoader4Line } from "@remixicon/react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useQuickCapture } from "@/hooks/use-quick-capture";
 import {
@@ -19,7 +19,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 
 type QuickCaptureProps = {
@@ -72,8 +72,10 @@ export function QuickCapture({ open, onOpenChange, onCaptured }: QuickCapturePro
     textareaRef.current?.focus();
   };
 
+  const modKey = typeof navigator !== "undefined" && /Mac/.test(navigator.platform) ? "⌘" : "Ctrl";
+
   const form = (
-    <form onSubmit={onSubmit} className="grid gap-2">
+    <form onSubmit={onSubmit} className="flex flex-col">
       <Textarea
         ref={textareaRef}
         value={capture.text}
@@ -82,29 +84,36 @@ export function QuickCapture({ open, onOpenChange, onCaptured }: QuickCapturePro
         placeholder="¿Qué tenés en mente?"
         aria-label="¿Qué tenés en mente?"
         rows={4}
-        className="max-h-[40svh] min-h-28 resize-none rounded-none border-0 bg-transparent p-0 pr-8 text-lg leading-relaxed shadow-none focus-visible:ring-0 dark:bg-transparent md:text-lg"
+        className="max-h-[40svh] min-h-32 resize-none rounded-none border-0 bg-transparent px-5 pt-1 pb-3 text-lg leading-relaxed shadow-none focus-visible:ring-0 dark:bg-transparent md:text-lg"
         aria-invalid={capture.status === "error"}
         aria-describedby="quick-capture-error"
         disabled={capture.status === "saving"}
       />
-      <p id="quick-capture-error" role="alert" className="text-sm text-destructive empty:hidden">
+      <p id="quick-capture-error" role="alert" className="px-5 pb-2 text-sm text-destructive empty:hidden">
         {capture.status === "error" ? "No se pudo guardar. Tu texto sigue acá, probá de nuevo." : null}
       </p>
-      <div className="flex items-center justify-between gap-3">
-        <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          <RiInboxLine className="size-4" aria-hidden />
+      <div className="flex items-center justify-between gap-3 bg-muted/50 px-5 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <span className="flex items-center gap-2 rounded-lg bg-muted px-2.5 py-1.5 text-sm font-medium">
+          <RiInboxArchiveLine className="size-4 text-primary" aria-hidden />
           Inbox
         </span>
-        <Button
-          type="submit"
-          size="icon-lg"
-          className="rounded-full"
-          aria-label="Capturar en Inbox"
-          disabled={!capture.canSubmit}
-          aria-busy={capture.status === "saving"}
-        >
-          {capture.status === "saving" ? <RiLoader4Line className="animate-spin" aria-hidden /> : <RiArrowUpLine aria-hidden />}
-        </Button>
+        <div className="flex items-center gap-3">
+          {isDesktop && (
+            <kbd className="font-sans text-xs text-muted-foreground" aria-hidden>
+              {modKey} ↵
+            </kbd>
+          )}
+          <Button
+            type="submit"
+            size="icon-lg"
+            className="rounded-full"
+            aria-label="Capturar en Inbox"
+            disabled={!capture.canSubmit}
+            aria-busy={capture.status === "saving"}
+          >
+            {capture.status === "saving" ? <RiLoader4Line className="animate-spin" aria-hidden /> : <RiArrowUpLine aria-hidden />}
+          </Button>
+        </div>
       </div>
     </form>
   );
@@ -113,7 +122,7 @@ export function QuickCapture({ open, onOpenChange, onCaptured }: QuickCapturePro
     <>
       {isDesktop ? (
         <Dialog open={open} onOpenChange={requestClose}>
-          <DialogContent className="sm:max-w-md gap-3" onOpenAutoFocus={focusTextarea}>
+          <DialogContent showCloseButton={false} className="gap-0 overflow-hidden rounded-2xl p-0 pt-5 sm:max-w-md" onOpenAutoFocus={focusTextarea}>
             <DialogTitle className="sr-only">Captura rápida</DialogTitle>
             <DialogDescription className="sr-only">Guardá una idea, tarea o recordatorio en Inbox.</DialogDescription>
             {form}
@@ -123,9 +132,18 @@ export function QuickCapture({ open, onOpenChange, onCaptured }: QuickCapturePro
         <Sheet open={open} onOpenChange={requestClose}>
           <SheetContent
             side="bottom"
-            className="max-h-svh rounded-t-2xl px-5 pt-5 pb-[max(1rem,env(safe-area-inset-bottom))]"
+            showCloseButton={false}
+            className="max-h-svh gap-0 rounded-t-2xl p-0"
             onOpenAutoFocus={focusTextarea}
           >
+            <div className="relative flex h-12 items-center justify-center">
+              <div className="h-1 w-10 rounded-full bg-muted-foreground/30" aria-hidden />
+              <SheetClose asChild>
+                <Button variant="secondary" size="icon-sm" className="absolute top-2.5 right-4 rounded-full" aria-label="Cerrar">
+                  <RiCloseLine aria-hidden />
+                </Button>
+              </SheetClose>
+            </div>
             <SheetTitle className="sr-only">Captura rápida</SheetTitle>
             <SheetDescription className="sr-only">Guardá una idea, tarea o recordatorio en Inbox.</SheetDescription>
             {form}
