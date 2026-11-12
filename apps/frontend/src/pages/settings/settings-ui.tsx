@@ -68,7 +68,7 @@ export function Section({
 }
 
 export function Panel({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={`space-y-4 rounded-xl border border-border bg-card p-4 ${className ?? ""}`}>{children}</div>
+  return <div className={`space-y-4 rounded-2xl border border-border/20 bg-card p-4 ${className ?? ""}`}>{children}</div>
 }
 
 export function TimeField({

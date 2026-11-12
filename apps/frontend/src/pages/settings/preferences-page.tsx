@@ -114,8 +114,8 @@ function PreferencesForm({ initial }: { initial: Preferences }) {
                 role="radio"
                 aria-checked={selected}
                 onClick={() => setTheme(id)}
-                className={`flex min-h-14 w-full items-center gap-3 rounded-xl border px-4 text-left text-sm font-medium outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 ${
-                  selected ? "border-primary bg-accent text-accent-foreground" : "border-border bg-card hover:bg-accent/50"
+                className={`flex min-h-14 w-full items-center gap-3 rounded-2xl border px-4 text-left text-sm font-medium outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 ${
+                  selected ? "border-primary bg-accent text-accent-foreground" : "border-border/20 bg-card hover:bg-accent/50"
                 }`}
               >
                 <Icon className="size-5" aria-hidden />

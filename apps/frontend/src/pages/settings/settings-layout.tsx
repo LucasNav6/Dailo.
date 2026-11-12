@@ -41,12 +41,12 @@ export function SettingsLayout() {
     <div className="mx-auto max-w-5xl lg:grid lg:grid-cols-[16rem_1fr] lg:gap-10">
       <nav aria-label="Configuración" className={cn("space-y-6", isIndex ? "block" : "hidden lg:block")}>
         {groups.map((group) => (
-          <div key={group.title} className="space-y-1">
-            <h2 className="px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{group.title}</h2>
-            <ul className="space-y-0.5">
+          <div key={group.title} className="space-y-2">
+            <h2 className="px-1 text-xs font-semibold lg:px-3 uppercase tracking-wide text-muted-foreground">{group.title}</h2>
+            <ul className="space-y-2 lg:space-y-0.5">
               {group.items.map(({ to, label, description, Icon }) => (
                 <li key={to}>
-                  <NavLink to={to} className="nav-link min-h-16 border border-border bg-card lg:min-h-10 lg:border-transparent lg:bg-transparent">
+                  <NavLink to={to} className="nav-link min-h-16 !rounded-2xl border border-border/20 bg-card lg:min-h-10 lg:border-transparent lg:bg-transparent">
                     <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted lg:size-auto lg:bg-transparent">
                       <Icon className="size-5" aria-hidden />
                     </span>

@@ -36,7 +36,7 @@ function NotificationsForm({ initial }: { initial: NotificationSettings }) {
             onCheckedChange={(checked) => update({ ...draft, inboxReminderEnabled: checked })}
           />
         </div>
-        <div className="border-t border-border pt-4">
+        <div className="border-t border-border/20 pt-4">
           <TimeField
             label="Hora del recordatorio"
             value={draft.inboxReminderTime}
@@ -51,7 +51,7 @@ function NotificationsForm({ initial }: { initial: NotificationSettings }) {
             </p>
           )}
         </div>
-        <div className="flex min-h-11 items-center justify-between gap-4 border-t border-border pt-4">
+        <div className="flex min-h-11 items-center justify-between gap-4 border-t border-border/20 pt-4">
           <label htmlFor="reminder-only-pending" className="text-sm font-medium">
             Recordar solo cuando Inbox tenga elementos pendientes
           </label>
