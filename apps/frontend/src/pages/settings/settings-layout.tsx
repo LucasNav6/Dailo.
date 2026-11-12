@@ -11,17 +11,17 @@ import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
-type Category = { to: string; label: string; Icon: RemixiconComponentType }
+type Category = { to: string; label: string; description: string; Icon: RemixiconComponentType }
 
 const groups: { title: string; items: Category[] }[] = [
   {
     title: "Personalización",
     items: [
-      { to: "/settings/preferences", label: "Preferencias", Icon: RiEqualizerLine },
-      { to: "/settings/notifications", label: "Notificaciones", Icon: RiNotification3Line },
+      { to: "/settings/preferences", label: "Preferencias", description: "Rutina, planificación y apariencia", Icon: RiEqualizerLine },
+      { to: "/settings/notifications", label: "Notificaciones", description: "Recordatorios y avisos", Icon: RiNotification3Line },
     ],
   },
-  { title: "Seguridad", items: [{ to: "/settings/security", label: "Seguridad y datos", Icon: RiShieldLine }] },
+  { title: "Seguridad", items: [{ to: "/settings/security", label: "Seguridad y datos", description: "Almacenamiento local en este dispositivo", Icon: RiShieldLine }] },
 ]
 
 const categories = groups.flatMap((group) => group.items)
@@ -42,13 +42,18 @@ export function SettingsLayout() {
       <nav aria-label="Configuración" className={cn("space-y-6", isIndex ? "block" : "hidden lg:block")}>
         {groups.map((group) => (
           <div key={group.title} className="space-y-1">
-            <h2 className="px-3 text-sm font-semibold text-muted-foreground">{group.title}</h2>
+            <h2 className="px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{group.title}</h2>
             <ul className="space-y-0.5">
-              {group.items.map(({ to, label, Icon }) => (
+              {group.items.map(({ to, label, description, Icon }) => (
                 <li key={to}>
-                  <NavLink to={to} className="nav-link min-h-12 lg:min-h-10">
-                    <Icon className="size-5" aria-hidden />
-                    <span className="flex-1">{label}</span>
+                  <NavLink to={to} className="nav-link min-h-16 border border-border bg-card lg:min-h-10 lg:border-transparent lg:bg-transparent">
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted lg:size-auto lg:bg-transparent">
+                      <Icon className="size-5" aria-hidden />
+                    </span>
+                    <span className="flex flex-1 flex-col">
+                      <span className="text-base font-medium text-foreground lg:text-sm">{label}</span>
+                      <span className="text-sm text-muted-foreground lg:hidden">{description}</span>
+                    </span>
                     <RiArrowRightSLine className="size-5 lg:hidden" aria-hidden />
                   </NavLink>
                 </li>
@@ -56,7 +61,7 @@ export function SettingsLayout() {
             </ul>
           </div>
         ))}
-        <p className="px-3 text-sm text-muted-foreground">Dailo v{__APP_VERSION__}</p>
+        <p className="px-3 pt-4 text-center text-sm text-muted-foreground lg:text-left">Dailo v{__APP_VERSION__}</p>
       </nav>
 
       {isIndex && <Outlet />}

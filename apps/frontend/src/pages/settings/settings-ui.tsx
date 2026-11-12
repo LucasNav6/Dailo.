@@ -1,5 +1,5 @@
 import { useId, useRef, useState } from "react"
-import { RiCheckLine } from "@remixicon/react"
+import { RiCheckLine, type RemixiconComponentType } from "@remixicon/react"
 import type { FieldErrors } from "@/models/setting.model"
 import { Input } from "@/components/ui/input"
 
@@ -42,16 +42,33 @@ export function SaveStatus({ state }: { state: SaveState }) {
   )
 }
 
-export function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
+export function Section({
+  title,
+  description,
+  Icon,
+  children,
+}: {
+  title: string
+  description?: string
+  Icon?: RemixiconComponentType
+  children: React.ReactNode
+}) {
   return (
-    <section className="space-y-4 border-b border-border py-6 first:pt-0 last:border-b-0">
+    <section className="space-y-3 py-4 first:pt-0">
       <div className="space-y-1">
-        <h3 className="text-lg font-semibold">{title}</h3>
+        <h3 className="flex items-center gap-2 text-lg font-semibold">
+          {Icon && <Icon className="size-5 text-primary" aria-hidden />}
+          {title}
+        </h3>
         {description && <p className="text-sm text-muted-foreground">{description}</p>}
       </div>
       {children}
     </section>
   )
+}
+
+export function Panel({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <div className={`space-y-4 rounded-xl border border-border bg-card p-4 ${className ?? ""}`}>{children}</div>
 }
 
 export function TimeField({

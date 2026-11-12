@@ -3,7 +3,7 @@ import { RiInformationLine } from "@remixicon/react"
 import { useNotificationSettings } from "@/hooks/use-settings"
 import type { NotificationSettings } from "@/models/setting.model"
 import { Switch } from "@/components/ui/switch"
-import { SaveStatus, Section, TimeField, useAutoSave } from "./settings-ui"
+import { Panel, SaveStatus, Section, TimeField, useAutoSave } from "./settings-ui"
 
 function NotificationsForm({ initial }: { initial: NotificationSettings }) {
   const { saveSettings } = useNotificationSettings()
@@ -24,7 +24,8 @@ function NotificationsForm({ initial }: { initial: NotificationSettings }) {
         </span>
       </p>
 
-      <Section title="Recordatorio de Inbox">
+      <Section title="Recordatorio de Inbox" description="Hábito de cierre diario: te recuerda procesar tu Inbox al final de la jornada.">
+        <Panel>
         <div className="flex min-h-11 items-center justify-between gap-4">
           <label htmlFor="reminder-enabled" className="text-sm font-medium">
             Activar recordatorio
@@ -35,7 +36,7 @@ function NotificationsForm({ initial }: { initial: NotificationSettings }) {
             onCheckedChange={(checked) => update({ ...draft, inboxReminderEnabled: checked })}
           />
         </div>
-        <div>
+        <div className="border-t border-border pt-4">
           <TimeField
             label="Hora del recordatorio"
             value={draft.inboxReminderTime}
@@ -50,7 +51,7 @@ function NotificationsForm({ initial }: { initial: NotificationSettings }) {
             </p>
           )}
         </div>
-        <div className="flex min-h-11 items-center justify-between gap-4">
+        <div className="flex min-h-11 items-center justify-between gap-4 border-t border-border pt-4">
           <label htmlFor="reminder-only-pending" className="text-sm font-medium">
             Recordar solo cuando Inbox tenga elementos pendientes
           </label>
@@ -61,6 +62,7 @@ function NotificationsForm({ initial }: { initial: NotificationSettings }) {
             onCheckedChange={(checked) => update({ ...draft, onlyWhenInboxHasItems: checked })}
           />
         </div>
+        </Panel>
         <SaveStatus state={state} />
       </Section>
     </div>

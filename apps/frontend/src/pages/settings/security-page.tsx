@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { RiDeleteBinLine } from "@remixicon/react"
+import { RiDatabase2Line, RiDeleteBinLine } from "@remixicon/react"
 import { deleteAllData } from "@/hooks/use-settings"
 import { useTheme } from "@/lib/theme"
 import {
@@ -14,7 +14,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { Section } from "./settings-ui"
+import { Panel, Section } from "./settings-ui"
 
 export function SecurityPage() {
   const { setTheme } = useTheme()
@@ -32,18 +32,20 @@ export function SecurityPage() {
 
   return (
     <div>
-      <Section title="Almacenamiento local">
+      <Section title="Tus datos" Icon={RiDatabase2Line}>
+        <Panel>
         <ul className="list-disc space-y-2 pl-5 text-sm">
           <li>Tus datos se almacenan localmente en este dispositivo mediante IndexedDB.</li>
           <li>Actualmente no existe sincronización entre dispositivos.</li>
           <li>Borrar los datos del navegador puede eliminar la información almacenada.</li>
         </ul>
+        </Panel>
       </Section>
 
-      <Section title="Eliminar datos" description="Elimina tareas, proyectos, secciones y ajustes de este dispositivo.">
+      <Section title="Eliminar datos locales" description="Borra de forma permanente tareas, proyectos, secciones y ajustes de este dispositivo.">
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="destructive" className="h-11">
+            <Button variant="destructive" className="h-12 w-full">
               <RiDeleteBinLine aria-hidden />
               Eliminar todos los datos
             </Button>
