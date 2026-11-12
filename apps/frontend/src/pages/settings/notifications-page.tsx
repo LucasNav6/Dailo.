@@ -3,7 +3,7 @@ import { RiInformationLine } from "@remixicon/react"
 import { useNotificationSettings } from "@/hooks/use-settings"
 import type { NotificationSettings } from "@/models/setting.model"
 import { Switch } from "@/components/ui/switch"
-import { Panel, SaveStatus, Section, TimeField, useAutoSave } from "./settings-ui"
+import { Labeled, Panel, SaveStatus, Section, TimeSelect, useAutoSave } from "./settings-ui"
 
 function NotificationsForm({ initial }: { initial: NotificationSettings }) {
   const { saveSettings } = useNotificationSettings()
@@ -37,14 +37,16 @@ function NotificationsForm({ initial }: { initial: NotificationSettings }) {
           />
         </div>
         <div className="border-t border-border/20 pt-4">
-          <TimeField
-            label="Hora del recordatorio"
-            value={draft.inboxReminderTime}
-            disabled={!draft.inboxReminderEnabled}
-            invalid={!!errors.inboxReminderTime}
-            describedBy={errors.inboxReminderTime ? "reminder-time-error" : undefined}
-            onChange={(value) => update({ ...draft, inboxReminderTime: value })}
-          />
+          <Labeled label="Hora del recordatorio">
+            <TimeSelect
+              label="Hora del recordatorio"
+              value={draft.inboxReminderTime}
+              disabled={!draft.inboxReminderEnabled}
+              invalid={!!errors.inboxReminderTime}
+              describedBy={errors.inboxReminderTime ? "reminder-time-error" : undefined}
+              onChange={(value) => update({ ...draft, inboxReminderTime: value })}
+            />
+          </Labeled>
           {errors.inboxReminderTime && (
             <p id="reminder-time-error" className="mt-1.5 text-sm text-destructive">
               {errors.inboxReminderTime}

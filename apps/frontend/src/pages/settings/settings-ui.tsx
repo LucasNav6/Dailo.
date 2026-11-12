@@ -1,7 +1,9 @@
 import { useId, useRef, useState } from "react"
 import { RiCheckLine, type RemixiconComponentType } from "@remixicon/react"
 import type { FieldErrors } from "@/models/setting.model"
-import { Input } from "@/components/ui/input"
+import { cn } from "@/lib/utils"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 type SaveState = "idle" | "saved" | "error"
 
@@ -68,10 +70,14 @@ export function Section({
 }
 
 export function Panel({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={`space-y-4 rounded-2xl border border-border/20 bg-card p-4 ${className ?? ""}`}>{children}</div>
+  return <div className={cn("rounded-2xl border border-border/20 bg-card", className ?? "space-y-4 p-4")}>{children}</div>
 }
 
-export function TimeField({
+const HOURS = Array.from({ length: 24 }, (_, hour) => String(hour).padStart(2, "0"))
+const MINUTES = Array.from({ length: 12 }, (_, step) => String(step * 5).padStart(2, "0"))
+
+/** Selector de hora en formato 24 h (minutos de 5 en 5). */
+export function TimeSelect({
   label,
   value,
   onChange,
@@ -86,52 +92,97 @@ export function TimeField({
   invalid?: boolean
   describedBy?: string
 }) {
-  const id = useId()
+  const [hour, minute] = value.split(":")
+  const minutes = MINUTES.includes(minute) ? MINUTES : [...MINUTES, minute].sort()
+  const common = { disabled, "aria-invalid": invalid || undefined, "aria-describedby": describedBy }
   return (
-    <div className="space-y-1.5">
-      <label htmlFor={id} className="text-sm font-medium">
-        {label}
-      </label>
-      <Input
-        id={id}
-        type="time"
-        value={value}
-        disabled={disabled}
-        aria-invalid={invalid || undefined}
-        aria-describedby={describedBy}
-        onChange={(event) => onChange(event.target.value)}
-        className="h-11 min-w-28"
-      />
+    <div role="group" aria-label={label} className="flex items-center gap-2">
+      <Select value={hour} onValueChange={(next) => onChange(`${next}:${minute}`)} disabled={disabled}>
+        <SelectTrigger {...common} aria-label={`${label}: hora`} className="h-11 w-20 tabular-nums">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent className="max-h-64">
+          {HOURS.map((item) => (
+            <SelectItem key={item} value={item} className="tabular-nums">
+              {item}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <span aria-hidden>:</span>
+      <Select value={minute} onValueChange={(next) => onChange(`${hour}:${next}`)} disabled={disabled}>
+        <SelectTrigger {...common} aria-label={`${label}: minutos`} className="h-11 w-20 tabular-nums">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent className="max-h-64">
+          {minutes.map((item) => (
+            <SelectItem key={item} value={item} className="tabular-nums">
+              {item}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   )
 }
 
-export function TimeRangeField({
+/** Fila compacta: icono, nombre y valor como chip. Al tocarla abre el editor. */
+export function TimeRow({
+  Icon,
   label,
-  start,
-  end,
-  onChange,
+  summary,
   error,
+  children,
 }: {
+  Icon: RemixiconComponentType
   label: string
-  start: string
-  end: string
-  onChange: (range: { start: string; end: string }) => void
+  summary: string
   error?: string
+  children: React.ReactNode
 }) {
   const errorId = useId()
   return (
-    <fieldset className="space-y-1.5">
-      <legend className="mb-1.5 text-sm font-semibold">{label}</legend>
-      <div className="grid grid-cols-2 gap-3 sm:max-w-sm">
-        <TimeField label="Inicio" value={start} invalid={!!error} describedBy={error ? errorId : undefined} onChange={(value) => onChange({ start: value, end })} />
-        <TimeField label="Fin" value={end} invalid={!!error} describedBy={error ? errorId : undefined} onChange={(value) => onChange({ start, end: value })} />
-      </div>
+    <div>
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            aria-describedby={error ? errorId : undefined}
+            aria-label={`${label}, ${summary}. Editar`}
+            className="flex min-h-14 w-full items-center gap-3 rounded-xl bg-background px-3 text-left outline-none transition-colors hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          >
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-primary">
+              <Icon className="size-5" aria-hidden />
+            </span>
+            <span className="flex-1 text-sm font-medium">{label}</span>
+            <span
+              className={cn(
+                "rounded-lg border px-2.5 py-1 text-sm tabular-nums",
+                error ? "border-destructive text-destructive" : "border-border/20 bg-card"
+              )}
+            >
+              {summary}
+            </span>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent align="end" className="w-auto space-y-3">
+          {children}
+        </PopoverContent>
+      </Popover>
       {error && (
-        <p id={errorId} className="text-sm text-destructive">
+        <p id={errorId} className="px-3 pt-1.5 text-sm text-destructive">
           {error}
         </p>
       )}
-    </fieldset>
+    </div>
+  )
+}
+
+export function Labeled({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-1.5">
+      <p className="text-sm font-medium">{label}</p>
+      {children}
+    </div>
   )
 }
