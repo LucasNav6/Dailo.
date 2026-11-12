@@ -23,3 +23,9 @@ db.version(1).stores({
 /** Agrupa varias operaciones en una transacción atómica. */
 export const atomically = <T>(operations: () => Promise<T>) =>
   db.transaction("rw", db.tasks, db.projects, db.sections, operations)
+
+/** Vacía todas las tablas locales en una única transacción. */
+export const clearAllData = () =>
+  db.transaction("rw", db.tables, () =>
+    Promise.all(db.tables.map((table) => table.clear()))
+  )
