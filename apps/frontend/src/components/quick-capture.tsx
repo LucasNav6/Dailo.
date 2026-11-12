@@ -61,7 +61,8 @@ export function QuickCapture({ open, onOpenChange, onCaptured }: QuickCapturePro
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+    // Enter guarda; Shift+Enter inserta un salto de línea.
+    if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
       event.preventDefault();
       void submit();
     }
@@ -72,8 +73,6 @@ export function QuickCapture({ open, onOpenChange, onCaptured }: QuickCapturePro
     textareaRef.current?.focus();
   };
 
-  const modKey = typeof navigator !== "undefined" && /Mac/.test(navigator.platform) ? "⌘" : "Ctrl";
-
   const form = (
     <form onSubmit={onSubmit} className="flex flex-col">
       <Textarea
@@ -83,8 +82,8 @@ export function QuickCapture({ open, onOpenChange, onCaptured }: QuickCapturePro
         onKeyDown={onKeyDown}
         placeholder="¿Qué tenés en mente?"
         aria-label="¿Qué tenés en mente?"
-        rows={4}
-        className="max-h-[40svh] min-h-32 resize-none rounded-none border-0 bg-transparent px-5 pt-1 pb-3 text-lg leading-relaxed shadow-none focus-visible:ring-0 dark:bg-transparent md:text-lg"
+        rows={3} enterKeyHint="done"
+        className="max-h-[40svh] min-h-24 resize-none rounded-none border-0 bg-transparent px-5 pt-1 pb-3 text-lg leading-relaxed shadow-none focus-visible:ring-0 dark:bg-transparent md:text-lg"
         aria-invalid={capture.status === "error"}
         aria-describedby="quick-capture-error"
         disabled={capture.status === "saving"}
@@ -100,7 +99,7 @@ export function QuickCapture({ open, onOpenChange, onCaptured }: QuickCapturePro
         <div className="flex items-center gap-3">
           {isDesktop && (
             <kbd className="font-sans text-xs text-muted-foreground" aria-hidden>
-              {modKey} ↵
+              Enter
             </kbd>
           )}
           <Button
