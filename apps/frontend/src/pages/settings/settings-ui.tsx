@@ -1,12 +1,12 @@
 import { useRef, useState } from "react"
-import { RiCheckLine, type RemixiconComponentType } from "@remixicon/react"
+import { type RemixiconComponentType } from "@remixicon/react"
 import type { FieldErrors } from "@/models/setting.model"
 import { cn } from "@/lib/utils"
 import { LAST_MINUTE_OF_DAY, TIME_STEP, toMinutes } from "@/services/setting.service"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-type SaveState = "idle" | "saved" | "error"
+type SaveState = "idle" | "error"
 
 /** Guardado automático: ejecuta `save` y expone un estado discreto para mostrar. */
 export function useAutoSave() {
@@ -20,7 +20,7 @@ export function useAutoSave() {
       const result = await save()
       if (id !== latest.current) return
       setErrors(result)
-      setState(Object.keys(result).length === 0 ? "saved" : "idle")
+      setState("idle")
     } catch {
       if (id !== latest.current) return
       setState("error")
@@ -29,18 +29,12 @@ export function useAutoSave() {
   return { state, errors, run }
 }
 
+/** Solo informa de fallos: el guardado correcto es silencioso. */
 export function SaveStatus({ state }: { state: SaveState }) {
+  if (state !== "error") return null
   return (
-    <p
-      role="status"
-      className={state === "error" ? "min-h-5 text-sm text-destructive" : "min-h-5 text-sm text-muted-foreground"}
-    >
-      {state === "saved" && (
-        <span className="inline-flex items-center gap-1">
-          <RiCheckLine className="size-4" aria-hidden /> Cambios guardados
-        </span>
-      )}
-      {state === "error" && "No se pudo guardar. Inténtalo de nuevo."}
+    <p role="alert" className="text-sm text-destructive">
+      No se pudo guardar. Inténtalo de nuevo.
     </p>
   )
 }
