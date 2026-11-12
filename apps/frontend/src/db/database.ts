@@ -37,6 +37,22 @@ async function assertTaskRefs(
     throw new Error(`Tarea padre inexistente: ${t.parentId}`)
 }
 
+/** Rechaza que `parentId` sea la propia tarea o uno de sus descendientes. */
+async function assertNoCycle(id: string, parentId?: string) {
+  for (let cur = parentId; cur; cur = (await db.tasks.get(cur))?.parentId) {
+    if (cur === id) throw new Error("La jerarquía de tareas no puede tener ciclos")
+  }
+}
+
+/** Elimina las tareas dadas y todos sus descendientes. */
+async function deleteTaskTrees(rootIds: string[]) {
+  const ids = [...rootIds]
+  for (let i = 0; i < ids.length; i++) {
+    ids.push(...(await db.tasks.where("parentId").equals(ids[i]).primaryKeys()))
+  }
+  await db.tasks.bulkDelete(ids)
+}
+
 // Tasks
 
 export function createTask(data: Created<Task>): Promise<Task> {
@@ -62,8 +78,14 @@ export function updateTask(id: string, changes: Changes<Task>): Promise<Task> {
   return db.transaction("rw", db.tasks, db.projects, db.sections, async () => {
     const current = await db.tasks.get(id)
     if (!current) throw new Error(`Tarea inexistente: ${id}`)
-    const next: Task = { ...current, ...changes, updatedAt: now() }
-    if (changes.parentId === id) throw new Error("Una tarea no puede ser su propio padre")
+    const next: Task = {
+      ...current,
+      ...changes,
+      id: current.id,
+      createdAt: current.createdAt,
+      updatedAt: now(),
+    }
+    await assertNoCycle(id, next.parentId)
     await assertTaskRefs(next)
     await db.tasks.put(next)
     return next
@@ -72,13 +94,7 @@ export function updateTask(id: string, changes: Changes<Task>): Promise<Task> {
 
 /** Elimina la tarea y sus subtareas. */
 export function deleteTask(id: string): Promise<void> {
-  return db.transaction("rw", db.tasks, async () => {
-    const ids = [id]
-    for (let i = 0; i < ids.length; i++) {
-      ids.push(...(await db.tasks.where("parentId").equals(ids[i]).primaryKeys()))
-    }
-    await db.tasks.bulkDelete(ids)
-  })
+  return db.transaction("rw", db.tasks, () => deleteTaskTrees([id]))
 }
 
 // Projects
@@ -106,7 +122,13 @@ export function updateProject(
   return db.transaction("rw", db.projects, async () => {
     const current = await db.projects.get(id)
     if (!current) throw new Error(`Proyecto inexistente: ${id}`)
-    const next: Project = { ...current, ...changes, updatedAt: now() }
+    const next: Project = {
+      ...current,
+      ...changes,
+      id: current.id,
+      createdAt: current.createdAt,
+      updatedAt: now(),
+    }
     await db.projects.put(next)
     return next
   })
@@ -115,7 +137,7 @@ export function updateProject(
 /** Elimina el proyecto, sus secciones y sus tareas. */
 export function deleteProject(id: string): Promise<void> {
   return db.transaction("rw", db.projects, db.sections, db.tasks, async () => {
-    await db.tasks.where("projectId").equals(id).delete()
+    await deleteTaskTrees(await db.tasks.where("projectId").equals(id).primaryKeys())
     await db.sections.where("projectId").equals(id).delete()
     await db.projects.delete(id)
   })
@@ -153,7 +175,14 @@ export function updateSection(
   return db.transaction("rw", db.sections, async () => {
     const current = await db.sections.get(id)
     if (!current) throw new Error(`Sección inexistente: ${id}`)
-    const next: Section = { ...current, ...changes, updatedAt: now() }
+    const next: Section = {
+      ...current,
+      ...changes,
+      id: current.id,
+      projectId: current.projectId,
+      createdAt: current.createdAt,
+      updatedAt: now(),
+    }
     await db.sections.put(next)
     return next
   })
