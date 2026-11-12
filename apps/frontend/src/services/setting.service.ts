@@ -103,7 +103,8 @@ export function validatePreferences(preferences: Preferences): FieldErrors {
 export function validateNotificationSettings(
   settings: NotificationSettings
 ): FieldErrors {
-  return isTime(settings.inboxReminderTime)
+  // Con el recordatorio desactivado la hora no se edita, así que no bloquea el guardado.
+  return !settings.inboxReminderEnabled || isTime(settings.inboxReminderTime)
     ? {}
     : { inboxReminderTime: "Indica una hora válida." }
 }

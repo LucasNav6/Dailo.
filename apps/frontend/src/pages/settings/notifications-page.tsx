@@ -1,17 +1,14 @@
-import { useState } from "react"
 import { RiInformationLine } from "@remixicon/react"
 import { useNotificationSettings } from "@/hooks/use-settings"
 import type { NotificationSettings } from "@/models/setting.model"
 import { Switch } from "@/components/ui/switch"
 import { Labeled, Panel, SaveStatus, Section, TimeSelect, useAutoSave } from "./settings-ui"
 
-function NotificationsForm({ initial }: { initial: NotificationSettings }) {
+function NotificationsForm({ settings }: { settings: NotificationSettings }) {
   const { saveSettings } = useNotificationSettings()
-  const [draft, setDraft] = useState(initial)
   const { state, errors, run } = useAutoSave()
 
   const update = (next: NotificationSettings) => {
-    setDraft(next)
     void run(() => saveSettings(next))
   }
 
@@ -32,19 +29,19 @@ function NotificationsForm({ initial }: { initial: NotificationSettings }) {
           </label>
           <Switch
             id="reminder-enabled"
-            checked={draft.inboxReminderEnabled}
-            onCheckedChange={(checked) => update({ ...draft, inboxReminderEnabled: checked })}
+            checked={settings.inboxReminderEnabled}
+            onCheckedChange={(checked) => update({ ...settings, inboxReminderEnabled: checked })}
           />
         </div>
         <div className="border-t border-border/20 pt-4">
           <Labeled label="Hora del recordatorio">
             <TimeSelect
               label="Hora del recordatorio"
-              value={draft.inboxReminderTime}
-              disabled={!draft.inboxReminderEnabled}
+              value={settings.inboxReminderTime}
+              disabled={!settings.inboxReminderEnabled}
               invalid={!!errors.inboxReminderTime}
               describedBy={errors.inboxReminderTime ? "reminder-time-error" : undefined}
-              onChange={(value) => update({ ...draft, inboxReminderTime: value })}
+              onChange={(value) => update({ ...settings, inboxReminderTime: value })}
             />
           </Labeled>
           {errors.inboxReminderTime && (
@@ -59,9 +56,9 @@ function NotificationsForm({ initial }: { initial: NotificationSettings }) {
           </label>
           <Switch
             id="reminder-only-pending"
-            checked={draft.onlyWhenInboxHasItems}
-            disabled={!draft.inboxReminderEnabled}
-            onCheckedChange={(checked) => update({ ...draft, onlyWhenInboxHasItems: checked })}
+            checked={settings.onlyWhenInboxHasItems}
+            disabled={!settings.inboxReminderEnabled}
+            onCheckedChange={(checked) => update({ ...settings, onlyWhenInboxHasItems: checked })}
           />
         </div>
         </Panel>
@@ -74,5 +71,5 @@ function NotificationsForm({ initial }: { initial: NotificationSettings }) {
 export function NotificationsPage() {
   const { settings } = useNotificationSettings()
   if (!settings) return null
-  return <NotificationsForm initial={settings} />
+  return <NotificationsForm settings={settings} />
 }

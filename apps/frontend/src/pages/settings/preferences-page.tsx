@@ -1,4 +1,3 @@
-import { useState } from "react"
 import {
   RiCheckboxBlankCircleLine,
   RiCheckboxCircleFill,
@@ -45,22 +44,20 @@ const ESSENTIAL_OPTIONS = Array.from(
   (_, index) => MIN_ESSENTIAL_TASKS + index
 )
 
-function PreferencesForm({ initial }: { initial: Preferences }) {
+function PreferencesForm({ preferences }: { preferences: Preferences }) {
   const { savePreferences } = usePreferences()
   const { theme, setTheme } = useTheme()
-  const [draft, setDraft] = useState(initial)
   const { state, run } = useAutoSave()
 
   const update = (next: Preferences) => {
-    setDraft(next)
     void run(() => savePreferences(next))
   }
-  const points = getPoints(draft)
-  const periods = getPeriods(draft)
-  const setPoint = (index: number, value: string) => update(withPoint(draft, index, value))
+  const points = getPoints(preferences)
+  const periods = getPeriods(preferences)
+  const setPoint = (index: number, value: string) => update(withPoint(preferences, index, value))
   // Cada selector solo ofrece horas que no invaden a los puntos vecinos.
   const pointField = (index: number, label: string) => (
-    <TimeSelect label={label} value={points[index]} onChange={(value) => setPoint(index, value)} {...pointBounds(draft, index)} />
+    <TimeSelect label={label} value={points[index]} onChange={(value) => setPoint(index, value)} {...pointBounds(preferences, index)} />
   )
 
   return (
@@ -99,9 +96,9 @@ function PreferencesForm({ initial }: { initial: Preferences }) {
                 <Button
                   key={value}
                   type="button"
-                  variant={draft.maxEssentialTasks === value ? "default" : "outline"}
-                  aria-pressed={draft.maxEssentialTasks === value}
-                  onClick={() => update({ ...draft, maxEssentialTasks: value })}
+                  variant={preferences.maxEssentialTasks === value ? "default" : "outline"}
+                  aria-pressed={preferences.maxEssentialTasks === value}
+                  onClick={() => update({ ...preferences, maxEssentialTasks: value })}
                   className="h-12 text-base"
                 >
                   {value}
@@ -149,5 +146,5 @@ function PreferencesForm({ initial }: { initial: Preferences }) {
 export function PreferencesPage() {
   const { preferences } = usePreferences()
   if (!preferences) return null
-  return <PreferencesForm initial={preferences} />
+  return <PreferencesForm preferences={preferences} />
 }
