@@ -32,7 +32,7 @@ export function NavDock({ onNew }: { onNew: () => void }) {
             type="button"
             onClick={onNew}
             aria-label="Nuevo"
-            className="-translate-y-3.5 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg outline-none transition-transform focus-visible:ring-ring active:scale-95"
+            className="flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg outline-none transition-transform focus-visible:ring-ring active:scale-95"
           >
             <RiAddLine className="size-7" aria-hidden />
           </button>
