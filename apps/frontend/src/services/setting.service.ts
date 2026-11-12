@@ -3,6 +3,7 @@ import { settingAdapter } from "@/adapters/setting.adapter"
 import type {
   DayPeriod,
   FieldErrors,
+  PeriodBreaks,
   NotificationSettings,
   Preferences,
   TimeRange,
@@ -24,14 +25,13 @@ export const MAX_ESSENTIAL_TASKS = 5
 
 export const defaultPreferences: Preferences = {
   workday: { start: "07:00", end: "22:00" },
-  periods: {
-    morning: { start: "07:00", end: "12:00" },
-    noon: { start: "12:00", end: "15:00" },
-    afternoon: { start: "15:00", end: "19:00" },
-    night: { start: "19:00", end: "22:00" },
-  },
+  periodBreaks: ["12:00", "15:00", "19:00"],
   maxEssentialTasks: 3,
 }
+
+/** Granularidad de los horarios, en minutos. */
+export const TIME_STEP = 5
+export const LAST_MINUTE_OF_DAY = 23 * 60 + 55
 
 export const defaultNotificationSettings: NotificationSettings = {
   inboxReminderEnabled: false,
@@ -42,47 +42,56 @@ export const defaultNotificationSettings: NotificationSettings = {
 const isTime = (value: unknown): value is string =>
   typeof value === "string" && TIME_PATTERN.test(value)
 
-function rangeOr(value: unknown, fallback: TimeRange): TimeRange {
-  const range = value as Partial<TimeRange> | null | undefined
-  return isTime(range?.start) && isTime(range?.end)
-    ? { start: range.start, end: range.end }
-    : fallback
+export const toMinutes = (time: string) => {
+  const [hours, minutes] = time.split(":").map(Number)
+  return hours * 60 + minutes
 }
 
-/** Valida un rango dentro del mismo día (inicio estrictamente anterior al fin). */
-function validateRange(
-  range: TimeRange,
-  field: string,
-  errors: FieldErrors
-): boolean {
-  if (!isTime(range.start) || !isTime(range.end)) {
-    errors[field] = "Indica una hora de inicio y una de fin."
-    return false
+/** Puntos de la rutina en orden: inicio, tres límites y cierre. */
+export const getPoints = (preferences: Preferences): string[] => [
+  preferences.workday.start,
+  ...preferences.periodBreaks,
+  preferences.workday.end,
+]
+
+export function withPoint(preferences: Preferences, index: number, value: string): Preferences {
+  const points = getPoints(preferences)
+  points[index] = value
+  return {
+    ...preferences,
+    workday: { start: points[0], end: points[4] },
+    periodBreaks: [points[1], points[2], points[3]] as PeriodBreaks,
   }
-  if (range.start >= range.end) {
-    errors[field] = "El inicio debe ser anterior al fin."
-    return false
-  }
-  return true
 }
 
+/** Rango (en minutos) que puede tomar un punto sin invadir a sus vecinos. */
+export function pointBounds(preferences: Preferences, index: number) {
+  const points = getPoints(preferences)
+  return {
+    min: index === 0 ? 0 : toMinutes(points[index - 1]) + TIME_STEP,
+    max: index === 4 ? LAST_MINUTE_OF_DAY : toMinutes(points[index + 1]) - TIME_STEP,
+  }
+}
+
+/** Franjas derivadas: contiguas y que cubren exactamente la jornada. */
+export function getPeriods(preferences: Preferences): Record<DayPeriod, TimeRange> {
+  const [start, first, second, third, end] = getPoints(preferences)
+  return {
+    morning: { start, end: first },
+    noon: { start: first, end: second },
+    afternoon: { start: second, end: third },
+    night: { start: third, end },
+  }
+}
+
+/** Defensa para datos no generados por la UI: los puntos deben ser válidos y crecientes. */
 export function validatePreferences(preferences: Preferences): FieldErrors {
   const errors: FieldErrors = {}
-  validateRange(preferences.workday, "workday", errors)
-
-  const valid = PERIODS.filter(({ id }) =>
-    validateRange(preferences.periods[id], id, errors)
-  )
-  // Con los inicios ordenados, basta comparar cada franja con la siguiente.
-  const sorted = [...valid].sort((a, b) =>
-    preferences.periods[a.id].start.localeCompare(preferences.periods[b.id].start)
-  )
-  sorted.forEach((current, index) => {
-    const next = sorted[index + 1]
-    if (next && preferences.periods[current.id].end > preferences.periods[next.id].start) {
-      errors[next.id] ??= `Se superpone con ${current.label.toLowerCase()}.`
-    }
-  })
+  const points = getPoints(preferences)
+  const increasing =
+    points.every(isTime) &&
+    points.every((point, index) => index === 0 || toMinutes(point) > toMinutes(points[index - 1]))
+  if (!increasing) errors.schedule = "La rutina debe tener horarios válidos y en orden."
 
   const max = preferences.maxEssentialTasks
   if (!Number.isInteger(max) || max < MIN_ESSENTIAL_TASKS || max > MAX_ESSENTIAL_TASKS) {
@@ -103,21 +112,26 @@ export function validateNotificationSettings(
 function normalizePreferences(value: unknown): Preferences {
   const stored = (value ?? {}) as Partial<Preferences>
   const candidate: Preferences = {
-    workday: rangeOr(stored.workday, defaultPreferences.workday),
-    periods: {
-      morning: rangeOr(stored.periods?.morning, defaultPreferences.periods.morning),
-      noon: rangeOr(stored.periods?.noon, defaultPreferences.periods.noon),
-      afternoon: rangeOr(stored.periods?.afternoon, defaultPreferences.periods.afternoon),
-      night: rangeOr(stored.periods?.night, defaultPreferences.periods.night),
-    },
+    workday: isTime(stored.workday?.start) && isTime(stored.workday?.end)
+      ? { start: stored.workday.start, end: stored.workday.end }
+      : defaultPreferences.workday,
+    periodBreaks:
+      Array.isArray(stored.periodBreaks) && stored.periodBreaks.length === 3 && stored.periodBreaks.every(isTime)
+        ? ([...stored.periodBreaks] as PeriodBreaks)
+        : defaultPreferences.periodBreaks,
     maxEssentialTasks:
       typeof stored.maxEssentialTasks === "number"
         ? stored.maxEssentialTasks
         : defaultPreferences.maxEssentialTasks,
   }
-  return Object.keys(validatePreferences(candidate)).length === 0
-    ? candidate
-    : defaultPreferences
+  const errors = validatePreferences(candidate)
+  return {
+    workday: errors.schedule ? defaultPreferences.workday : candidate.workday,
+    periodBreaks: errors.schedule ? defaultPreferences.periodBreaks : candidate.periodBreaks,
+    maxEssentialTasks: errors.maxEssentialTasks
+      ? defaultPreferences.maxEssentialTasks
+      : candidate.maxEssentialTasks,
+  }
 }
 
 function normalizeNotifications(value: unknown): NotificationSettings {

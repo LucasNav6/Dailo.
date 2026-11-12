@@ -14,8 +14,12 @@ import {
 } from "@remixicon/react"
 import { usePreferences } from "@/hooks/use-settings"
 import { useTheme, type Theme } from "@/lib/theme"
-import type { DayPeriod, Preferences, TimeRange } from "@/models/setting.model"
+import type { DayPeriod, Preferences } from "@/models/setting.model"
 import {
+  getPeriods,
+  getPoints,
+  pointBounds,
+  withPoint,
   MAX_ESSENTIAL_TASKS,
   MIN_ESSENTIAL_TASKS,
   PERIODS,
@@ -45,44 +49,39 @@ function PreferencesForm({ initial }: { initial: Preferences }) {
   const { savePreferences } = usePreferences()
   const { theme, setTheme } = useTheme()
   const [draft, setDraft] = useState(initial)
-  const { state, errors, run } = useAutoSave()
+  const { state, run } = useAutoSave()
 
   const update = (next: Preferences) => {
     setDraft(next)
     void run(() => savePreferences(next))
   }
-  const setPeriod = (id: keyof Preferences["periods"], range: TimeRange) =>
-    update({ ...draft, periods: { ...draft.periods, [id]: range } })
+  const points = getPoints(draft)
+  const periods = getPeriods(draft)
+  const setPoint = (index: number, value: string) => update(withPoint(draft, index, value))
+  // Cada selector solo ofrece horas que no invaden a los puntos vecinos.
+  const pointField = (index: number, label: string) => (
+    <TimeSelect label={label} value={points[index]} onChange={(value) => setPoint(index, value)} {...pointBounds(draft, index)} />
+  )
 
   return (
     <div>
-      <Section title="Rutina diaria" Icon={RiCalendarScheduleLine}>
+      <Section title="Rutina diaria" Icon={RiCalendarScheduleLine} description="Tu jornada empieza con la mañana y termina con la noche.">
         <Panel className="space-y-2 p-2">
-          <TimeRow Icon={RiSunLine} label="Inicio del día" summary={draft.workday.start} error={errors.workday}>
-            <TimeSelect label="Inicio del día" value={draft.workday.start} onChange={(start) => update({ ...draft, workday: { ...draft.workday, start } })} />
+          <TimeRow Icon={RiSunLine} label="Inicio del día" summary={points[0]}>
+            {pointField(0, "Inicio del día")}
           </TimeRow>
-          <TimeRow Icon={RiMoonLine} label="Cierre del día" summary={draft.workday.end} error={errors.workday}>
-            <TimeSelect label="Cierre del día" value={draft.workday.end} onChange={(end) => update({ ...draft, workday: { ...draft.workday, end } })} />
+          <TimeRow Icon={RiMoonLine} label="Cierre del día" summary={points[4]}>
+            {pointField(4, "Cierre del día")}
           </TimeRow>
         </Panel>
       </Section>
 
-      <Section title="Franjas horarias" Icon={RiTimeLine} description="Cada franja es independiente de la jornada.">
+      <Section title="Franjas horarias" Icon={RiTimeLine} description="Cubren toda la jornada, una a continuación de otra. Al mover un límite se ajusta la franja contigua.">
         <Panel className="space-y-2 p-2">
-          {PERIODS.map(({ id, label }) => (
-            <TimeRow
-              key={id}
-              Icon={PERIOD_ICONS[id]}
-              label={label}
-              summary={`${draft.periods[id].start} – ${draft.periods[id].end}`}
-              error={errors[id]}
-            >
-              <Labeled label="Inicio">
-                <TimeSelect label={`${label}, inicio`} value={draft.periods[id].start} onChange={(start) => setPeriod(id, { ...draft.periods[id], start })} />
-              </Labeled>
-              <Labeled label="Fin">
-                <TimeSelect label={`${label}, fin`} value={draft.periods[id].end} onChange={(end) => setPeriod(id, { ...draft.periods[id], end })} />
-              </Labeled>
+          {PERIODS.map(({ id, label }, index) => (
+            <TimeRow key={id} Icon={PERIOD_ICONS[id]} label={label} summary={`${periods[id].start} – ${periods[id].end}`}>
+              <Labeled label="Inicio">{pointField(index, `${label}, inicio`)}</Labeled>
+              <Labeled label="Fin">{pointField(index + 1, `${label}, fin`)}</Labeled>
             </TimeRow>
           ))}
         </Panel>

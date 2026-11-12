@@ -1,7 +1,8 @@
-import { useId, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { RiCheckLine, type RemixiconComponentType } from "@remixicon/react"
 import type { FieldErrors } from "@/models/setting.model"
 import { cn } from "@/lib/utils"
+import { LAST_MINUTE_OF_DAY, TIME_STEP, toMinutes } from "@/services/setting.service"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
@@ -73,14 +74,26 @@ export function Panel({ children, className }: { children: React.ReactNode; clas
   return <div className={cn("rounded-2xl border border-border/20 bg-card", className ?? "space-y-4 p-4")}>{children}</div>
 }
 
-const HOURS = Array.from({ length: 24 }, (_, hour) => String(hour).padStart(2, "0"))
-const MINUTES = Array.from({ length: 12 }, (_, step) => String(step * 5).padStart(2, "0"))
+const FULL_DAY = { min: 0, max: LAST_MINUTE_OF_DAY }
+const pad = (value: number) => String(value).padStart(2, "0")
 
-/** Selector de hora en formato 24 h (minutos de 5 en 5). */
+/** Horas disponibles (minutos desde medianoche) dentro de [min, max], cada TIME_STEP. */
+function slotsBetween(min: number, max: number, current: number) {
+  const slots = new Set<number>([current])
+  for (let time = Math.ceil(min / TIME_STEP) * TIME_STEP; time <= max; time += TIME_STEP) slots.add(time)
+  return [...slots].sort((a, b) => a - b)
+}
+
+/**
+ * Selector de hora en 24 h. Solo ofrece horas dentro de [min, max], de modo que
+ * no se puede elegir un valor que invada a las franjas vecinas.
+ */
 export function TimeSelect({
   label,
   value,
   onChange,
+  min = FULL_DAY.min,
+  max = FULL_DAY.max,
   disabled,
   invalid,
   describedBy,
@@ -88,36 +101,52 @@ export function TimeSelect({
   label: string
   value: string
   onChange: (value: string) => void
+  min?: number
+  max?: number
   disabled?: boolean
   invalid?: boolean
   describedBy?: string
 }) {
-  const [hour, minute] = value.split(":")
-  const minutes = MINUTES.includes(minute) ? MINUTES : [...MINUTES, minute].sort()
+  const current = toMinutes(value)
+  const slots = slotsBetween(min, max, current)
+  const hours = [...new Set(slots.map((slot) => Math.floor(slot / 60)))]
+  const hour = Math.floor(current / 60)
+  const minutes = slots.filter((slot) => Math.floor(slot / 60) === hour).map((slot) => slot % 60)
+  const format = (time: number) => `${pad(Math.floor(time / 60))}:${pad(time % 60)}`
+
+  const changeHour = (nextHour: number) => {
+    const options = slots.filter((slot) => Math.floor(slot / 60) === nextHour)
+    // Si el minuto actual no existe en esa hora, se usa el más cercano permitido.
+    const nearest = options.reduce((best, slot) =>
+      Math.abs(slot - (nextHour * 60 + (current % 60))) < Math.abs(best - (nextHour * 60 + (current % 60))) ? slot : best
+    )
+    onChange(format(nearest))
+  }
   const common = { disabled, "aria-invalid": invalid || undefined, "aria-describedby": describedBy }
+
   return (
     <div role="group" aria-label={label} className="flex items-center gap-2">
-      <Select value={hour} onValueChange={(next) => onChange(`${next}:${minute}`)} disabled={disabled}>
+      <Select value={String(hour)} onValueChange={(next) => changeHour(Number(next))} disabled={disabled}>
         <SelectTrigger {...common} aria-label={`${label}: hora`} className="h-11 w-20 tabular-nums">
           <SelectValue />
         </SelectTrigger>
         <SelectContent className="max-h-64">
-          {HOURS.map((item) => (
-            <SelectItem key={item} value={item} className="tabular-nums">
-              {item}
+          {hours.map((item) => (
+            <SelectItem key={item} value={String(item)} className="tabular-nums">
+              {pad(item)}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
       <span aria-hidden>:</span>
-      <Select value={minute} onValueChange={(next) => onChange(`${hour}:${next}`)} disabled={disabled}>
+      <Select value={String(current % 60)} onValueChange={(next) => onChange(`${pad(hour)}:${pad(Number(next))}`)} disabled={disabled}>
         <SelectTrigger {...common} aria-label={`${label}: minutos`} className="h-11 w-20 tabular-nums">
           <SelectValue />
         </SelectTrigger>
         <SelectContent className="max-h-64">
           {minutes.map((item) => (
-            <SelectItem key={item} value={item} className="tabular-nums">
-              {item}
+            <SelectItem key={item} value={String(item)} className="tabular-nums">
+              {pad(item)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -131,23 +160,18 @@ export function TimeRow({
   Icon,
   label,
   summary,
-  error,
   children,
 }: {
   Icon: RemixiconComponentType
   label: string
   summary: string
-  error?: string
   children: React.ReactNode
 }) {
-  const errorId = useId()
   return (
-    <div>
-      <Popover>
+    <Popover>
         <PopoverTrigger asChild>
           <button
             type="button"
-            aria-describedby={error ? errorId : undefined}
             aria-label={`${label}, ${summary}. Editar`}
             className="flex min-h-14 w-full items-center gap-3 rounded-xl bg-background px-3 text-left outline-none transition-colors hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50"
           >
@@ -155,26 +179,13 @@ export function TimeRow({
               <Icon className="size-5" aria-hidden />
             </span>
             <span className="flex-1 text-sm font-medium">{label}</span>
-            <span
-              className={cn(
-                "rounded-lg border px-2.5 py-1 text-sm tabular-nums",
-                error ? "border-destructive text-destructive" : "border-border/20 bg-card"
-              )}
-            >
-              {summary}
-            </span>
+            <span className="rounded-lg border border-border/20 bg-card px-2.5 py-1 text-sm tabular-nums">{summary}</span>
           </button>
         </PopoverTrigger>
         <PopoverContent align="end" className="w-auto space-y-3">
           {children}
         </PopoverContent>
-      </Popover>
-      {error && (
-        <p id={errorId} className="px-3 pt-1.5 text-sm text-destructive">
-          {error}
-        </p>
-      )}
-    </div>
+    </Popover>
   )
 }
 
