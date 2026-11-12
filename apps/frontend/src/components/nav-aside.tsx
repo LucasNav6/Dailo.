@@ -1,5 +1,5 @@
 import { NavLink } from "react-router";
-import { RiLayoutLeftLine, RiLayoutRightLine } from "@remixicon/react";
+import { RiAddLine, RiLayoutLeftLine, RiLayoutRightLine } from "@remixicon/react";
 import { cn } from "@/lib/utils";
 import { primaryNav, secondaryNav, type NavItem } from "@/lib/navigation";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ function AsideList({ items, collapsed, className }: { items: NavItem[]; collapse
   );
 }
 
-export function NavAside({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
+export function NavAside({ collapsed, onToggle, onNew }: { collapsed: boolean; onToggle: () => void; onNew: () => void }) {
   const ToggleIcon = collapsed ? RiLayoutRightLine : RiLayoutLeftLine;
   const toggleLabel = collapsed ? "Expandir menú" : "Contraer menú";
   return (
@@ -52,7 +52,13 @@ export function NavAside({ collapsed, onToggle }: { collapsed: boolean; onToggle
         </Tooltip>
       </div>
       <nav aria-label="Navegación principal" className="flex flex-1 flex-col justify-between p-3">
-        <AsideList items={primaryNav} collapsed={collapsed} />
+        <div className="space-y-3">
+          <Button onClick={onNew} aria-label={collapsed ? "Nuevo" : undefined} className={cn("w-full", collapsed && "px-0")}>
+            <RiAddLine aria-hidden />
+            {!collapsed && "Nuevo"}
+          </Button>
+          <AsideList items={primaryNav} collapsed={collapsed} />
+        </div>
         <AsideList items={secondaryNav} collapsed={collapsed} className="border-t border-sidebar-border pt-3" />
       </nav>
     </aside>
