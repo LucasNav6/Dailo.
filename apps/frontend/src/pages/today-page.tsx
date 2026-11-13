@@ -82,6 +82,10 @@ export function TodayPage() {
     <>
       <PageHeader eyebrow={`Hoy · ${format(new Date(), "EEEE d", { locale: es })}`} title="Tu día," em="claro." />
 
+      {tasks.length === 0 ? (
+        <EmptyState title="Nada para" em="hoy." description="Lo que planifiques o venza hoy aparece acá, por checkpoint." />
+      ) : (
+        <>
       <div className="mb-6 flex gap-1.5" aria-hidden>
         {sections.map(({ id, items, done }) => (
           <span key={id} className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
@@ -92,7 +96,6 @@ export function TodayPage() {
 
       <ErrorView message={failed ? "No se pudo guardar el cambio. Probá de nuevo." : null} className="mb-3" />
 
-      {tasks.length === 0 && <EmptyState title="Nada para" em="hoy." description="Lo que planifiques o venza hoy aparece acá, por checkpoint." />}
 
       <div className="flex flex-col gap-5">
         {unscheduled.length > 0 && (
@@ -122,6 +125,9 @@ export function TodayPage() {
           );
         })}
       </div>
+
+        </>
+      )}
 
       <PeriodSheet
         task={picking}

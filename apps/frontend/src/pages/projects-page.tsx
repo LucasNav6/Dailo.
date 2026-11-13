@@ -32,12 +32,17 @@ export function ProjectsPage() {
         )}
 
         {projects.length === 0 ? (
-          <EmptyState title="Todavía no tenés" em="proyectos." description="Creá el primero para agrupar tus tareas.">
-            <Button type="button" onClick={() => setForm("new")}>
-              <RiAddLine aria-hidden />
-              Crear proyecto
-            </Button>
-          </EmptyState>
+          <EmptyState
+            title="Todavía no tenés"
+            em="proyectos."
+            description="Creá el primero para agrupar tus tareas."
+            action={
+              <Button type="button" onClick={() => setForm("new")}>
+                <RiAddLine aria-hidden />
+                Crear proyecto
+              </Button>
+            }
+          />
         ) : (
           <ul className="flex flex-col divide-y divide-sidebar-border">
             {projects.map((project) => (

@@ -41,11 +41,16 @@ export function ProjectDetailPage() {
   if (overview === undefined) return <LoadingView label="Cargando proyecto…" />;
   if (overview === null)
     return (
-      <EmptyState title="Este proyecto" em="no existe." description="Puede que haya sido eliminado.">
-        <Button asChild variant="secondary">
-          <Link to="/projects">Volver a Proyectos</Link>
-        </Button>
-      </EmptyState>
+      <EmptyState
+        title="Este proyecto"
+        em="no existe."
+        description="Puede que haya sido eliminado."
+        action={
+          <Button asChild variant="secondary">
+            <Link to="/projects">Volver a Proyectos</Link>
+          </Button>
+        }
+      />
     );
 
   const { project, sections, unsectioned, bySection } = overview;
