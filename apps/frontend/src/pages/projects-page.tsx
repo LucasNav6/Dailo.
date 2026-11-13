@@ -6,6 +6,7 @@ import type { ProjectWithProgress } from "@/services/project.service";
 import { Button } from "@/components/ui/button";
 import { DeleteProjectDialog } from "@/components/delete-project-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { PageHeader } from "@/components/page-header";
 import { ProjectFormDialog } from "@/components/project-form-dialog";
 import { ProgressLine, pendingLabel } from "@/components/project-progress";
 
@@ -19,7 +20,8 @@ export function ProjectsPage() {
 
   return (
     <>
-      <div className="max-w-2xl">
+      <PageHeader eyebrow={`Proyectos · ${projects.length}`} title="Tus" em="proyectos." />
+      <div>
         {projects.length > 0 && (
           <Button type="button" variant="ghost" className="-ml-3 mb-2 text-muted-foreground" onClick={() => setForm("new")}>
             <RiAddLine aria-hidden />

@@ -17,7 +17,7 @@ export function ResponsiveDialog({ open, onOpenChange, title, description, child
 
   return isDesktop ? (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false} className="gap-0 rounded-md border-0 bg-card p-0 shadow-none sm:max-w-md">
+      <DialogContent showCloseButton={false} className="gap-0 p-0 sm:max-w-md">
         <DialogTitle className="px-5 pt-5 text-base font-semibold">{title}</DialogTitle>
         <DialogDescription className="sr-only">{description}</DialogDescription>
         {children}
@@ -25,7 +25,7 @@ export function ResponsiveDialog({ open, onOpenChange, title, description, child
     </Dialog>
   ) : (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" showCloseButton={false} className="max-h-[92svh] gap-0 overflow-y-auto rounded-t-md border-0 bg-card p-0 shadow-none">
+      <SheetContent side="bottom" showCloseButton={false} className="max-h-[92svh] gap-0 overflow-y-auto p-0">
         <div className="mx-auto mt-3 h-1 w-10 rounded-full bg-muted-foreground/30" aria-hidden />
         <SheetTitle className="px-5 pt-3 text-base font-semibold">{title}</SheetTitle>
         <SheetDescription className="sr-only">{description}</SheetDescription>
