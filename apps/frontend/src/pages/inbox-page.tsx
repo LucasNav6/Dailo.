@@ -1,28 +1,41 @@
 import { useState } from "react";
 import { useOutletContext } from "react-router";
-import { RiAddLine } from "@remixicon/react";
 import { useInbox } from "@/hooks/use-inbox";
+import { useToast } from "@/components/toast";
 import { PageHeader } from "@/components/page-header";
-import { TaskCircle } from "@/components/task-circle";
+import { InboxRow } from "@/components/inbox-row";
+import { TriageSheet, type TriageIntent } from "@/components/triage-sheet";
 import { Button } from "@/components/ui/button";
-import type { ShellContext } from "@/lib/shell-context";
-import { TriageSheet } from "@/components/triage-sheet";
 import { EmptyState } from "@/components/wrappers/empty-state";
 import { LoadingView } from "@/components/wrappers/loading-view";
+import { RiAddLine } from "@remixicon/react";
+import type { ShellContext } from "@/lib/shell-context";
+
+type Target = { id: string; intent?: TriageIntent };
 
 export function InboxPage() {
-  const { tasks, isLoading } = useInbox();
+  const { tasks, isLoading, toggle, discard, restore } = useInbox();
   const { openCapture } = useOutletContext<ShellContext>();
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  // Si el elemento sale de Inbox, el triage se cierra solo.
-  const selected = tasks.find((task) => task.id === selectedId) ?? null;
+  const notify = useToast();
+  const [target, setTarget] = useState<Target | null>(null);
+  // Si el elemento deja de estar pendiente, el triage se cierra solo.
+  const selected = tasks.find((task) => task.id === target?.id && task.status === "inbox") ?? null;
+  const pending = tasks.filter((task) => task.status === "inbox").length;
 
   if (isLoading) return <LoadingView label="Cargando Inbox…" />;
 
+  const act = async (action: () => Promise<unknown>, message: string, undo?: () => Promise<unknown>) => {
+    try {
+      await action();
+      notify({ message, actionLabel: undo ? "Deshacer" : undefined, onAction: () => void undo?.() });
+    } catch {
+      notify({ message: "No se pudo guardar. Probá de nuevo." });
+    }
+  };
+
   return (
     <>
-      <PageHeader eyebrow={`Inbox · ${tasks.length === 1 ? "1 pendiente" : `${tasks.length} pendientes`}`} title="Vaciá tu" em="mente." />
-
+      <PageHeader eyebrow={`Inbox · ${pending === 1 ? "1 pendiente" : `${pending} pendientes`}`} title="Vaciá tu" em="mente." />
 
       {tasks.length === 0 ? (
         <EmptyState
@@ -39,22 +52,22 @@ export function InboxPage() {
       ) : (
         <ul className="flex flex-col">
           {tasks.map((task) => (
-            <li key={task.id}>
-              <button
-                type="button"
-                onClick={() => setSelectedId(task.id)}
-                aria-label={`Procesar: ${task.title}`}
-                className="flex min-h-11 w-full items-start gap-4 rounded-lg py-2.5 pl-1.5 text-left text-[17px] leading-snug outline-none hover:bg-secondary/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-              >
-                <TaskCircle />
-                <span className="min-w-0 flex-1 whitespace-pre-line">{task.title}</span>
-              </button>
-            </li>
+            <InboxRow
+              key={task.id}
+              task={task}
+              onOpen={() => setTarget({ id: task.id })}
+              onToggle={() =>
+                void act(() => toggle(task.id), `Tachada: ${task.title}`, () => toggle(task.id))
+              }
+              onPlan={() => setTarget({ id: task.id, intent: "plan" })}
+              onSomeday={() => setTarget({ id: task.id, intent: "someday" })}
+              onDiscard={() => void act(() => discard(task.id), `Descartada: ${task.title}`, () => restore(task.id, "inbox"))}
+            />
           ))}
         </ul>
       )}
 
-      <TriageSheet task={selected} source="inbox" onClose={() => setSelectedId(null)} />
+      <TriageSheet task={selected} source="inbox" intent={target?.intent} onClose={() => setTarget(null)} />
     </>
   );
 }

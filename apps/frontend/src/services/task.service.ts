@@ -212,6 +212,7 @@ export const taskService = {
         case "complete":
           next.status = "completed"
           next.completedAt = now
+          next.completedFromInbox = true
           break
         case "discard":
           next.status = "discarded"
@@ -272,6 +273,7 @@ export const taskService = {
         status,
         completedAt: undefined,
         deletedAt: undefined,
+        completedFromInbox: undefined,
         updatedAt: new Date().toISOString(),
       }
       await taskAdapter.update(id, next)
@@ -281,6 +283,37 @@ export const taskService = {
   /** Elige el checkpoint (franja) de una tarea de hoy; la planifica para ese día. */
   setTimeOfDay: (id: string, timeOfDay: TimeOfDay | undefined, date: string) =>
     taskService.update(id, { timeOfDay, plannedDate: date }),
+
+  /** Tilda o destilda un elemento de Inbox "hecho ahora" sin sacarlo de Inbox. */
+  toggleInboxCompletion: (id: string) =>
+    atomically(async () => {
+      const current = await taskAdapter.findById(id)
+      if (!current) throw new Error(`Task not found: ${id}`)
+      const now = new Date().toISOString()
+      if (current.status === "inbox") {
+        const next: Task = {
+          ...current,
+          status: "completed",
+          completedAt: now,
+          completedFromInbox: true,
+          updatedAt: now,
+        }
+        await taskAdapter.update(id, next)
+        return next
+      }
+      if (current.status === "completed" && current.completedFromInbox) {
+        const next: Task = {
+          ...current,
+          status: "inbox",
+          completedAt: undefined,
+          completedFromInbox: undefined,
+          updatedAt: now,
+        }
+        await taskAdapter.update(id, next)
+        return next
+      }
+      throw new Error(`Task cannot be toggled from ${current.status}: ${id}`)
+    }),
 
   /** Elimina la tarea y sus subtareas. */
   remove: (id: string) => atomically(() => removeTaskTrees([id])),
@@ -307,10 +340,15 @@ export const taskService = {
     (await taskAdapter.findByStatus("discarded")).sort((a, b) =>
       (b.deletedAt ?? "").localeCompare(a.deletedAt ?? "")
     ),
-  /** Inbox con las capturas más recientes primero. */
-  findInbox: async () =>
-    (await taskAdapter.findByStatus("inbox")).sort(
+  /** Inbox: pendientes y las marcadas como hechas desde Inbox (tachadas), más recientes primero. */
+  findInbox: async () => {
+    const [pending, done] = await Promise.all([
+      taskAdapter.findByStatus("inbox"),
+      taskAdapter.findByStatus("completed"),
+    ])
+    return [...pending, ...done.filter((task) => task.completedFromInbox)].sort(
       (a, b) =>
         b.createdAt.localeCompare(a.createdAt) || b.position - a.position
-    ),
+    )
+  },
 }

@@ -317,3 +317,40 @@ describe("restaurar y listas", () => {
     expect((await taskService.findSomeday()).map((t) => t.title)).toEqual(["b", "a"])
   })
 })
+
+describe("tachar en Inbox", () => {
+  it("hacerla ahora tacha el elemento y lo deja en Inbox", async () => {
+    const task = await taskService.create({ title: "Lavar los vasos" })
+    await taskService.toggleInboxCompletion(task.id)
+    const [item] = await taskService.findInbox()
+    expect(item).toMatchObject({ id: task.id, status: "completed", completedFromInbox: true })
+  })
+
+  it("destachar lo devuelve a pendiente", async () => {
+    const task = await taskService.create({ title: "x" })
+    await taskService.toggleInboxCompletion(task.id)
+    const back = await taskService.toggleInboxCompletion(task.id)
+    expect(back).toMatchObject({ status: "inbox", completedAt: undefined, completedFromInbox: undefined })
+    expect((await taskService.findInbox()).map((t) => t.id)).toEqual([task.id])
+  })
+
+  it("la decisión Hacerla ahora también la deja tachada en Inbox", async () => {
+    const task = await taskService.create({ title: "x" })
+    await taskService.decide(task.id, { type: "complete" })
+    expect((await taskService.findInbox())[0]).toMatchObject({ status: "completed" })
+  })
+
+  it("no mete en Inbox tareas completadas desde otros módulos", async () => {
+    const project = await projectService.create({ name: "P" })
+    const task = await taskService.create({ title: "x", projectId: project.id, status: "active" })
+    await taskService.setCompleted(task.id, true)
+    expect(await taskService.findInbox()).toHaveLength(0)
+  })
+
+  it("restaurar limpia la marca de hecha desde Inbox", async () => {
+    const task = await taskService.create({ title: "x" })
+    await taskService.toggleInboxCompletion(task.id)
+    const restored = await taskService.restore(task.id, "inbox")
+    expect(restored.completedFromInbox).toBeUndefined()
+  })
+})

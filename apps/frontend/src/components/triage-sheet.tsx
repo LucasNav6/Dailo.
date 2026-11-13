@@ -26,24 +26,26 @@ import { ErrorView } from "@/components/wrappers/error-view";
 
 export type TriageSource = "inbox" | "someday";
 type Step = "choose" | "plan" | "someday";
+/** Camino que se abre directo desde el deslizar de Inbox. */
+export type TriageIntent = Exclude<Step, "choose">;
 
-type Props = { task: Task | null; source: TriageSource; onClose: () => void };
+type Props = { task: Task | null; source: TriageSource; intent?: TriageIntent; onClose: () => void };
 
 /** Bottom sheet de triage: ¿qué hacemos con esto? Cada camino saca el elemento de su lista. */
-export function TriageSheet({ task, source, onClose }: Props) {
+export function TriageSheet({ task, source, intent, onClose }: Props) {
   return (
     <Sheet open={!!task} onOpenChange={(open) => !open && onClose()}>
       <SheetContent side="bottom" showCloseButton={false} className="max-h-[92svh] gap-0 overflow-y-auto p-0">
         <SheetTitle className="sr-only">Procesar elemento</SheetTitle>
         <SheetDescription className="sr-only">Elegí qué hacer con este elemento.</SheetDescription>
-        {task && <Flow key={task.id} task={task} source={source} onClose={onClose} />}
+        {task && <Flow key={task.id} task={task} source={source} intent={intent} onClose={onClose} />}
       </SheetContent>
     </Sheet>
   );
 }
 
-function Flow({ task, source, onClose }: Props & { task: Task }) {
-  const [step, setStep] = useState<Step>("choose");
+function Flow({ task, source, intent, onClose }: Props & { task: Task }) {
+  const [step, setStep] = useState<Step>(intent ?? "choose");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
   const notify = useToast();
@@ -173,13 +175,31 @@ function SomedayForm({ task, busy, error, onBack, onSubmit }: FormProps & { onSu
 type Draft = { key: number; title: string; deadline?: string };
 
 function PlanForm({ task, busy, error, onBack, onSubmit }: FormProps & { onSubmit: (input: { title: string; description: string; projectId: string; deadline?: string; subtasks: { title: string; deadline?: string }[] }, projectName: string) => void }) {
-  const { projects } = useProjects();
+  const { projects, createProject } = useProjects();
+  const [newProject, setNewProject] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [createFailed, setCreateFailed] = useState(false);
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description ?? "");
   const [projectId, setProjectId] = useState("");
   const [deadline, setDeadline] = useState<string | undefined>();
   const [subtasks, setSubtasks] = useState<Draft[]>([]);
   const project = projects.find((item) => item.id === projectId);
+
+  // Sin proyectos, se crea uno acá mismo y queda elegido.
+  const createAndPick = async () => {
+    setCreating(true);
+    setCreateFailed(false);
+    try {
+      const created = await createProject({ name: newProject });
+      setProjectId(created.id);
+      setNewProject("");
+    } catch {
+      setCreateFailed(true);
+    } finally {
+      setCreating(false);
+    }
+  };
 
   const updateSubtask = (key: number, changes: Partial<Draft>) => setSubtasks((list) => list.map((item) => (item.key === key ? { ...item, ...changes } : item)));
 
@@ -198,19 +218,29 @@ function PlanForm({ task, busy, error, onBack, onSubmit }: FormProps & { onSubmi
         <Field id="pl-desc" label="Descripción" optional>
           <Textarea id="pl-desc" rows={3} value={description} onChange={(event) => setDescription(event.target.value)} className="resize-none" />
         </Field>
-        <Field id="pl-project" label="Proyecto">
-          <Select value={projectId} onValueChange={setProjectId}>
-            <SelectTrigger id="pl-project" className="w-full">
-              <SelectValue placeholder={projects.length ? "Elegí un proyecto" : "Todavía no hay proyectos"} />
-            </SelectTrigger>
-            <SelectContent>
-              {projects.map((item) => (
-                <SelectItem key={item.id} value={item.id}>
-                  {item.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <Field id="pl-project" label={projects.length ? "Proyecto" : "Nuevo proyecto"}>
+          {projects.length ? (
+            <Select value={projectId} onValueChange={setProjectId}>
+              <SelectTrigger id="pl-project" className="w-full">
+                <SelectValue placeholder="Elegí un proyecto" />
+              </SelectTrigger>
+              <SelectContent>
+                {projects.map((item) => (
+                  <SelectItem key={item.id} value={item.id}>
+                    {item.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <div className="flex gap-2">
+              <Input id="pl-project" value={newProject} onChange={(event) => setNewProject(event.target.value)} aria-label="Nombre del proyecto" placeholder="Nombre del proyecto" className="h-12 flex-1" />
+              <Button type="button" variant="outline" className="h-12" onClick={() => void createAndPick()} disabled={creating || !newProject.trim()}>
+                Crear y elegir
+              </Button>
+            </div>
+          )}
+          <ErrorView message={createFailed ? "No se pudo crear el proyecto. Probá de nuevo." : null} />
         </Field>
         <Field id="pl-deadline" label="Deadline" optional>
           <DateField value={deadline} onChange={setDeadline} label="Deadline" />

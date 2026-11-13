@@ -29,6 +29,8 @@ export interface Task {
   completedAt?: string
   /** Descarte recuperable. */
   deletedAt?: string
+  /** Marcada como hecha desde Inbox: queda tachada en Inbox hasta que se destilda. */
+  completedFromInbox?: boolean
 }
 
 /** Datos para crear una tarea. Los campos omitidos toman valores por defecto. */
