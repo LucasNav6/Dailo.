@@ -44,7 +44,7 @@ export function InboxPage() {
                   type="button"
                   onClick={() => setSelectedId(task.id)}
                   aria-label={`Procesar: ${task.title}`}
-                  className="-mx-2 flex min-h-14 w-[calc(100%+1rem)] items-center gap-3 rounded-lg px-2 py-3 text-left outline-none transition-colors hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                  className="-mx-2 flex min-h-14 w-[calc(100%+1rem)] items-center gap-3 rounded-sm px-2 py-3 text-left outline-none transition-colors hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring/50"
                 >
                   <span className="min-w-0 flex-1">
                     <span className="line-clamp-2 block text-base whitespace-pre-line">{task.title}</span>
@@ -68,7 +68,7 @@ export function InboxPage() {
         }}
       />
       <div role="status" aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-28 z-[60] flex justify-center px-4 lg:bottom-6">
-        {notice && <p className="rounded-full border bg-popover px-4 py-2 text-sm text-popover-foreground shadow-md">{notice}</p>}
+        {notice && <p className="rounded-md bg-popover px-4 py-2 text-sm text-popover-foreground">{notice}</p>}
       </div>
     </>
   );
