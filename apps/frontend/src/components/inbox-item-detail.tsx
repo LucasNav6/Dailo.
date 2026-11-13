@@ -46,7 +46,7 @@ export function InboxItemDetail({ task, onClose, onProcessed }: Props) {
 
   return isDesktop ? (
     <Dialog open={!!task} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false} className="gap-0 rounded-2xl p-0 sm:max-w-md" onOpenAutoFocus={(event) => event.preventDefault()}>
+      <DialogContent showCloseButton={false} className="gap-0 rounded-xl p-0 sm:max-w-md" onOpenAutoFocus={(event) => event.preventDefault()}>
         <DialogTitle className="sr-only">Procesar Inbox</DialogTitle>
         <DialogDescription className="sr-only">Decidí qué hacer con lo que capturaste.</DialogDescription>
         {body}
@@ -54,7 +54,7 @@ export function InboxItemDetail({ task, onClose, onProcessed }: Props) {
     </Dialog>
   ) : (
     <Sheet open={!!task} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" showCloseButton={false} className="max-h-[92svh] gap-0 overflow-y-auto rounded-t-2xl p-0">
+      <SheetContent side="bottom" showCloseButton={false} className="max-h-[92svh] gap-0 overflow-y-auto rounded-t-xl p-0">
         <div className="mx-auto mt-3 h-1 w-10 rounded-full bg-muted-foreground/30" aria-hidden />
         <SheetTitle className="sr-only">Procesar Inbox</SheetTitle>
         <SheetDescription className="sr-only">Decidí qué hacer con lo que capturaste.</SheetDescription>
@@ -140,7 +140,7 @@ function Processor({ task, onClose, onProcessed }: Omit<Props, "task"> & { task:
                   onChange={(event) => setTitle(event.target.value)}
                   aria-label="Título"
                   aria-invalid={titleEmpty}
-                  className="h-auto rounded-lg px-3 py-2 text-lg font-semibold md:text-lg"
+                  className="h-auto px-3 py-2 text-lg font-semibold md:text-lg"
                 />
                 <Textarea
                   value={description}
@@ -261,11 +261,11 @@ function ActionRow({
         type="button"
         onClick={onClick}
         disabled={disabled}
-        className="flex min-h-14 w-full items-center gap-3 rounded-xl px-2 py-2 text-left outline-none transition-colors hover:bg-muted/60 focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50"
+        className="flex min-h-14 w-full items-center gap-3 rounded-lg px-2 py-2 text-left outline-none transition-colors hover:bg-muted/60 focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50"
       >
         <span
           className={cn(
-            "flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground",
+            "flex size-10 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground",
             primary && "text-primary",
             destructive && "text-destructive"
           )}
