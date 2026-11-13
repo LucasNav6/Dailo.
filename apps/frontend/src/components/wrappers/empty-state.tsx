@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { RiFlowerLine, type RemixiconComponentType } from "@remixicon/react";
+import { RiFlowerFill, type RemixiconComponentType } from "@remixicon/react";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -15,7 +15,7 @@ type Props = {
 };
 
 /** Estado vacío calmo, centrado en la pantalla: ícono, título serif, apoyo y acción opcional. */
-export function EmptyState({ title, em, description, Icon = RiFlowerLine, action, className }: Props) {
+export function EmptyState({ title, em, description, Icon = RiFlowerFill, action, className }: Props) {
   return (
     <div className={cn("flex min-h-[60svh] flex-col items-center justify-center gap-3 px-6 py-8 text-center", className)}>
       <Icon className="mb-2 size-16 text-muted-foreground" aria-hidden />

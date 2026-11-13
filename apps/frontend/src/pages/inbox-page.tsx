@@ -1,13 +1,18 @@
 import { useState } from "react";
+import { useOutletContext } from "react-router";
+import { RiAddLine } from "@remixicon/react";
 import { useInbox } from "@/hooks/use-inbox";
 import { PageHeader } from "@/components/page-header";
 import { TaskCircle } from "@/components/task-circle";
+import { Button } from "@/components/ui/button";
+import type { ShellContext } from "@/lib/shell-context";
 import { TriageSheet } from "@/components/triage-sheet";
 import { EmptyState } from "@/components/wrappers/empty-state";
 import { LoadingView } from "@/components/wrappers/loading-view";
 
 export function InboxPage() {
   const { tasks, isLoading } = useInbox();
+  const { openCapture } = useOutletContext<ShellContext>();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   // Si el elemento sale de Inbox, el triage se cierra solo.
   const selected = tasks.find((task) => task.id === selectedId) ?? null;
@@ -20,7 +25,17 @@ export function InboxPage() {
 
 
       {tasks.length === 0 ? (
-        <EmptyState title="Inbox en" em="cero." description="Vaciaste tu mente. Mañana empezás liviano." />
+        <EmptyState
+          title="Inbox en"
+          em="cero."
+          description="Vaciaste tu mente. Mañana empezás liviano."
+          action={
+            <Button type="button" onClick={openCapture}>
+              <RiAddLine aria-hidden />
+              Capturar algo
+            </Button>
+          }
+        />
       ) : (
         <ul className="flex flex-col">
           {tasks.map((task) => (

@@ -5,6 +5,7 @@ import { NavAside } from "@/components/nav-aside";
 import { NavDock } from "@/components/nav-dock";
 import { QuickCapture } from "@/components/quick-capture";
 import { useToast } from "@/components/toast";
+import type { ShellContext } from "@/lib/shell-context";
 
 export function AppShell() {
   const [collapsed, setCollapsed] = useState(false);
@@ -24,7 +25,7 @@ export function AppShell() {
           </header>
         )}
         <main className="mx-auto w-full max-w-3xl flex-1 px-6 pt-6 pb-32 lg:pb-10">
-          <Outlet />
+          <Outlet context={{ openCapture: () => setCaptureOpen(true) } satisfies ShellContext} />
         </main>
       </div>
       <NavDock onNew={() => setCaptureOpen(true)} />
