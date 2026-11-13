@@ -46,7 +46,7 @@ export function InboxItemDetail({ task, onClose, onProcessed }: Props) {
 
   return isDesktop ? (
     <Dialog open={!!task} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false} className="gap-0 rounded-xl p-0 sm:max-w-md" onOpenAutoFocus={(event) => event.preventDefault()}>
+      <DialogContent showCloseButton={false} className="gap-0 rounded-xl border-sidebar-border p-0 shadow-none sm:max-w-md" onOpenAutoFocus={(event) => event.preventDefault()}>
         <DialogTitle className="sr-only">Procesar Inbox</DialogTitle>
         <DialogDescription className="sr-only">Decidí qué hacer con lo que capturaste.</DialogDescription>
         {body}
@@ -54,7 +54,7 @@ export function InboxItemDetail({ task, onClose, onProcessed }: Props) {
     </Dialog>
   ) : (
     <Sheet open={!!task} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" showCloseButton={false} className="max-h-[92svh] gap-0 overflow-y-auto rounded-t-xl p-0">
+      <SheetContent side="bottom" showCloseButton={false} className="max-h-[92svh] gap-0 overflow-y-auto rounded-t-xl border-sidebar-border p-0 shadow-none">
         <div className="mx-auto mt-3 h-1 w-10 rounded-full bg-muted-foreground/30" aria-hidden />
         <SheetTitle className="sr-only">Procesar Inbox</SheetTitle>
         <SheetDescription className="sr-only">Decidí qué hacer con lo que capturaste.</SheetDescription>
@@ -318,12 +318,12 @@ function OrganizeStep({
 
       <p className="mx-5 mb-3 line-clamp-2 text-sm text-muted-foreground whitespace-pre-line">{title}</p>
 
-      <div className="flex flex-col divide-y px-5">
+      <div className="flex flex-col divide-y divide-sidebar-border px-5">
         <div className="flex min-h-14 items-center gap-3">
           <RiFolderLine className="size-5 text-muted-foreground" aria-hidden />
           <span className="flex-1 text-sm">Proyecto</span>
           <Select value={projectId} onValueChange={setProjectId}>
-            <SelectTrigger className="w-auto max-w-48 border-0 bg-transparent text-muted-foreground shadow-none dark:bg-transparent dark:hover:bg-transparent" aria-label="Proyecto">
+            <SelectTrigger className="w-auto max-w-48 border-0 bg-transparent text-muted-foreground shadow-none outline-none hover:bg-muted focus-visible:bg-muted focus-visible:ring-0 dark:bg-transparent dark:hover:bg-muted dark:focus-visible:bg-muted focus-visible:ring-0" aria-label="Proyecto">
               <SelectValue />
             </SelectTrigger>
             <SelectContent align="end">
@@ -345,7 +345,7 @@ function OrganizeStep({
             type="date"
             value={deadline}
             onChange={(event) => setDeadline(event.target.value)}
-            className="w-auto border-0 bg-transparent text-muted-foreground shadow-none dark:bg-transparent"
+            className="w-auto border-0 bg-transparent text-muted-foreground shadow-none outline-none hover:bg-muted focus-visible:bg-muted focus-visible:ring-0 dark:bg-transparent dark:hover:bg-muted dark:focus-visible:bg-muted"
           />
           {deadline && (
             <Button type="button" variant="ghost" size="icon-sm" onClick={() => setDeadline("")} aria-label="Quitar deadline">

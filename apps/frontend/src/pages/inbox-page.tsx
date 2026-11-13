@@ -37,7 +37,7 @@ export function InboxPage() {
           <p className="-mt-2 mb-3 text-sm text-muted-foreground">
             {tasks.length === 1 ? "1 pendiente" : `${tasks.length} pendientes`}
           </p>
-          <ul className="flex max-w-2xl flex-col divide-y">
+          <ul className="flex max-w-2xl flex-col divide-y divide-sidebar-border">
             {tasks.map((task) => (
               <li key={task.id}>
                 <button
