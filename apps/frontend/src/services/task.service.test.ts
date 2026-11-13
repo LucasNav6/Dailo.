@@ -219,3 +219,101 @@ describe("mover a sección", () => {
     expect((await taskService.findById(child.id))?.sectionId).toBeUndefined()
   })
 })
+
+describe("Hoy", () => {
+  it("incluye tareas planificadas o con deadline ese día, activas o completadas", async () => {
+    await taskService.create({ title: "planificada", status: "active", plannedDate: "2026-11-13" })
+    await taskService.create({ title: "vence", status: "active", deadline: "2026-11-13" })
+    const done = await taskService.create({ title: "hecha", status: "active", plannedDate: "2026-11-13" })
+    await taskService.setCompleted(done.id, true)
+    await taskService.create({ title: "otro día", status: "active", plannedDate: "2026-11-14" })
+    await taskService.create({ title: "inbox", plannedDate: "2026-11-13" })
+    await taskService.create({ title: "tal vez", status: "someday", plannedDate: "2026-11-13" })
+
+    const titles = (await taskService.findForDay("2026-11-13")).map((t) => t.title).sort()
+    expect(titles).toEqual(["hecha", "planificada", "vence"])
+  })
+
+  it("elegir franja planifica la tarea para ese día", async () => {
+    const task = await taskService.create({ title: "t", status: "active", deadline: "2026-11-13" })
+    const next = await taskService.setTimeOfDay(task.id, "afternoon", "2026-11-13")
+    expect(next).toMatchObject({ timeOfDay: "afternoon", plannedDate: "2026-11-13" })
+  })
+})
+
+describe("planificar", () => {
+  it("pasa a un proyecto con deadline y subtareas con su propio deadline", async () => {
+    const project = await projectService.create({ name: "Trabajo" })
+    const item = await taskService.create({ title: "balance" })
+    const planned = await taskService.plan(item.id, {
+      title: " Pedir el balance 2025 al contador ",
+      description: "Para el monotributo",
+      projectId: project.id,
+      deadline: "2026-11-20",
+      subtasks: [
+        { title: "Juntar facturas", deadline: "2026-11-18" },
+        { title: "  " },
+        { title: "Agendar la reunión" },
+      ],
+    })
+    expect(planned).toMatchObject({ status: "active", projectId: project.id, deadline: "2026-11-20", title: "Pedir el balance 2025 al contador", description: "Para el monotributo" })
+
+    const overview = await projectService.getOverview(project.id)
+    const children = overview?.unsectioned[0].children.map((n) => [n.task.title, n.task.deadline])
+    expect(children).toEqual([["Juntar facturas", "2026-11-18"], ["Agendar la reunión", undefined]])
+    expect(await taskService.findInbox()).toHaveLength(0)
+  })
+
+  it("también planifica una idea de Tal vez", async () => {
+    const project = await projectService.create({ name: "P" })
+    const item = await taskService.create({ title: "idea" })
+    await taskService.decide(item.id, { type: "someday" })
+    const planned = await taskService.plan(item.id, { title: "idea", projectId: project.id })
+    expect(planned.status).toBe("active")
+  })
+
+  it("exige proyecto y título, y no guarda nada si falla", async () => {
+    const project = await projectService.create({ name: "P" })
+    const item = await taskService.create({ title: "x" })
+    await expect(taskService.plan(item.id, { title: "x", projectId: "" })).rejects.toBeInstanceOf(ValidationError)
+    await expect(taskService.plan(item.id, { title: " ", projectId: project.id, subtasks: [{ title: "s" }] })).rejects.toBeInstanceOf(ValidationError)
+    await expect(taskService.plan(item.id, { title: "x", projectId: "nope" })).rejects.toThrow()
+    expect((await taskService.findById(item.id))?.status).toBe("inbox")
+    expect((await taskService.findAll()).length).toBe(1)
+  })
+
+  it("solo planifica elementos de Inbox o Tal vez", async () => {
+    const project = await projectService.create({ name: "P" })
+    const task = await taskService.create({ title: "t", status: "active" })
+    await expect(taskService.plan(task.id, { title: "t", projectId: project.id })).rejects.toThrow()
+  })
+})
+
+describe("restaurar y listas", () => {
+  it("restaura una descartada al estado indicado y limpia deletedAt", async () => {
+    const task = await taskService.create({ title: "t" })
+    await taskService.discard(task.id)
+    expect((await taskService.findDiscarded()).map((t) => t.id)).toEqual([task.id])
+    const back = await taskService.restore(task.id, "inbox")
+    expect(back.status).toBe("inbox")
+    expect(back.deletedAt).toBeUndefined()
+    expect(await taskService.findDiscarded()).toHaveLength(0)
+  })
+
+  it("deshacer una tarea completada limpia completedAt", async () => {
+    const task = await taskService.create({ title: "t" })
+    await taskService.decide(task.id, { type: "complete" })
+    const back = await taskService.restore(task.id, "inbox")
+    expect(back.completedAt).toBeUndefined()
+    expect(back.status).toBe("inbox")
+  })
+
+  it("Tal vez lista lo más reciente primero", async () => {
+    const a = await taskService.create({ title: "a" })
+    await taskService.decide(a.id, { type: "someday" })
+    await new Promise((resolve) => setTimeout(resolve, 3))
+    const b = await taskService.create({ title: "b" })
+    await taskService.decide(b.id, { type: "someday" })
+    expect((await taskService.findSomeday()).map((t) => t.title)).toEqual(["b", "a"])
+  })
+})
