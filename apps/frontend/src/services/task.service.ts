@@ -2,21 +2,11 @@ import { atomically } from "@/adapters/database"
 import { projectAdapter } from "@/adapters/project.adapter"
 import { sectionAdapter } from "@/adapters/section.adapter"
 import { taskAdapter } from "@/adapters/task.adapter"
-import type {
-  Task,
-  TaskChanges,
-  TaskInput,
-  TimeOfDay,
-} from "@/models/task.model"
+import type { Task, TaskChanges, TaskInput } from "@/models/task.model"
 
 /** Decisión explícita que saca un elemento de Inbox. */
 export type InboxDecision =
-  | {
-      type: "activate"
-      projectId?: string
-      plannedDate?: string
-      timeOfDay?: TimeOfDay
-    }
+  | { type: "activate"; projectId?: string; deadline?: string }
   | { type: "someday" }
   | { type: "complete" }
   | { type: "discard" }
@@ -135,8 +125,7 @@ export const taskService = {
         case "activate":
           next.status = "active"
           next.projectId = decision.projectId
-          next.plannedDate = decision.plannedDate
-          next.timeOfDay = decision.plannedDate ? decision.timeOfDay : undefined
+          next.deadline = decision.deadline
           break
         case "someday":
           next.status = "someday"
