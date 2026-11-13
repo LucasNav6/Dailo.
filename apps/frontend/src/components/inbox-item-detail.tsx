@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
+import { format, parseISO } from "date-fns";
+import { es } from "react-day-picker/locale";
 import {
-  RiArrowLeftSLine,
   RiArrowRightSLine,
   RiFlagLine,
   RiCheckLine,
@@ -21,8 +22,10 @@ import type { Task } from "@/models/task.model";
 import { cn } from "@/lib/utils";
 import type { InboxDecision } from "@/services/task.service";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
@@ -216,10 +219,7 @@ function Processor({ task, onClose, onProcessed }: Omit<Props, "task"> & { task:
           title={title}
           busy={busy}
           error={error}
-          onBack={() => {
-            setError(null);
-            setStep("decide");
-          }}
+          onClose={onClose}
           onSave={(organization) => resolve({ type: "activate", ...organization }, "Tarea guardada")}
         />
       )}
@@ -287,42 +287,32 @@ function OrganizeStep({
   title,
   busy,
   error,
-  onBack,
+  onClose,
   onSave,
 }: {
   title: string;
   busy: boolean;
   error: string | null;
-  onBack: () => void;
+  onClose: () => void;
   onSave: (organization: Organization) => void;
 }) {
   const { projects } = useProjects();
   const [projectId, setProjectId] = useState(NONE);
-  // null = sin deadline (solo el botón); string = deadline activo, con o sin fecha elegida.
+  // YYYY-MM-DD o null (sin deadline: solo se ve el botón).
   const [deadline, setDeadline] = useState<string | null>(null);
-  const dateRef = useRef<HTMLInputElement>(null);
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
+  // Sin deadline abre el calendario; con deadline lo quita y vuelve al botón solo.
   const toggleDeadline = () => {
-    if (deadline !== null) return setDeadline(null);
-    setDeadline("");
-    // Abre el selector de fecha apenas aparece el campo.
-    setTimeout(() => {
-      try {
-        dateRef.current?.showPicker?.();
-      } catch {
-        dateRef.current?.focus();
-      }
-    }, 0);
+    if (deadline) setDeadline(null);
+    else setCalendarOpen(true);
   };
 
   return (
     <>
-      <header className="flex items-center gap-1 px-3 pt-3 pb-2">
-        <Button type="button" variant="ghost" size="sm" onClick={onBack} disabled={busy}>
-          <RiArrowLeftSLine aria-hidden />
-          Volver
-        </Button>
+      <header className="flex items-center justify-between px-5 pt-4 pb-2">
         <h2 className="text-base font-semibold">Convertir en tarea</h2>
+        <CloseButton onClose={onClose} />
       </header>
 
       <p className="mx-5 mb-4 line-clamp-2 text-base whitespace-pre-line">{title}</p>
@@ -332,7 +322,7 @@ function OrganizeStep({
       <div className="flex items-center gap-1 px-3">
         <Select value={projectId} onValueChange={setProjectId}>
           <SelectTrigger
-            className="h-9 w-auto max-w-32 min-w-0 gap-1.5 border-0 bg-transparent px-2 text-muted-foreground shadow-none hover:bg-muted focus-visible:bg-muted focus-visible:ring-0 dark:bg-transparent dark:hover:bg-muted"
+            className="h-9 w-auto max-w-40 min-w-0 gap-1.5 border-0 bg-transparent px-2 text-muted-foreground shadow-none hover:bg-muted focus-visible:bg-muted focus-visible:ring-0 dark:bg-transparent dark:hover:bg-muted"
             aria-label="Proyecto"
           >
             <RiFolderLine className="size-4 shrink-0" aria-hidden />
@@ -348,44 +338,46 @@ function OrganizeStep({
           </SelectContent>
         </Select>
 
-        <div className="flex items-center">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className={cn("text-muted-foreground", deadline !== null && "text-primary")}
-            onClick={toggleDeadline}
-            aria-pressed={deadline !== null}
-            aria-label={deadline !== null ? "Quitar deadline" : "Agregar deadline"}
-          >
-            <RiFlagLine aria-hidden />
-          </Button>
-          {deadline !== null && (
-            <Input
-              ref={dateRef}
-              type="date"
-              value={deadline}
-              onChange={(event) => setDeadline(event.target.value)}
-              aria-label="Deadline"
-              className="h-9 w-auto border-0 bg-transparent px-1 text-sm text-muted-foreground shadow-none focus-visible:ring-0 dark:bg-transparent [&::-webkit-calendar-picker-indicator]:hidden"
+        <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+          <PopoverAnchor asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size={deadline ? "default" : "icon"}
+              className={cn("text-muted-foreground", deadline && "px-2 text-primary")}
+              onClick={toggleDeadline}
+              aria-label={deadline ? "Quitar deadline" : "Agregar deadline"}
+            >
+              <RiFlagLine aria-hidden />
+              {deadline && format(parseISO(deadline), "d MMM yyyy", { locale: es })}
+            </Button>
+          </PopoverAnchor>
+          <PopoverContent align="start" className="z-[70] w-auto border-0 p-0 shadow-none">
+            <Calendar
+              mode="single"
+              navLayout="after"
+              locale={es}
+              selected={deadline ? parseISO(deadline) : undefined}
+              defaultMonth={deadline ? parseISO(deadline) : undefined}
+              onSelect={(date) => {
+                if (!date) return;
+                setDeadline(format(date, "yyyy-MM-dd"));
+                setCalendarOpen(false);
+              }}
             />
-          )}
-        </div>
+          </PopoverContent>
+        </Popover>
 
         <Button
           type="button"
+          size="icon"
           className="ml-auto"
           disabled={busy}
           aria-busy={busy}
-          onClick={() =>
-            onSave({
-              projectId: projectId === NONE ? undefined : projectId,
-              deadline: deadline || undefined,
-            })
-          }
+          aria-label="Guardar tarea"
+          onClick={() => onSave({ projectId: projectId === NONE ? undefined : projectId, deadline: deadline ?? undefined })}
         >
           {busy ? <RiLoader4Line className="animate-spin" aria-hidden /> : <RiCheckLine aria-hidden />}
-          Guardar
         </Button>
       </div>
     </>
