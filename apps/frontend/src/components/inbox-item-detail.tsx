@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   RiArrowLeftSLine,
   RiArrowRightSLine,
-  RiCalendarLine,
+  RiFlagLine,
   RiCheckLine,
   RiCheckboxCircleLine,
   RiCloseLine,
@@ -220,7 +220,6 @@ function Processor({ task, onClose, onProcessed }: Omit<Props, "task"> & { task:
             setError(null);
             setStep("decide");
           }}
-          onClose={onClose}
           onSave={(organization) => resolve({ type: "activate", ...organization }, "Tarea guardada")}
         />
       )}
@@ -289,79 +288,93 @@ function OrganizeStep({
   busy,
   error,
   onBack,
-  onClose,
   onSave,
 }: {
   title: string;
   busy: boolean;
   error: string | null;
   onBack: () => void;
-  onClose: () => void;
   onSave: (organization: Organization) => void;
 }) {
   const { projects } = useProjects();
   const [projectId, setProjectId] = useState(NONE);
-  const [deadline, setDeadline] = useState("");
+  // null = sin deadline (solo el botón); string = deadline activo, con o sin fecha elegida.
+  const [deadline, setDeadline] = useState<string | null>(null);
+  const dateRef = useRef<HTMLInputElement>(null);
+
+  const toggleDeadline = () => {
+    if (deadline !== null) return setDeadline(null);
+    setDeadline("");
+    // Abre el selector de fecha apenas aparece el campo.
+    setTimeout(() => {
+      try {
+        dateRef.current?.showPicker?.();
+      } catch {
+        dateRef.current?.focus();
+      }
+    }, 0);
+  };
 
   return (
     <>
-      <header className="grid grid-cols-[1fr_auto_1fr] items-center px-3 pt-3 pb-2">
-        <Button type="button" variant="ghost" size="sm" className="justify-self-start" onClick={onBack} disabled={busy}>
+      <header className="flex items-center gap-1 px-3 pt-3 pb-2">
+        <Button type="button" variant="ghost" size="sm" onClick={onBack} disabled={busy}>
           <RiArrowLeftSLine aria-hidden />
           Volver
         </Button>
         <h2 className="text-base font-semibold">Convertir en tarea</h2>
-        <span className="justify-self-end">
-          <CloseButton onClose={onClose} />
-        </span>
       </header>
 
-      <p className="mx-5 mb-3 line-clamp-2 text-sm text-muted-foreground whitespace-pre-line">{title}</p>
+      <p className="mx-5 mb-4 line-clamp-2 text-base whitespace-pre-line">{title}</p>
 
-      <div className="flex flex-col divide-y divide-sidebar-border px-5">
-        <div className="flex min-h-14 items-center gap-3">
-          <RiFolderLine className="size-5 text-muted-foreground" aria-hidden />
-          <span className="flex-1 text-sm">Proyecto</span>
-          <Select value={projectId} onValueChange={setProjectId}>
-            <SelectTrigger className="w-auto max-w-48 border-0 bg-transparent text-muted-foreground shadow-none outline-none hover:bg-muted focus-visible:bg-muted focus-visible:ring-0 dark:bg-transparent dark:hover:bg-muted dark:focus-visible:bg-muted focus-visible:ring-0" aria-label="Proyecto">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent align="end">
-              <SelectItem value={NONE}>Sin proyecto</SelectItem>
-              {projects.map((project) => (
-                <SelectItem key={project.id} value={project.id}>
-                  {project.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      <p role="alert" className="px-5 pb-2 text-sm text-destructive empty:hidden">{error}</p>
 
-        <div className="flex min-h-14 items-center gap-3">
-          <RiCalendarLine className="size-5 text-muted-foreground" aria-hidden />
-          <label htmlFor="inbox-deadline" className="flex-1 text-sm">Deadline</label>
-          <Input
-            id="inbox-deadline"
-            type="date"
-            value={deadline}
-            onChange={(event) => setDeadline(event.target.value)}
-            className="w-auto border-0 bg-transparent text-muted-foreground shadow-none outline-none hover:bg-muted focus-visible:bg-muted focus-visible:ring-0 dark:bg-transparent dark:hover:bg-muted dark:focus-visible:bg-muted"
-          />
-          {deadline && (
-            <Button type="button" variant="ghost" size="icon-sm" onClick={() => setDeadline("")} aria-label="Quitar deadline">
-              <RiCloseLine aria-hidden />
-            </Button>
+      <div className="flex items-center gap-1 px-3">
+        <Select value={projectId} onValueChange={setProjectId}>
+          <SelectTrigger
+            className="h-9 w-auto max-w-32 min-w-0 gap-1.5 border-0 bg-transparent px-2 text-muted-foreground shadow-none hover:bg-muted focus-visible:bg-muted focus-visible:ring-0 dark:bg-transparent dark:hover:bg-muted"
+            aria-label="Proyecto"
+          >
+            <RiFolderLine className="size-4 shrink-0" aria-hidden />
+            {projectId === NONE ? null : <SelectValue />}
+          </SelectTrigger>
+          <SelectContent align="start">
+            <SelectItem value={NONE}>Sin proyecto</SelectItem>
+            {projects.map((project) => (
+              <SelectItem key={project.id} value={project.id}>
+                {project.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <div className="flex items-center">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className={cn("text-muted-foreground", deadline !== null && "text-primary")}
+            onClick={toggleDeadline}
+            aria-pressed={deadline !== null}
+            aria-label={deadline !== null ? "Quitar deadline" : "Agregar deadline"}
+          >
+            <RiFlagLine aria-hidden />
+          </Button>
+          {deadline !== null && (
+            <Input
+              ref={dateRef}
+              type="date"
+              value={deadline}
+              onChange={(event) => setDeadline(event.target.value)}
+              aria-label="Deadline"
+              className="h-9 w-auto border-0 bg-transparent px-1 text-sm text-muted-foreground shadow-none focus-visible:ring-0 dark:bg-transparent [&::-webkit-calendar-picker-indicator]:hidden"
+            />
           )}
         </div>
-      </div>
 
-      <p role="alert" className="px-5 pt-1 text-sm text-destructive empty:hidden">{error}</p>
-
-      <div className="px-5 pt-4">
         <Button
           type="button"
-          size="lg"
-          className="w-full"
+          className="ml-auto"
           disabled={busy}
           aria-busy={busy}
           onClick={() =>
@@ -372,9 +385,8 @@ function OrganizeStep({
           }
         >
           {busy ? <RiLoader4Line className="animate-spin" aria-hidden /> : <RiCheckLine aria-hidden />}
-          Guardar tarea
+          Guardar
         </Button>
-        <p className="pt-3 text-center text-xs text-muted-foreground">Al guardar, la tarea sale de Inbox.</p>
       </div>
     </>
   );
