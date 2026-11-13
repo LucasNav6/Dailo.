@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { RiAddLine, RiDeleteBinLine, RiFolderLine, RiMore2Line, RiPencilLine } from "@remixicon/react";
+import { RiAddLine, RiDeleteBinLine, RiMore2Line, RiPencilLine } from "@remixicon/react";
 import { useProjects } from "@/hooks/use-projects";
 import type { ProjectWithProgress } from "@/services/project.service";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,7 @@ export function ProjectsPage() {
         )}
 
         {projects.length === 0 ? (
-          <EmptyState Icon={RiFolderLine} title="Todavía no tenés" em="proyectos." description="Creá el primero para agrupar tus tareas.">
+          <EmptyState title="Todavía no tenés" em="proyectos." description="Creá el primero para agrupar tus tareas.">
             <Button type="button" onClick={() => setForm("new")}>
               <RiAddLine aria-hidden />
               Crear proyecto
