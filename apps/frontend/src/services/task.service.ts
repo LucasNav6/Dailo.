@@ -2,7 +2,24 @@ import { atomically } from "@/adapters/database"
 import { projectAdapter } from "@/adapters/project.adapter"
 import { sectionAdapter } from "@/adapters/section.adapter"
 import { taskAdapter } from "@/adapters/task.adapter"
-import type { Task, TaskChanges, TaskInput } from "@/models/task.model"
+import type {
+  Task,
+  TaskChanges,
+  TaskInput,
+  TimeOfDay,
+} from "@/models/task.model"
+
+/** Decisión explícita que saca un elemento de Inbox. */
+export type InboxDecision =
+  | {
+      type: "activate"
+      projectId?: string
+      plannedDate?: string
+      timeOfDay?: TimeOfDay
+    }
+  | { type: "someday" }
+  | { type: "complete" }
+  | { type: "discard" }
 
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/
 
@@ -21,6 +38,8 @@ function isValidDate(value: string) {
 
 async function assertValid(task: Task) {
   if (!task.title) throw new Error("Task title is required")
+  if (task.timeOfDay && !task.plannedDate)
+    throw new Error("A time of day requires a planned date")
   for (const date of [task.plannedDate, task.deadline]) {
     if (date !== undefined && !isValidDate(date))
       throw new Error(`Invalid date, expected YYYY-MM-DD: ${date}`)
@@ -90,10 +109,62 @@ export const taskService = {
       return next
     }),
 
+  /**
+   * Procesa un elemento de Inbox con una decisión explícita. Es la única vía
+   * por la que un elemento abandona Inbox. `edits` (título/descripción) se
+   * guardan en la misma operación.
+   */
+  decide: (
+    id: string,
+    decision: InboxDecision,
+    edits: Pick<TaskChanges, "title" | "description"> = {}
+  ) =>
+    atomically(async () => {
+      const current = await taskAdapter.findById(id)
+      if (!current) throw new Error(`Task not found: ${id}`)
+      if (current.status !== "inbox")
+        throw new Error(`Task is not in the inbox: ${id}`)
+      const now = new Date().toISOString()
+      const next: Task = {
+        ...current,
+        ...edits,
+        title: edits.title === undefined ? current.title : edits.title.trim(),
+        updatedAt: now,
+      }
+      switch (decision.type) {
+        case "activate":
+          next.status = "active"
+          next.projectId = decision.projectId
+          next.plannedDate = decision.plannedDate
+          next.timeOfDay = decision.plannedDate ? decision.timeOfDay : undefined
+          break
+        case "someday":
+          next.status = "someday"
+          break
+        case "complete":
+          next.status = "completed"
+          next.completedAt = now
+          break
+        case "discard":
+          next.status = "discarded"
+          next.deletedAt = now
+          break
+      }
+      await assertValid(next)
+      await taskAdapter.update(id, next)
+      return next
+    }),
+
   /** Elimina la tarea y sus subtareas. */
   remove: (id: string) => atomically(() => removeTaskTrees([id])),
 
   findById: (id: string) => taskAdapter.findById(id),
   findAll: () => taskAdapter.findAll(),
   findByStatus: taskAdapter.findByStatus,
+  /** Inbox con las capturas más recientes primero. */
+  findInbox: async () =>
+    (await taskAdapter.findByStatus("inbox")).sort(
+      (a, b) =>
+        b.createdAt.localeCompare(a.createdAt) || b.position - a.position
+    ),
 }
