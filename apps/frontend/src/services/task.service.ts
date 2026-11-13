@@ -246,9 +246,12 @@ export const taskService = {
       }
       await assertValid(next)
       await taskAdapter.update(id, next)
-      for (const subtask of input.subtasks ?? []) {
+      // Posiciones crecientes: varias subtareas pueden crearse en el mismo ms.
+      const base = Date.now()
+      for (const [index, subtask] of (input.subtasks ?? []).entries()) {
         if (!subtask.title.trim()) continue
         await taskService.create({
+          position: base + index,
           title: subtask.title,
           parentId: id,
           projectId: input.projectId,
