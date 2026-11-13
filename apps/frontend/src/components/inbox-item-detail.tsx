@@ -17,10 +17,8 @@ import {
 import { useInbox } from "@/hooks/use-inbox";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useProjects } from "@/hooks/use-projects";
-import { usePreferences } from "@/hooks/use-settings";
-import type { Task, TimeOfDay } from "@/models/task.model";
+import type { Task } from "@/models/task.model";
 import { cn } from "@/lib/utils";
-import { defaultPreferences, getPeriods, PERIODS } from "@/services/setting.service";
 import type { InboxDecision } from "@/services/task.service";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
@@ -30,14 +28,6 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/
 import { Textarea } from "@/components/ui/textarea";
 
 const NONE = "none";
-// Franjas del modelo de tarea ↔ franjas configuradas en Preferencias.
-const PERIOD_TO_TIME: Record<(typeof PERIODS)[number]["id"], TimeOfDay> = {
-  morning: "morning",
-  noon: "midday",
-  afternoon: "afternoon",
-  night: "evening",
-};
-
 type Props = {
   task: Task | null;
   onClose: () => void;
@@ -292,7 +282,7 @@ function ActionRow({
   );
 }
 
-type Organization = { projectId?: string; plannedDate?: string; timeOfDay?: TimeOfDay };
+type Organization = { projectId?: string; deadline?: string };
 
 function OrganizeStep({
   title,
@@ -310,16 +300,8 @@ function OrganizeStep({
   onSave: (organization: Organization) => void;
 }) {
   const { projects } = useProjects();
-  const { preferences } = usePreferences();
-  const ranges = getPeriods(preferences ?? defaultPreferences);
   const [projectId, setProjectId] = useState(NONE);
-  const [plannedDate, setPlannedDate] = useState("");
-  const [timeOfDay, setTimeOfDay] = useState<TimeOfDay | null>(null);
-
-  const changeDate = (value: string) => {
-    setPlannedDate(value);
-    if (!value) setTimeOfDay(null);
-  };
+  const [deadline, setDeadline] = useState("");
 
   return (
     <>
@@ -357,58 +339,25 @@ function OrganizeStep({
 
         <div className="flex min-h-14 items-center gap-3">
           <RiCalendarLine className="size-5 text-muted-foreground" aria-hidden />
-          <label htmlFor="inbox-date" className="flex-1 text-sm">Fecha</label>
+          <label htmlFor="inbox-deadline" className="flex-1 text-sm">Deadline</label>
           <Input
-            id="inbox-date"
+            id="inbox-deadline"
             type="date"
-            value={plannedDate}
-            onChange={(event) => changeDate(event.target.value)}
+            value={deadline}
+            onChange={(event) => setDeadline(event.target.value)}
             className="w-auto border-0 bg-transparent text-muted-foreground shadow-none dark:bg-transparent"
           />
-          {plannedDate && (
-            <Button type="button" variant="ghost" size="icon-sm" onClick={() => changeDate("")} aria-label="Quitar fecha">
+          {deadline && (
+            <Button type="button" variant="ghost" size="icon-sm" onClick={() => setDeadline("")} aria-label="Quitar deadline">
               <RiCloseLine aria-hidden />
             </Button>
           )}
-        </div>
-
-        <div className="py-3">
-          <div className="flex items-center gap-3 pb-3">
-            <RiTimeLine className="size-5 text-muted-foreground" aria-hidden />
-            <span id="inbox-period" className="flex-1 text-sm">Franja horaria</span>
-            {!plannedDate && <span className="text-xs text-muted-foreground">Elegí una fecha primero</span>}
-          </div>
-          <div role="radiogroup" aria-labelledby="inbox-period" className="grid grid-cols-2 gap-2">
-            {PERIODS.map(({ id, label }) => {
-              const value = PERIOD_TO_TIME[id];
-              const selected = timeOfDay === value;
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  role="radio"
-                  aria-checked={selected}
-                  disabled={!plannedDate}
-                  onClick={() => setTimeOfDay(selected ? null : value)}
-                  className={cn(
-                    "flex flex-col rounded-xl bg-muted px-3 py-2 text-left outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50",
-                    selected && "bg-primary text-primary-foreground"
-                  )}
-                >
-                  <span className="text-sm font-medium">{label}</span>
-                  <span className={cn("text-xs", selected ? "text-primary-foreground/80" : "text-muted-foreground")}>
-                    {ranges[id].start} – {ranges[id].end}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
         </div>
       </div>
 
       <p role="alert" className="px-5 pt-1 text-sm text-destructive empty:hidden">{error}</p>
 
-      <div className="px-5 pt-3">
+      <div className="px-5 pt-4">
         <Button
           type="button"
           size="lg"
@@ -418,8 +367,7 @@ function OrganizeStep({
           onClick={() =>
             onSave({
               projectId: projectId === NONE ? undefined : projectId,
-              plannedDate: plannedDate || undefined,
-              timeOfDay: plannedDate ? (timeOfDay ?? undefined) : undefined,
+              deadline: deadline || undefined,
             })
           }
         >

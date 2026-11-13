@@ -70,7 +70,7 @@ describe("Inbox", () => {
 })
 
 describe("decide (procesamiento)", () => {
-  it("activa con proyecto, fecha y franja, guardando las ediciones", async () => {
+  it("activa con proyecto y deadline, guardando las ediciones", async () => {
     const project = await projectService.create({ name: "Forky" })
     const task = await taskService.create({ title: "gastos" })
 
@@ -79,8 +79,7 @@ describe("decide (procesamiento)", () => {
       {
         type: "activate",
         projectId: project.id,
-        plannedDate: "2026-11-13",
-        timeOfDay: "morning",
+        deadline: "2026-11-13",
       },
       { title: "Revisar gastos de Forky", description: "Comparar con presupuesto" }
     )
@@ -88,8 +87,7 @@ describe("decide (procesamiento)", () => {
     expect(next).toMatchObject({
       status: "active",
       projectId: project.id,
-      plannedDate: "2026-11-13",
-      timeOfDay: "morning",
+      deadline: "2026-11-13",
       title: "Revisar gastos de Forky",
       description: "Comparar con presupuesto",
     })
@@ -100,15 +98,9 @@ describe("decide (procesamiento)", () => {
     const task = await taskService.create({ title: "x" })
     const next = await taskService.decide(task.id, { type: "activate" })
     expect(next.status).toBe("active")
+    expect(next.deadline).toBeUndefined()
+    expect(next.projectId).toBeUndefined()
     expect(next.plannedDate).toBeUndefined()
-  })
-
-  it("ignora la franja si no hay fecha", async () => {
-    const task = await taskService.create({ title: "x" })
-    const next = await taskService.decide(task.id, {
-      type: "activate",
-      timeOfDay: "evening",
-    })
     expect(next.timeOfDay).toBeUndefined()
   })
 
@@ -135,7 +127,7 @@ describe("decide (procesamiento)", () => {
   it("no guarda nada si la decisión es inválida", async () => {
     const task = await taskService.create({ title: "x" })
     await expect(
-      taskService.decide(task.id, { type: "activate", plannedDate: "2026-02-31" })
+      taskService.decide(task.id, { type: "activate", deadline: "2026-02-31" })
     ).rejects.toThrow()
     await expect(
       taskService.decide(task.id, { type: "activate", projectId: "nope" })
