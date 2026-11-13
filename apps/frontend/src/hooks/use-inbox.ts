@@ -8,7 +8,10 @@ export function useInbox() {
   return {
     tasks: tasks ?? [],
     isLoading: tasks === undefined,
-    updateTask: taskService.update,
+    capture: (title: string) => taskService.create({ title }),
     decide: taskService.decide,
+    plan: taskService.plan,
+    discard: taskService.discard,
+    restore: taskService.restore,
   }
 }
