@@ -4,6 +4,8 @@ import { AppShell } from "@/components/app-shell";
 import { PagePlaceholder } from "@/components/page-placeholder";
 import { allNav } from "@/lib/navigation";
 import { InboxPage } from "@/pages/inbox-page";
+import { ProjectDetailPage } from "@/pages/project-detail-page";
+import { ProjectsPage } from "@/pages/projects-page";
 import { NotificationsPage } from "@/pages/settings/notifications-page";
 import { PreferencesPage } from "@/pages/settings/preferences-page";
 import { SecurityPage } from "@/pages/settings/security-page";
@@ -22,7 +24,9 @@ export default function App() {
             <Route path="security" element={<SecurityPage />} />
           </Route>
           <Route path="inbox" element={<InboxPage />} />
-          {allNav.filter(({ to }) => to !== "/settings" && to !== "/inbox").map(({ to, label }) => (
+          <Route path="projects" element={<ProjectsPage />} />
+          <Route path="projects/:projectId" element={<ProjectDetailPage />} />
+          {allNav.filter(({ to }) => to !== "/settings" && to !== "/inbox" && to !== "/projects").map(({ to, label }) => (
             <Route key={to} path={to} element={<PagePlaceholder description={`Pantalla de ${label} próximamente.`} />} />
           ))}
           <Route path="*" element={<Navigate to="/today" replace />} />

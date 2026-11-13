@@ -1,7 +1,9 @@
 import "fake-indexeddb/auto"
 import { beforeEach, describe, expect, it } from "vitest"
 import { clearAllData } from "@/adapters/database"
+import { ValidationError } from "./errors"
 import { projectService } from "./project.service"
+import { sectionService } from "./section.service"
 import { taskService } from "./task.service"
 
 beforeEach(clearAllData)
@@ -151,5 +153,69 @@ describe("decide (procesamiento)", () => {
     await taskService.decide(task.id, { type: "someday" })
     await expect(taskService.decide(task.id, { type: "complete" })).rejects.toThrow()
     await expect(taskService.decide("missing", { type: "complete" })).rejects.toThrow()
+  })
+})
+
+describe("tareas de proyecto", () => {
+  it("crea subtareas heredando proyecto y sección de la madre", async () => {
+    const project = await projectService.create({ name: "P" })
+    const section = await sectionService.create({ projectId: project.id, name: "S" })
+    const parent = await taskService.create({ title: "madre", projectId: project.id, sectionId: section.id, status: "active" })
+    const child = await taskService.createSubtask(parent.id, { title: " hija " })
+    expect(child).toMatchObject({ title: "hija", parentId: parent.id, projectId: project.id, sectionId: section.id, status: "active", essential: false })
+    await expect(taskService.createSubtask("missing", { title: "x" })).rejects.toThrow()
+    await expect(taskService.createSubtask(parent.id, { title: " " })).rejects.toBeInstanceOf(ValidationError)
+  })
+
+  it("completa y reactiva manejando completedAt", async () => {
+    const task = await taskService.create({ title: "t", status: "active" })
+    const done = await taskService.setCompleted(task.id, true)
+    expect(done.status).toBe("completed")
+    expect(done.completedAt).toBeDefined()
+    const reopened = await taskService.setCompleted(task.id, false)
+    expect(reopened.status).toBe("active")
+    expect(reopened.completedAt).toBeUndefined()
+  })
+
+  it("descarta de forma lógica la tarea y sus subtareas", async () => {
+    const parent = await taskService.create({ title: "madre", status: "active" })
+    const child = await taskService.createSubtask(parent.id, { title: "hija" })
+    const other = await taskService.create({ title: "otra", status: "active" })
+    await taskService.discard(parent.id)
+    for (const id of [parent.id, child.id]) {
+      const task = await taskService.findById(id)
+      expect(task?.status).toBe("discarded")
+      expect(task?.deletedAt).toBeDefined()
+    }
+    expect((await taskService.findById(other.id))?.status).toBe("active")
+  })
+
+  it("una tarea planificada para hoy sigue siendo la misma tarea del proyecto", async () => {
+    const project = await projectService.create({ name: "P" })
+    const task = await taskService.create({ title: "t", projectId: project.id, status: "active", plannedDate: "2026-11-13" })
+    const all = await taskService.findAll()
+    expect(all.filter((item) => item.id === task.id)).toHaveLength(1)
+    expect((await projectService.getOverview(project.id))?.unsectioned.map((n) => n.task.id)).toEqual([task.id])
+  })
+})
+
+describe("mover a sección", () => {
+  it("mueve la tarea y sus subtareas, y valida la sección", async () => {
+    const project = await projectService.create({ name: "P" })
+    const other = await projectService.create({ name: "Otro" })
+    const section = await sectionService.create({ projectId: project.id, name: "S" })
+    const foreign = await sectionService.create({ projectId: other.id, name: "X" })
+    const parent = await taskService.create({ title: "madre", projectId: project.id, status: "active" })
+    const child = await taskService.createSubtask(parent.id, { title: "hija" })
+
+    await taskService.moveToSection(parent.id, section.id)
+    expect((await taskService.findById(parent.id))?.sectionId).toBe(section.id)
+    expect((await taskService.findById(child.id))?.sectionId).toBe(section.id)
+
+    await expect(taskService.moveToSection(parent.id, foreign.id)).rejects.toThrow()
+    expect((await taskService.findById(child.id))?.sectionId).toBe(section.id)
+
+    await taskService.moveToSection(parent.id, undefined)
+    expect((await taskService.findById(child.id))?.sectionId).toBeUndefined()
   })
 })

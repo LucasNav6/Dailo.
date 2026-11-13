@@ -8,6 +8,7 @@ import type {
   TaskInput,
   TimeOfDay,
 } from "@/models/task.model"
+import { ValidationError } from "./errors"
 
 /** Decisión explícita que saca un elemento de Inbox. */
 export type InboxDecision =
@@ -37,7 +38,7 @@ function isValidDate(value: string) {
 }
 
 async function assertValid(task: Task) {
-  if (!task.title) throw new Error("Task title is required")
+  if (!task.title) throw new ValidationError("Task title is required")
   if (task.timeOfDay && !task.plannedDate)
     throw new Error("A time of day requires a planned date")
   for (const date of [task.plannedDate, task.deadline]) {
@@ -71,6 +72,16 @@ export async function removeTaskTrees(rootIds: string[]) {
   await taskAdapter.removeMany(ids)
 }
 
+/** Los ids de la tarea y de todos sus descendientes. */
+async function collectTree(rootId: string) {
+  const ids = [rootId]
+  for (let i = 0; i < ids.length; i++) {
+    const children = await taskAdapter.findByParentId(ids[i])
+    ids.push(...children.map((child) => child.id))
+  }
+  return ids
+}
+
 export const taskService = {
   create: (input: TaskInput) =>
     atomically(async () => {
@@ -81,6 +92,7 @@ export const taskService = {
         position: Date.now(),
         ...input,
         title: input.title.trim(),
+        description: input.description?.trim() || undefined,
         id: crypto.randomUUID(),
         createdAt: now,
         updatedAt: now,
@@ -88,6 +100,51 @@ export const taskService = {
       await assertValid(task)
       await taskAdapter.create(task)
       return task
+    }),
+
+  /** Subtarea activa: hereda proyecto y sección de su tarea madre. */
+  createSubtask: (parentId: string, input: Pick<TaskInput, "title">) =>
+    atomically(async () => {
+      const parent = await taskAdapter.findById(parentId)
+      if (!parent) throw new Error(`Parent task not found: ${parentId}`)
+      return taskService.create({
+        title: input.title,
+        parentId,
+        projectId: parent.projectId,
+        sectionId: parent.sectionId,
+        status: "active",
+      })
+    }),
+
+  /** Mueve una tarea (y sus subtareas) a una sección de su proyecto, o a ninguna. */
+  moveToSection: (id: string, sectionId: string | undefined) =>
+    atomically(async () => {
+      const task = await taskAdapter.findById(id)
+      if (!task) throw new Error(`Task not found: ${id}`)
+      const now = new Date().toISOString()
+      for (const taskId of await collectTree(id)) {
+        const current = (await taskAdapter.findById(taskId)) as Task
+        const next: Task = { ...current, sectionId, updatedAt: now }
+        await assertValid(next)
+        await taskAdapter.update(taskId, next)
+      }
+    }),
+
+  /** Completa o reactiva una tarea. */
+  setCompleted: (id: string, completed: boolean) =>
+    taskService.update(id, { status: completed ? "completed" : "active" }),
+
+  /** Descarte lógico (recuperable) de la tarea y sus subtareas. */
+  discard: (id: string) =>
+    atomically(async () => {
+      if (!(await taskAdapter.findById(id))) throw new Error(`Task not found: ${id}`)
+      const now = new Date().toISOString()
+      for (const taskId of await collectTree(id))
+        await taskAdapter.update(taskId, {
+          status: "discarded",
+          deletedAt: now,
+          updatedAt: now,
+        })
     }),
 
   update: (id: string, changes: TaskChanges) =>
@@ -101,6 +158,8 @@ export const taskService = {
         title: changes.title === undefined ? current.title : changes.title.trim(),
         updatedAt: now,
       }
+      if (typeof changes.description === "string")
+        next.description = changes.description.trim() || undefined
       if (changes.status !== undefined && changes.status !== current.status) {
         next.completedAt = changes.status === "completed" ? now : undefined
       }

@@ -2,15 +2,23 @@ import { atomically } from "@/adapters/database"
 import { projectAdapter } from "@/adapters/project.adapter"
 import { sectionAdapter } from "@/adapters/section.adapter"
 import { taskAdapter } from "@/adapters/task.adapter"
+import { ValidationError } from "./errors"
 import type {
   Section,
   SectionChanges,
   SectionInput,
 } from "@/models/section.model"
 
+const sortByPosition = <T extends { position: number; createdAt: string }>(
+  items: T[]
+) =>
+  [...items].sort(
+    (a, b) => a.position - b.position || a.createdAt.localeCompare(b.createdAt)
+  )
+
 function cleanName(name: string) {
   const value = name.trim()
-  if (!value) throw new Error("Section name is required")
+  if (!value) throw new ValidationError("Section name is required")
   return value
 }
 
@@ -53,7 +61,26 @@ export const sectionService = {
       await sectionAdapter.remove(id)
     }),
 
+  /** Sube o baja una sección entre las de su proyecto. */
+  move: (id: string, direction: "up" | "down") =>
+    atomically(async () => {
+      const section = await sectionAdapter.findById(id)
+      if (!section) throw new Error(`Section not found: ${id}`)
+      const siblings = sortByPosition(
+        await sectionAdapter.findByProjectId(section.projectId)
+      )
+      const from = siblings.findIndex((item) => item.id === id)
+      const to = direction === "up" ? from - 1 : from + 1
+      if (to < 0 || to >= siblings.length) return
+      ;[siblings[from], siblings[to]] = [siblings[to], siblings[from]]
+      // Renumera para que el orden sea estable aunque haya posiciones iguales.
+      const now = new Date().toISOString()
+      for (const [position, item] of siblings.entries())
+        if (item.position !== position)
+          await sectionAdapter.update(item.id, { position, updatedAt: now })
+    }),
+
   findById: (id: string) => sectionAdapter.findById(id),
-  findByProjectId: (projectId: string) =>
-    sectionAdapter.findByProjectId(projectId),
+  findByProjectId: async (projectId: string) =>
+    sortByPosition(await sectionAdapter.findByProjectId(projectId)),
 }
