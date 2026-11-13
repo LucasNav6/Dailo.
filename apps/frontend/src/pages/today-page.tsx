@@ -12,6 +12,9 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PageHeader } from "@/components/page-header";
 import { PeriodSheet } from "@/components/period-sheet";
+import { ErrorView } from "@/components/wrappers/error-view";
+import { EmptyState } from "@/components/wrappers/empty-state";
+import { LoadingView } from "@/components/wrappers/loading-view";
 
 const minutesNow = () => {
   const now = new Date();
@@ -27,7 +30,7 @@ export function TodayPage() {
   const ranges = getPeriods(preferences ?? defaultPreferences);
   const now = minutesNow();
 
-  if (isLoading) return <p className="sr-only" role="status">Cargando Hoy…</p>;
+  if (isLoading) return <LoadingView label="Cargando Hoy…" />;
 
   const run = async (action: () => Promise<unknown>) => {
     try {
@@ -87,16 +90,9 @@ export function TodayPage() {
         ))}
       </div>
 
-      <p role="alert" className="mb-3 text-sm text-destructive empty:hidden">{failed ? "No se pudo guardar el cambio. Probá de nuevo." : null}</p>
+      <ErrorView message={failed ? "No se pudo guardar el cambio. Probá de nuevo." : null} className="mb-3" />
 
-      {tasks.length === 0 && (
-        <div className="flex flex-col gap-2 py-4">
-          <h2 className="font-serif text-2xl font-semibold tracking-tight">
-            Nada para <em className="font-medium">hoy.</em>
-          </h2>
-          <p className="max-w-xs text-muted-foreground">Lo que planifiques o venza hoy aparece acá, por checkpoint.</p>
-        </div>
-      )}
+      {tasks.length === 0 && <EmptyState title="Nada para" em="hoy." description="Lo que planifiques o venza hoy aparece acá, por checkpoint." />}
 
       <div className="flex flex-col gap-5">
         {unscheduled.length > 0 && (

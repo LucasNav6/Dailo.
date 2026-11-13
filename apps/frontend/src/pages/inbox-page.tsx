@@ -5,6 +5,9 @@ import { PageHeader } from "@/components/page-header";
 import { Input } from "@/components/ui/input";
 import { TaskCircle } from "@/components/task-circle";
 import { TriageSheet } from "@/components/triage-sheet";
+import { ErrorView } from "@/components/wrappers/error-view";
+import { EmptyState } from "@/components/wrappers/empty-state";
+import { LoadingView } from "@/components/wrappers/loading-view";
 
 export function InboxPage() {
   const { tasks, isLoading, capture } = useInbox();
@@ -26,7 +29,7 @@ export function InboxPage() {
     }
   };
 
-  if (isLoading) return <p className="sr-only" role="status">Cargando Inbox…</p>;
+  if (isLoading) return <LoadingView label="Cargando Inbox…" />;
 
   return (
     <>
@@ -46,16 +49,11 @@ export function InboxPage() {
           enterKeyHint="done"
           className="h-[52px] pl-11"
         />
-        <p role="alert" className="mt-2 text-sm text-destructive empty:hidden">{failed ? "No se pudo guardar. Tu texto sigue acá, probá de nuevo." : null}</p>
+        <ErrorView message={failed ? "No se pudo guardar. Tu texto sigue acá, probá de nuevo." : null} className="mt-2" />
       </form>
 
       {tasks.length === 0 ? (
-        <div className="flex flex-col gap-2 py-10">
-          <h2 className="font-serif text-2xl font-semibold tracking-tight">
-            Inbox en <em className="font-medium">cero.</em>
-          </h2>
-          <p className="max-w-xs text-muted-foreground">Vaciaste tu mente. Mañana empezás liviano.</p>
-        </div>
+        <EmptyState title="Inbox en" em="cero." description="Vaciaste tu mente. Mañana empezás liviano." />
       ) : (
         <ul className="flex flex-col">
           {tasks.map((task) => (

@@ -10,6 +10,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { ErrorView } from "@/components/wrappers/error-view";
 
 type Props = {
   project: Project | null;
@@ -44,7 +45,7 @@ export function DeleteProjectDialog({ project, onClose, onConfirm }: Props) {
             Sus secciones se eliminan. Las tareas se conservan, sin proyecto ni sección.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <p role="alert" className="text-sm text-destructive empty:hidden">{failed ? "No se pudo eliminar. Probá de nuevo." : null}</p>
+        <ErrorView message={failed ? "No se pudo eliminar. Probá de nuevo." : null} />
         <AlertDialogFooter>
           <AlertDialogCancel disabled={busy}>Cancelar</AlertDialogCancel>
           <Button type="button" variant="destructive" onClick={() => void confirm()} disabled={busy}>

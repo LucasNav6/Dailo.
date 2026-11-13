@@ -5,6 +5,8 @@ import { useSomeday } from "@/hooks/use-someday";
 import { PageHeader } from "@/components/page-header";
 import { TaskCircle } from "@/components/task-circle";
 import { TriageSheet } from "@/components/triage-sheet";
+import { EmptyState } from "@/components/wrappers/empty-state";
+import { LoadingView } from "@/components/wrappers/loading-view";
 
 const ago = (iso: string) => {
   const text = formatDistanceToNow(new Date(iso), { locale: es, addSuffix: true });
@@ -16,7 +18,7 @@ export function SomedayPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = tasks.find((task) => task.id === selectedId) ?? null;
 
-  if (isLoading) return <p className="sr-only" role="status">Cargando Tal vez…</p>;
+  if (isLoading) return <LoadingView label="Cargando Tal vez…" />;
 
   return (
     <>
@@ -24,7 +26,7 @@ export function SomedayPage() {
       <p className="mb-4 text-[15px] leading-normal text-muted-foreground">Lo que tiene sentido pero no es para ahora. Revisalo una vez por semana.</p>
 
       {tasks.length === 0 ? (
-        <p className="py-6 text-muted-foreground">Todavía no guardaste ideas. Desde el Inbox, mové ahí lo que no aporta ahora.</p>
+        <EmptyState title="Sin ideas" em="guardadas." description="Desde el Inbox, mové acá lo que no aporta ahora." />
       ) : (
         <ul className="flex flex-col">
           {tasks.map((task) => (

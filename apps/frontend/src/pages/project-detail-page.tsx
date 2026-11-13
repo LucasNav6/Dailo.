@@ -22,6 +22,9 @@ import { pendingLabel, ProgressLine } from "@/components/project-progress";
 import { ProjectFormDialog } from "@/components/project-form-dialog";
 import { TaskEditDialog } from "@/components/task-edit-dialog";
 import { TaskRow, type TaskActions } from "@/components/task-row";
+import { ErrorView } from "@/components/wrappers/error-view";
+import { EmptyState } from "@/components/wrappers/empty-state";
+import { LoadingView } from "@/components/wrappers/loading-view";
 
 export function ProjectDetailPage() {
   const { projectId = "" } = useParams();
@@ -35,16 +38,14 @@ export function ProjectDetailPage() {
   const [failed, setFailed] = useState(false);
 
   const { overview } = p;
-  if (overview === undefined) return <p className="sr-only" role="status">Cargando proyecto…</p>;
+  if (overview === undefined) return <LoadingView label="Cargando proyecto…" />;
   if (overview === null)
     return (
-      <div className="flex max-w-2xl flex-col items-start gap-3 py-8">
-        <h2 className="text-lg font-semibold">Este proyecto no existe</h2>
-        <p className="text-sm text-muted-foreground">Puede que haya sido eliminado.</p>
+      <EmptyState title="Este proyecto" em="no existe." description="Puede que haya sido eliminado.">
         <Button asChild variant="secondary">
           <Link to="/projects">Volver a Proyectos</Link>
         </Button>
-      </div>
+      </EmptyState>
     );
 
   const { project, sections, unsectioned, bySection } = overview;
@@ -110,7 +111,7 @@ export function ProjectDetailPage() {
         </DropdownMenu>
       </header>
 
-      <p role="alert" className="mb-3 text-sm text-destructive empty:hidden">{failed ? "No se pudo guardar el cambio. Probá de nuevo." : null}</p>
+      <ErrorView message={failed ? "No se pudo guardar el cambio. Probá de nuevo." : null} className="mb-3" />
 
       <section aria-label="Tareas sin sección">
         {unsectioned.length === 0 && sections.length === 0 && total === 0 && (

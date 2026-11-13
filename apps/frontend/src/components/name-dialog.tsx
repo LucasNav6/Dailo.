@@ -3,6 +3,7 @@ import { ValidationError } from "@/services/errors";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ResponsiveDialog } from "@/components/responsive-dialog";
+import { ErrorView } from "@/components/wrappers/error-view";
 
 type Props = {
   open: boolean;
@@ -46,7 +47,7 @@ function Form({ label, initial, submitLabel, onSubmit, onDone }: Pick<Props, "la
   return (
     <form onSubmit={submit} className="flex flex-col gap-3 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
       <Input autoFocus value={name} onChange={(event) => setName(event.target.value)} aria-label={label} placeholder={label} className="h-11 text-base" />
-      <p role="alert" className="text-sm text-destructive empty:hidden">{error}</p>
+      <ErrorView message={error} />
       <div className="flex justify-end gap-2">
         <Button type="button" variant="ghost" onClick={onDone} disabled={busy}>
           Cancelar

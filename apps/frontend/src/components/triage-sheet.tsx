@@ -22,6 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/toast";
+import { ErrorView } from "@/components/wrappers/error-view";
 
 export type TriageSource = "inbox" | "someday";
 type Step = "choose" | "plan" | "someday";
@@ -111,7 +112,7 @@ function Flow({ task, source, onClose }: Props & { task: Task }) {
           onClick={() => void run(() => someday.discard(task.id), `Descartada: ${task.title}`, () => inbox.restore(task.id, back))}
         />
       </div>
-      <p role="alert" className="text-sm text-destructive empty:hidden">{error ? "No se pudo guardar. Probá de nuevo." : null}</p>
+      <ErrorView message={error ? "No se pudo guardar. Probá de nuevo." : null} />
     </div>
   );
 }
@@ -157,7 +158,7 @@ function SomedayForm({ task, busy, error, onBack, onSubmit }: FormProps & { onSu
         <Field id="sd-note" label="Nota" optional>
           <Textarea id="sd-note" rows={3} value={description} onChange={(event) => setDescription(event.target.value)} placeholder="¿Qué querías recordar?" className="resize-none" />
         </Field>
-        <p role="alert" className="text-sm text-destructive empty:hidden">{error ? "No se pudo guardar. Probá de nuevo." : null}</p>
+        <ErrorView message={error ? "No se pudo guardar. Probá de nuevo." : null} />
       </div>
       <Footer>
         <Button type="submit" size="lg" className="w-full" disabled={busy || !title.trim()}>
@@ -231,7 +232,7 @@ function PlanForm({ task, busy, error, onBack, onSubmit }: FormProps & { onSubmi
             Agregar subtarea
           </Button>
         </div>
-        <p role="alert" className="text-sm text-destructive empty:hidden">{error ? "No se pudo guardar. Probá de nuevo." : null}</p>
+        <ErrorView message={error ? "No se pudo guardar. Probá de nuevo." : null} />
       </div>
       <Footer>
         <Button type="submit" size="lg" className="w-full" disabled={busy || !project || !title.trim()} aria-busy={busy}>

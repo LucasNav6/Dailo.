@@ -2,12 +2,14 @@ import { useTrash } from "@/hooks/use-trash";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/toast";
+import { EmptyState } from "@/components/wrappers/empty-state";
+import { LoadingView } from "@/components/wrappers/loading-view";
 
 export function TrashPage() {
   const { tasks, isLoading, restore } = useTrash();
   const notify = useToast();
 
-  if (isLoading) return <p className="sr-only" role="status">Cargando descartados…</p>;
+  if (isLoading) return <LoadingView label="Cargando descartados…" />;
 
   const restoreTask = async (id: string, title: string) => {
     try {
@@ -22,7 +24,7 @@ export function TrashPage() {
     <>
       <PageHeader eyebrow={`Descartados · ${tasks.length}`} title="Lo que" em="soltaste." />
       {tasks.length === 0 ? (
-        <p className="py-6 text-muted-foreground">No hay nada descartado.</p>
+        <EmptyState title="Nada" em="descartado." description="Lo que descartes se guarda acá por si querés recuperarlo." />
       ) : (
         <ul className="flex flex-col divide-y">
           {tasks.map((task) => (

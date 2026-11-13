@@ -9,6 +9,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { PageHeader } from "@/components/page-header";
 import { ProjectFormDialog } from "@/components/project-form-dialog";
 import { ProgressLine, pendingLabel } from "@/components/project-progress";
+import { EmptyState } from "@/components/wrappers/empty-state";
+import { LoadingView } from "@/components/wrappers/loading-view";
 
 export function ProjectsPage() {
   const { projects, isLoading, createProject, updateProject, removeProject } = useProjects();
@@ -16,7 +18,7 @@ export function ProjectsPage() {
   const [form, setForm] = useState<"new" | ProjectWithProgress | null>(null);
   const [deleting, setDeleting] = useState<ProjectWithProgress | null>(null);
 
-  if (isLoading) return <p className="sr-only" role="status">Cargando proyectos…</p>;
+  if (isLoading) return <LoadingView label="Cargando proyectos…" />;
 
   return (
     <>
@@ -30,15 +32,12 @@ export function ProjectsPage() {
         )}
 
         {projects.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 px-6 py-16 text-center">
-            <RiFolderLine className="size-9 text-muted-foreground" aria-hidden />
-            <h2 className="text-lg font-semibold">Todavía no tenés proyectos</h2>
-            <p className="max-w-xs text-sm text-muted-foreground">Creá el primero para agrupar tus tareas.</p>
+          <EmptyState Icon={RiFolderLine} title="Todavía no tenés" em="proyectos." description="Creá el primero para agrupar tus tareas.">
             <Button type="button" onClick={() => setForm("new")}>
               <RiAddLine aria-hidden />
               Crear proyecto
             </Button>
-          </div>
+          </EmptyState>
         ) : (
           <ul className="flex flex-col divide-y divide-sidebar-border">
             {projects.map((project) => (
