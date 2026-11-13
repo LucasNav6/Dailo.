@@ -92,6 +92,7 @@ export const taskService = {
         position: Date.now(),
         ...input,
         title: input.title.trim(),
+        description: input.description?.trim() || undefined,
         id: crypto.randomUUID(),
         createdAt: now,
         updatedAt: now,
@@ -113,6 +114,20 @@ export const taskService = {
         sectionId: parent.sectionId,
         status: "active",
       })
+    }),
+
+  /** Mueve una tarea (y sus subtareas) a una sección de su proyecto, o a ninguna. */
+  moveToSection: (id: string, sectionId: string | undefined) =>
+    atomically(async () => {
+      const task = await taskAdapter.findById(id)
+      if (!task) throw new Error(`Task not found: ${id}`)
+      const now = new Date().toISOString()
+      for (const taskId of await collectTree(id)) {
+        const current = (await taskAdapter.findById(taskId)) as Task
+        const next: Task = { ...current, sectionId, updatedAt: now }
+        await assertValid(next)
+        await taskAdapter.update(taskId, next)
+      }
     }),
 
   /** Completa o reactiva una tarea. */
@@ -143,6 +158,8 @@ export const taskService = {
         title: changes.title === undefined ? current.title : changes.title.trim(),
         updatedAt: now,
       }
+      if (typeof changes.description === "string")
+        next.description = changes.description.trim() || undefined
       if (changes.status !== undefined && changes.status !== current.status) {
         next.completedAt = changes.status === "completed" ? now : undefined
       }

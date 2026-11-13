@@ -198,3 +198,24 @@ describe("tareas de proyecto", () => {
     expect((await projectService.getOverview(project.id))?.unsectioned.map((n) => n.task.id)).toEqual([task.id])
   })
 })
+
+describe("mover a sección", () => {
+  it("mueve la tarea y sus subtareas, y valida la sección", async () => {
+    const project = await projectService.create({ name: "P" })
+    const other = await projectService.create({ name: "Otro" })
+    const section = await sectionService.create({ projectId: project.id, name: "S" })
+    const foreign = await sectionService.create({ projectId: other.id, name: "X" })
+    const parent = await taskService.create({ title: "madre", projectId: project.id, status: "active" })
+    const child = await taskService.createSubtask(parent.id, { title: "hija" })
+
+    await taskService.moveToSection(parent.id, section.id)
+    expect((await taskService.findById(parent.id))?.sectionId).toBe(section.id)
+    expect((await taskService.findById(child.id))?.sectionId).toBe(section.id)
+
+    await expect(taskService.moveToSection(parent.id, foreign.id)).rejects.toThrow()
+    expect((await taskService.findById(child.id))?.sectionId).toBe(section.id)
+
+    await taskService.moveToSection(parent.id, undefined)
+    expect((await taskService.findById(child.id))?.sectionId).toBeUndefined()
+  })
+})
