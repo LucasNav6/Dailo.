@@ -4,10 +4,10 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/models/task.model";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-/** Ancho de cada panel de acción al deslizar (mobile), como en Mail de iOS. */
-const PANEL = 76;
-const ACTIONS_WIDTH = 3 * PANEL;
+/** Ancho que ocupan las tres acciones al deslizar (mobile): 3 botones de 44 px, huecos y margen. */
+const ACTIONS_WIDTH = 3 * 44 + 2 * 4 + 12;
 
 type Props = {
   task: Task;
@@ -20,8 +20,8 @@ type Props = {
 
 /**
  * Fila de Inbox. El círculo tacha/destacha sin sacar la tarea.
- * Mobile: deslizar de derecha a izquierda revela tres paneles (Planificar, Tal vez, Descartar).
- * Desktop: las tres acciones son botones; muestran su texto al pasar el mouse.
+ * Mobile: deslizar de derecha a izquierda revela tres botones ghost (Planificar, Tal vez, Descartar).
+ * Desktop: los mismos tres botones, siempre visibles, con tooltip.
  */
 export function InboxRow({ task, onOpen, onToggle, onPlan, onSomeday, onDiscard }: Props) {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
@@ -66,14 +66,14 @@ export function InboxRow({ task, onOpen, onToggle, onPlan, onSomeday, onDiscard 
     <li className="relative overflow-hidden">
       {showSwipe && (
         <div
-          className="absolute inset-y-0 right-0 flex"
+          className="absolute inset-y-0 right-0 flex items-center justify-end gap-1 pr-3"
           style={{ width: ACTIONS_WIDTH }}
           // Cerrada, la barra de acciones no es alcanzable ni por teclado ni por lector de pantalla.
           inert={offset === 0}
         >
-          <SwipeAction Icon={RiCalendarLine} label="Planificar" tone="bg-secondary text-foreground" onClick={onPlan} />
-          <SwipeAction Icon={RiLightbulbLine} label="Tal vez" tone="bg-muted text-muted-foreground" onClick={onSomeday} />
-          <SwipeAction Icon={RiDeleteBinLine} label="Descartar" tone="bg-accent text-destructive" onClick={onDiscard} />
+          <GhostAction Icon={RiCalendarLine} label="Planificar" onClick={onPlan} />
+          <GhostAction Icon={RiLightbulbLine} label="Tal vez" onClick={onSomeday} />
+          <GhostAction Icon={RiDeleteBinLine} label="Descartar" destructive onClick={onDiscard} />
         </div>
       )}
       <div
@@ -111,9 +111,9 @@ export function InboxRow({ task, onOpen, onToggle, onPlan, onSomeday, onDiscard 
         </button>
         {isDesktop && !done && (
           <div className="flex shrink-0 items-center gap-1 self-center">
-            <DesktopAction Icon={RiCalendarLine} label="Planificar" onClick={onPlan} />
-            <DesktopAction Icon={RiLightbulbLine} label="Tal vez" onClick={onSomeday} />
-            <DesktopAction Icon={RiDeleteBinLine} label="Descartar" destructive onClick={onDiscard} />
+            <GhostAction Icon={RiCalendarLine} label="Planificar" tooltip onClick={onPlan} />
+            <GhostAction Icon={RiLightbulbLine} label="Tal vez" tooltip onClick={onSomeday} />
+            <GhostAction Icon={RiDeleteBinLine} label="Descartar" destructive tooltip onClick={onDiscard} />
           </div>
         )}
       </div>
@@ -121,37 +121,27 @@ export function InboxRow({ task, onOpen, onToggle, onPlan, onSomeday, onDiscard 
   );
 }
 
-/** Panel de acción de mobile: ícono y texto debajo, en tonos apagados. */
-function SwipeAction({ Icon, label, tone, onClick }: { Icon: RemixiconComponentType; label: string; tone: string; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      style={{ width: PANEL }}
-      className={cn("flex h-full flex-col items-center justify-center gap-1 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring", tone)}
-    >
-      <Icon className="size-5" aria-hidden />
-      {label}
-    </button>
-  );
-}
+type ActionProps = {
+  Icon: RemixiconComponentType;
+  label: string;
+  destructive?: boolean;
+  /** Muestra el nombre en un tooltip (solo desktop; en mobile no hay hover). */
+  tooltip?: boolean;
+  onClick: () => void;
+};
 
-/** Botón de escritorio: solo ícono; el texto aparece al pasar el mouse. */
-function DesktopAction({ Icon, label, destructive, onClick }: { Icon: RemixiconComponentType; label: string; destructive?: boolean; onClick: () => void }) {
-  return (
-    <Button
-      type="button"
-      variant="outline"
-      aria-label={label}
-      onClick={onClick}
-      className={cn(
-        "group h-11 w-11 shrink-0 gap-2 overflow-hidden rounded-full px-0 transition-[width,padding] hover:w-auto hover:px-4",
-        destructive && "text-destructive"
-      )}
-    >
+/** Botón ghost de solo ícono: sin borde y con un fondo sutil al pasar el mouse. */
+function GhostAction({ Icon, label, destructive, tooltip, onClick }: ActionProps) {
+  const button = (
+    <Button type="button" variant="ghost" size="icon" aria-label={label} onClick={onClick} className={cn("shrink-0", destructive ? "text-destructive" : "text-muted-foreground")}>
       <Icon className="size-5" aria-hidden />
-      <span className="hidden whitespace-nowrap group-hover:inline group-focus-visible:inline">{label}</span>
     </Button>
+  );
+  if (!tooltip) return button;
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{button}</TooltipTrigger>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
   );
 }

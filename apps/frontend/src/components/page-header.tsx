@@ -20,7 +20,7 @@ export function PageHeader({ eyebrow, title, em }: Props) {
           {title} <em className="font-medium">{em}</em>
         </h1>
       </div>
-      <Button asChild variant="outline" size="icon" className="shrink-0 lg:hidden">
+      <Button asChild variant="ghost" size="icon" className="shrink-0 text-muted-foreground lg:hidden">
         <Link to="/settings" aria-label="Configuración">
           <RiSettings3Line aria-hidden />
         </Link>
