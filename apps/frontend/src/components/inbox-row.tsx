@@ -5,10 +5,9 @@ import { cn } from "@/lib/utils";
 import type { Task } from "@/models/task.model";
 import { Button } from "@/components/ui/button";
 
-const ACTION = 44;
-const GAP = 4;
-/** Ancho que ocupan las tres acciones al deslizar (mobile). */
-const ACTIONS_WIDTH = 3 * ACTION + 2 * GAP + 8;
+/** Ancho de cada panel de acción al deslizar (mobile), como en Mail de iOS. */
+const PANEL = 76;
+const ACTIONS_WIDTH = 3 * PANEL;
 
 type Props = {
   task: Task;
@@ -21,7 +20,7 @@ type Props = {
 
 /**
  * Fila de Inbox. El círculo tacha/destacha sin sacar la tarea.
- * Mobile: deslizar de derecha a izquierda muestra Planificar, Tal vez y Descartar.
+ * Mobile: deslizar de derecha a izquierda revela tres paneles (Planificar, Tal vez, Descartar).
  * Desktop: las tres acciones son botones; muestran su texto al pasar el mouse.
  */
 export function InboxRow({ task, onOpen, onToggle, onPlan, onSomeday, onDiscard }: Props) {
@@ -63,24 +62,18 @@ export function InboxRow({ task, onOpen, onToggle, onPlan, onSomeday, onDiscard 
     if (!done) onOpen();
   };
 
-  const actions = (
-    <>
-      <ActionButton Icon={RiCalendarLine} label="Planificar" onClick={onPlan} />
-      <ActionButton Icon={RiLightbulbLine} label="Tal vez" onClick={onSomeday} />
-      <ActionButton Icon={RiDeleteBinLine} label="Descartar" destructive onClick={onDiscard} />
-    </>
-  );
-
   return (
     <li className="relative overflow-hidden">
       {showSwipe && (
         <div
-          className="absolute inset-y-0 right-0 flex items-center justify-end gap-1 pr-1.5"
+          className="absolute inset-y-0 right-0 flex"
           style={{ width: ACTIONS_WIDTH }}
           // Cerrada, la barra de acciones no es alcanzable ni por teclado ni por lector de pantalla.
           inert={offset === 0}
         >
-          {actions}
+          <SwipeAction Icon={RiCalendarLine} label="Planificar" tone="bg-secondary text-foreground" onClick={onPlan} />
+          <SwipeAction Icon={RiLightbulbLine} label="Tal vez" tone="bg-muted text-muted-foreground" onClick={onSomeday} />
+          <SwipeAction Icon={RiDeleteBinLine} label="Descartar" tone="bg-accent text-destructive" onClick={onDiscard} />
         </div>
       )}
       <div
@@ -116,13 +109,36 @@ export function InboxRow({ task, onOpen, onToggle, onPlan, onSomeday, onDiscard 
         >
           <span className={cn(done && "text-muted-foreground line-through decoration-1")}>{task.title}</span>
         </button>
-        {isDesktop && !done && <div className="flex shrink-0 items-center gap-1 self-center">{actions}</div>}
+        {isDesktop && !done && (
+          <div className="flex shrink-0 items-center gap-1 self-center">
+            <DesktopAction Icon={RiCalendarLine} label="Planificar" onClick={onPlan} />
+            <DesktopAction Icon={RiLightbulbLine} label="Tal vez" onClick={onSomeday} />
+            <DesktopAction Icon={RiDeleteBinLine} label="Descartar" destructive onClick={onDiscard} />
+          </div>
+        )}
       </div>
     </li>
   );
 }
 
-function ActionButton({ Icon, label, destructive, onClick }: { Icon: RemixiconComponentType; label: string; destructive?: boolean; onClick: () => void }) {
+/** Panel de acción de mobile: ícono y texto debajo, en tonos apagados. */
+function SwipeAction({ Icon, label, tone, onClick }: { Icon: RemixiconComponentType; label: string; tone: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      style={{ width: PANEL }}
+      className={cn("flex h-full flex-col items-center justify-center gap-1 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring", tone)}
+    >
+      <Icon className="size-5" aria-hidden />
+      {label}
+    </button>
+  );
+}
+
+/** Botón de escritorio: solo ícono; el texto aparece al pasar el mouse. */
+function DesktopAction({ Icon, label, destructive, onClick }: { Icon: RemixiconComponentType; label: string; destructive?: boolean; onClick: () => void }) {
   return (
     <Button
       type="button"
@@ -139,4 +155,3 @@ function ActionButton({ Icon, label, destructive, onClick }: { Icon: RemixiconCo
     </Button>
   );
 }
-
