@@ -16,6 +16,19 @@ import { ProjectsNoTasksView } from "./views/no-tasks.view";
 import { ProjectsNotFoundView } from "./views/not-found.view";
 import { ProjectsOptionsView } from "./views/options.view";
 import { ProjectsScopeSheetView } from "./views/scope-sheet.view";
+import { ProjectsSectionsView } from "./views/sections.view";
+import { ProjectsReorderTaskView } from "./views/reorder-task.view";
+import { ProjectsReorderSectionView } from "./views/reorder-section.view";
+import { ProjectsSectionNewView } from "./views/section-new.view";
+import { ProjectsSectionNewWrittenView } from "./views/section-new-written.view";
+import { ProjectsSectionDuplicateView } from "./views/section-duplicate.view";
+import { ProjectsSectionOptionsView } from "./views/section-options.view";
+import { ProjectsSectionRenameView } from "./views/section-rename.view";
+import { ProjectsSectionDeleteView } from "./views/section-delete.view";
+import { ProjectsSectionEmptyView } from "./views/section-empty.view";
+import { ProjectsSectionsCollapsedView } from "./views/sections-collapsed.view";
+import { ProjectsTaskMoveSectionView } from "./views/task-move-section.view";
+import { ProjectsTaskAddSectionView } from "./views/task-add-section.view";
 import { ProjectsSubtasksView } from "./views/subtasks.view";
 import { ProjectsTaskDetailView } from "./views/task-detail.view";
 import { ProjectsTaskNotFoundView } from "./views/task-not-found.view";
@@ -41,6 +54,19 @@ export const projectsFeature: Feature = {
     { id: "complete-with-subtasks", title: "Completar con subtareas", source: "D-02", component: ProjectsCompleteWithSubtasksView, nav: "projects" },
     { id: "completed", title: "Completadas desplegadas", source: "N-08", component: ProjectsCompletedView, nav: "projects" },
     { id: "menu", title: "Menú del proyecto", source: "D-09", component: ProjectsMenuView, nav: "projects" },
+    { id: "sections", title: "Proyecto con secciones", source: "P-01", component: ProjectsSectionsView, nav: "projects", height: 1000 },
+    { id: "reorder-task", title: "Ordenar tarea", source: "P-02", component: ProjectsReorderTaskView, nav: "projects", height: 1000 },
+    { id: "reorder-section", title: "Ordenar sección", source: "P-03", component: ProjectsReorderSectionView, nav: "projects" },
+    { id: "section-new", title: "Nueva sección", source: "P-04", component: ProjectsSectionNewView, nav: "projects" },
+    { id: "section-new-written", title: "Nueva sección escrita", source: "P-05", component: ProjectsSectionNewWrittenView, nav: "projects" },
+    { id: "section-duplicate", title: "Sección con nombre repetido", source: "P-06", component: ProjectsSectionDuplicateView, nav: "projects" },
+    { id: "section-options", title: "Opciones de sección", source: "P-07", component: ProjectsSectionOptionsView, nav: "projects" },
+    { id: "section-rename", title: "Renombrar sección", source: "P-08", component: ProjectsSectionRenameView, nav: "projects" },
+    { id: "section-delete", title: "Eliminar sección", source: "P-09", component: ProjectsSectionDeleteView, nav: "projects" },
+    { id: "section-empty", title: "Sección vacía", source: "P-10", component: ProjectsSectionEmptyView, nav: "projects" },
+    { id: "sections-collapsed", title: "Secciones plegadas", source: "P-11", component: ProjectsSectionsCollapsedView, nav: "projects" },
+    { id: "task-move-section", title: "Mover tarea a sección", source: "P-12", component: ProjectsTaskMoveSectionView, nav: "projects" },
+    { id: "task-add-section", title: "Añadir tarea a sección", source: "P-13", component: ProjectsTaskAddSectionView, nav: "projects" },
     { id: "task-detail", title: "Detalle de tarea", source: "V-03e", component: ProjectsTaskDetailView, nav: false, height: 877 },
     { id: "attachment-states", title: "Estados de adjuntos", source: "D-04", component: ProjectsAttachmentStatesView, nav: false },
     { id: "task-not-found", title: "Tarea no existe", source: "N-09", component: ProjectsTaskNotFoundView, nav: "today" },

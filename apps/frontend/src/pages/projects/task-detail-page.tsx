@@ -22,6 +22,10 @@ import { PropertyRow } from "@/components/molecules/property-row";
 import { SheetHeading } from "@/components/molecules/sheet-heading";
 import { SubtaskRow } from "@/components/molecules/subtask-row";
 import { ComposeForm } from "@/components/organisms/compose-form";
+import { MoveToSectionSheet } from "@/features/projects/components/move-to-section-sheet";
+import { useCreateSection } from "@/features/projects/hooks/create-section.hook";
+import { useSections } from "@/features/projects/hooks/list-sections.hook";
+import { useMoveTaskToSection } from "@/features/projects/hooks/move-task-to-section.hook";
 import { useAddSubtask } from "@/features/projects/hooks/add-subtask.hook";
 import { useAttachFiles } from "@/features/projects/hooks/attach-file.hook";
 import { useDeleteTask } from "@/features/projects/hooks/delete-task.hook";
@@ -131,6 +135,10 @@ export function TaskDetailPage() {
   const deleteTask = useDeleteTask();
   const attachFiles = useAttachFiles();
   const removeAttachment = useRemoveAttachment();
+  const { sections } = useSections(projectId);
+  const createSection = useCreateSection(projectId);
+  const moveToSection = useMoveTaskToSection();
+  const [moving, setMoving] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
   const [addingSubtask, setAddingSubtask] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -151,6 +159,8 @@ export function TaskDetailPage() {
   const subtasks = tasks.filter((sub) => sub.parentId === task.id).sort((a, b) => a.position - b.position);
   const doneSubtasks = subtasks.filter((sub) => sub.status === "completed").length;
   const planLabel = task.plannedDate ? `${dayLabel(task.plannedDate)}${task.timeOfDay ? ` · ${PERIODS.find((p) => p.key === task.timeOfDay)?.label}` : ""}` : undefined;
+
+  const currentSection = sections.find((section) => section.id === task.sectionId);
 
   const toggleEssential = async (value: boolean) => setNotice(await setEssential(task.id, value));
   const onFiles = async (files: FileList | null) => {
@@ -205,6 +215,9 @@ export function TaskDetailPage() {
         <PropertyRow icon={<RiStarLine aria-hidden />} label="Esencial ese día">
           <Switch aria-label="Esencial ese día" checked={task.essential} disabled={!task.plannedDate} onCheckedChange={(value) => void toggleEssential(value)} />
         </PropertyRow>
+        <PropertyRow icon={<RiFolderLine aria-hidden />} label="Sección">
+          <Chip aria-pressed={undefined} aria-label={`Sección: ${currentSection?.name ?? "sin sección"}`} onClick={() => setMoving(true)}>{currentSection?.name ?? "Sin sección"}</Chip>
+        </PropertyRow>
         <PropertyRow icon={<RiAlbumLine aria-hidden />} label="Fecha límite">
           <DatePopover label="Fecha límite" value={task.deadline} onChange={(value) => void setDeadline(task.id, value)} />
         </PropertyRow>
@@ -245,6 +258,24 @@ export function TaskDetailPage() {
           />
         )}
       </BottomSheet>
+
+      <MoveToSectionSheet
+        key={`${task.id}-${task.sectionId ?? "none"}-${moving}`}
+        open={moving}
+        onOpenChange={setMoving}
+        taskTitle={task.title}
+        sections={sections}
+        current={currentSection?.id}
+        projectName={project?.name ?? ""}
+        onMove={async (sectionId) => {
+          await moveToSection(task.id, sectionId);
+          setMoving(false);
+        }}
+        onCreateSection={async (name) => {
+          const result = await createSection(name);
+          return typeof result === "string" ? result : undefined;
+        }}
+      />
 
       <BottomSheet open={menu} onOpenChange={setMenu} label="Opciones de la tarea" className="gap-2 pb-7">
         <SheetHeading eyebrow="Tarea" title={task.title} />

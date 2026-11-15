@@ -12,9 +12,11 @@ type ComposeFormProps = {
   onSave: (title: string, description: string) => Promise<string | void>;
   descriptionLimit?: number;
   withDescription?: boolean;
+  chip?: React.ReactNode;
+  note?: string;
 };
 
-function ComposeForm({ placeholder, initialTitle = "", initialDescription = "", onSave, descriptionLimit = 250, withDescription = true }: ComposeFormProps) {
+function ComposeForm({ placeholder, initialTitle = "", initialDescription = "", onSave, descriptionLimit = 250, withDescription = true, chip, note }: ComposeFormProps) {
   const [title, setTitle] = useState(initialTitle)
   const [description, setDescription] = useState(initialDescription)
   const [showDescription, setShowDescription] = useState(initialDescription.length > 0)
@@ -76,17 +78,21 @@ function ComposeForm({ placeholder, initialTitle = "", initialDescription = "", 
           <InlineError>{error}</InlineError>
         </div>
       )}
-      <div className="flex items-center gap-1.5 pt-3">
-        {withDescription && <IconButton
-          aria-label="Añadir descripción"
-          aria-pressed={showDescription}
-          type="button"
-          onClick={() => setShowDescription((value) => !value)}
-          className={showDescription ? "bg-selected text-foreground" : title ? "text-foreground" : "text-subtle"}
-        >
-          <RiAlignLeft aria-hidden />
-        </IconButton>}
-        <span className="flex-1" />
+      <div className={cn("flex items-center gap-1.5", note ? "justify-between" : "pt-3")}>
+        {note && <span className="pl-0.5 text-[13px] text-muted-foreground">{note}</span>}
+        {withDescription && (
+          <IconButton
+            aria-label="Añadir descripción"
+            aria-pressed={showDescription}
+            type="button"
+            onClick={() => setShowDescription((value) => !value)}
+            className={showDescription ? "bg-selected text-foreground" : title ? "text-foreground" : "text-subtle"}
+          >
+            <RiAlignLeft aria-hidden />
+          </IconButton>
+        )}
+        {chip}
+        {!note && <span className="flex-1" />}
         <Button type="submit" variant="ghost" disabled={!canSave} className={cn("h-11 px-2 disabled:opacity-100", canSave ? "text-foreground" : "text-faint")}>
           Guardar
         </Button>

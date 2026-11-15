@@ -14,9 +14,12 @@ type TaskRowProps = {
   className?: string
   id?: string
   onOpen?: () => void
+  handle?: ReactNode
+  style?: React.CSSProperties
+  ref?: React.Ref<HTMLLIElement>
 };
 
-function TaskRow({ title, checked = false, onCheckedChange, time, timeIcon, meta, className, id, onOpen }: TaskRowProps) {
+function TaskRow({ title, checked = false, onCheckedChange, time, timeIcon, meta, className, id, onOpen, handle, style, ref }: TaskRowProps) {
   const checkId = id ?? `task-${title}`
   const checkRef = useRef<HTMLSpanElement>(null)
   const animating = useCompletionEffect(checked, checkRef)
@@ -27,7 +30,7 @@ function TaskRow({ title, checked = false, onCheckedChange, time, timeIcon, meta
     </span>
   )
   return (
-    <li className={cn("flex list-none items-start gap-[15px] py-[9px] pl-[5px] text-[17px] leading-[1.35] text-foreground", className)}>
+    <li ref={ref} style={style} className={cn("flex list-none items-start gap-[15px] py-[9px] pl-[5px] text-[17px] leading-[1.35] text-foreground", className)}>
       <span ref={checkRef} className={cn("mt-px inline-flex", animating && "anim-pop")}>
         <TaskCheck id={checkId} checked={checked} onCheckedChange={(value) => onCheckedChange?.(value === true)} aria-label={`Completar ${title}`} />
       </span>
@@ -54,6 +57,7 @@ function TaskRow({ title, checked = false, onCheckedChange, time, timeIcon, meta
           {time}
         </span>
       )}
+      {handle}
     </li>
   )
 }
