@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { LinkifiedText } from "@/components/atoms/linkified-text"
 import { TaskCheck } from "@/components/atoms/task-check"
 import { cn } from "@/lib/utils"
 
@@ -32,7 +33,7 @@ function TaskRow({ title, checked = false, onCheckedChange, time, timeIcon, meta
           onClick={onOpen}
           className={cn("line-clamp-2 min-w-0 flex-1 rounded-lg text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50", checked && "text-muted-foreground line-through decoration-wavy decoration-1")}
         >
-          {title}
+          <LinkifiedText text={title} />
         </button>
       ) : (
         <label
@@ -42,7 +43,7 @@ function TaskRow({ title, checked = false, onCheckedChange, time, timeIcon, meta
             checked && "text-muted-foreground line-through decoration-wavy decoration-1"
           )}
         >
-          {title}
+          <LinkifiedText text={title} />
         </label>
       )}
       {meta && <span className="shrink-0 self-center whitespace-nowrap">{meta}</span>}

@@ -1,3 +1,4 @@
+import { LinkifiedText } from "@/components/atoms/linkified-text"
 import { TaskCheck } from "@/components/atoms/task-check"
 import { cn } from "@/lib/utils"
 
@@ -11,7 +12,7 @@ function SubtaskRow({ title, checked = false, large = false, className, onChecke
         aria-label={`Completar ${title}`}
         className={large ? undefined : "size-[18px] [&_svg]:size-2.5"}
       />
-      <span className={cn(checked ? "text-muted-foreground line-through decoration-wavy decoration-1" : "text-foreground")}>{title}</span>
+      <span className={cn(checked ? "text-muted-foreground line-through decoration-wavy decoration-1" : "text-foreground")}><LinkifiedText text={title} /></span>
     </li>
   )
 }

@@ -4,6 +4,7 @@ import { es } from "date-fns/locale";
 import { RiAddLine, RiAlbumLine, RiCalendarLine, RiCloseLine, RiDeleteBinLine, RiFolderLine, RiStarLine } from "@remixicon/react";
 import { Button } from "@/components/atoms/button";
 import { Chip } from "@/components/atoms/chip";
+import { hasLink, LinkifiedText } from "@/components/atoms/linkified-text";
 import { IconButton } from "@/components/atoms/icon-button";
 import { Switch } from "@/components/atoms/switch";
 import { PageColumn } from "@/components/layouts/page-column";
@@ -48,17 +49,40 @@ const PERIODS: { key: TimeOfDay; label: string }[] = [
 const formatSize = (bytes: number) =>
   bytes < 1024 * 1024 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : `${(bytes / 1024 / 1024).toFixed(1).replace(".", ",")} MB`;
 
-/** Campo de texto que crece con su contenido y guarda al salir. */
+/**
+ * Campo de texto que crece con su contenido y guarda al salir. Con enlaces muestra el texto con "Enlace"
+ * y pasa a edición al tocar fuera del enlace (o con el teclado).
+ */
 function AutoField({ value, onCommit, label, className, placeholder }: { value: string; onCommit: (value: string) => void; label: string; className: string; placeholder?: string }) {
   const [draft, setDraft] = useState(value);
+  const [editing, setEditing] = useState(false);
+
+  if (!editing && hasLink(value)) {
+    return (
+      <div
+        role="textbox"
+        aria-label={label}
+        tabIndex={0}
+        onClick={() => setEditing(true)}
+        onFocus={(event) => event.target === event.currentTarget && setEditing(true)}
+        className={`w-full cursor-text whitespace-pre-wrap break-words outline-none ${className}`}
+      >
+        <LinkifiedText text={value} />
+      </div>
+    );
+  }
   return (
     <textarea
       aria-label={label}
       placeholder={placeholder}
       rows={1}
+      autoFocus={editing}
       value={draft}
       onChange={(event) => setDraft(event.target.value)}
-      onBlur={() => (draft !== value ? onCommit(draft) : undefined)}
+      onBlur={() => {
+        setEditing(false);
+        if (draft !== value) onCommit(draft);
+      }}
       className={`field-sizing-content w-full resize-none bg-transparent outline-none placeholder:text-faint ${className}`}
     />
   );
