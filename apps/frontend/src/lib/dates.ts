@@ -38,3 +38,23 @@ export function dateLabel(value: string) {
   const text = format(fromISODate(value), "EEE d MMM", { locale: es }).replace(/\./g, "");
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
+
+const lower = (value: string) => value.charAt(0).toLowerCase() + value.slice(1);
+
+export function plannedLabel(value: string, today: Date = new Date()) {
+  const diff = differenceInCalendarDays(fromISODate(value), today);
+  if (diff === 0) return "Hoy";
+  if (diff === 1) return "Mañana";
+  if (Math.abs(diff) <= 6) return format(fromISODate(value), "EEE d", { locale: es }).replace(/^./, (c) => c.toUpperCase()).replace(".", "");
+  return format(fromISODate(value), "d MMM", { locale: es }).replace(".", "");
+}
+
+export function deadlineInfo(value: string, today: Date = new Date()) {
+  const diff = differenceInCalendarDays(fromISODate(value), today);
+  const date = fromISODate(value);
+  const weekday = format(date, "EEE d", { locale: es }).replace(".", "");
+  const urgent = diff <= 2;
+  if (diff < 0) return { label: `Venció el ${weekday}`, urgent };
+  if (diff <= 6) return { label: `Límite ${weekday}`, urgent };
+  return { label: `Límite ${lower(format(date, "d MMM", { locale: es }).replace(".", ""))}`, urgent };
+}

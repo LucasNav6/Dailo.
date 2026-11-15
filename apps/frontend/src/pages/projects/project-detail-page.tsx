@@ -19,11 +19,13 @@ import { SubtaskToggle } from "@/components/molecules/subtask-toggle";
 import { TaskRow } from "@/components/molecules/task-row";
 import { ComposeForm } from "@/components/organisms/compose-form";
 import { AddTask } from "@/features/projects/components/add-task";
+import { TaskDates } from "@/features/projects/components/task-dates";
+import { taskDates } from "@/features/projects/lib/task-dates";
 import { DropIndicator } from "@/features/projects/components/drop-indicator";
 import { ProjectHeading } from "@/features/projects/components/project-heading";
 import { ProjectSectionHeader } from "@/features/projects/components/project-section-header";
 import { EmptySectionNote, NewSection, SectionAddTask } from "@/features/projects/components/section-actions";
-import { DRAGGED_ROW, PROJECT_ROW } from "@/features/projects/lib/drag-styles";
+import { DATED_ROW, DRAGGED_ROW, PROJECT_ROW } from "@/features/projects/lib/drag-styles";
 import { useAddTask } from "@/features/projects/hooks/add-task.hook";
 import { useCompleteTaskWithSubtasks } from "@/features/projects/hooks/complete-task-with-subtasks.hook";
 import { useCreateSection } from "@/features/projects/hooks/create-section.hook";
@@ -175,6 +177,7 @@ export function ProjectDetailPage() {
     const subs = subtasksOf(task);
     const open = expanded.includes(task.id) && !taskDragging;
     const dragged = taskDrag.drag?.id === task.id;
+    const dates = taskDates(task);
     const meta = subs.length > 0 && (
       <button
         type="button"
@@ -196,7 +199,8 @@ export function ProjectDetailPage() {
           title={task.title}
           checked={task.status === "completed"}
           onCheckedChange={(done) => toggle(task, done)}
-          className={cn(PROJECT_ROW, dragged && DRAGGED_ROW, (sectionDragging || (taskDragging && !dragged)) && "opacity-55")}
+          subtitle={dates.planned || dates.deadline ? <TaskDates {...dates} /> : undefined}
+          className={cn(dates.planned || dates.deadline ? DATED_ROW : PROJECT_ROW, dragged && DRAGGED_ROW, (sectionDragging || (taskDragging && !dragged)) && "opacity-55")}
           meta={meta || undefined}
           handle={
             <DragHandle
