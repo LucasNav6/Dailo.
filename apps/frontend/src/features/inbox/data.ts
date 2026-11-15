@@ -1,4 +1,4 @@
-export type InboxEntry = { title: string; age: string };
+export type InboxEntry = { id?: string; title: string; age: string };
 
 /** Elementos de ejemplo del diseño, del más reciente al más antiguo. */
 export const INBOX_ENTRIES: InboxEntry[] = [

@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
-import { Outlet, useLocation } from "react-router";
-import { allNav } from "@/lib/navigation";
+import { Outlet } from "react-router";
 import { NavAside } from "@/components/organisms/nav-aside";
 import { NavDock } from "@/components/organisms/nav-dock";
-import { AppHeader } from "@/components/organisms/app-header";
 import { QuickCapture } from "@/components/organisms/quick-capture";
 import { Snackbar } from "@/components/molecules/snackbar";
 
+/** Contexto que el shell ofrece a las pantallas (p. ej. para abrir la captura desde un estado vacío). */
+export type AppOutletContext = { openCapture: () => void };
+
+/**
+ * Estructura de la app: columna con el contenido desplazable y la barra inferior de 88px en flujo
+ * (móvil), o aside + contenido (escritorio). Cada pantalla pinta su propia cabecera.
+ */
 export function AppShell() {
   const [collapsed, setCollapsed] = useState(false);
   const [captureOpen, setCaptureOpen] = useState(false);
   const [notice, setNotice] = useState(false);
-  const { pathname } = useLocation();
-  const title = allNav.find((item) => pathname.startsWith(item.to))?.label ?? "Dailo";
+  const openCapture = () => setCaptureOpen(true);
 
   useEffect(() => {
     if (!notice) return;
@@ -21,19 +25,18 @@ export function AppShell() {
   }, [notice]);
 
   return (
-    <div className="flex min-h-svh bg-background">
-      <NavAside collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} onNew={() => setCaptureOpen(true)} />
+    <div className="flex h-svh bg-background">
+      <NavAside collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} onNew={openCapture} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <div className="flex flex-1 flex-col px-6 pt-6 pb-32 lg:pb-6">
-          <AppHeader title={title} />
-          <main className="flex flex-1 flex-col">
-            <Outlet />
-          </main>
-        </div>
+        <main className="min-h-0 flex-1 overflow-y-auto">
+          <div className="mx-auto flex min-h-full w-full max-w-5xl flex-col p-6">
+            <Outlet context={{ openCapture } satisfies AppOutletContext} />
+          </div>
+        </main>
+        <NavDock onNew={openCapture} />
       </div>
-      <NavDock onNew={() => setCaptureOpen(true)} />
       <QuickCapture open={captureOpen} onOpenChange={setCaptureOpen} onCaptured={() => setNotice(true)} />
-      <div className="pointer-events-none fixed inset-x-0 bottom-28 z-[60] flex justify-center px-4 lg:bottom-6">
+      <div className="pointer-events-none fixed inset-x-4 bottom-[100px] z-[60] lg:bottom-6 lg:left-auto lg:right-6 lg:inset-x-auto">
         {notice && <Snackbar message="Guardado en Inbox" />}
       </div>
     </div>

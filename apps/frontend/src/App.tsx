@@ -25,7 +25,7 @@ export default function App() {
           </Route>
           <Route path="inbox" element={<InboxPage />} />
           {allNav.filter(({ to }) => to !== "/settings" && to !== "/inbox").map(({ to, label }) => (
-            <Route key={to} path={to} element={<PagePlaceholder description={`Pantalla de ${label} próximamente.`} />} />
+            <Route key={to} path={to} element={<PagePlaceholder title={label} description={`Pantalla de ${label} próximamente.`} />} />
           ))}
           <Route path="*" element={<Navigate to="/today" replace />} />
         </Route>

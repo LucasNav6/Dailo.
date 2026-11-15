@@ -4,9 +4,9 @@ import { primaryNav } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 /**
- * Barra inferior móvil: dos destinos, acción Nuevo al centro (no es ruta) y dos destinos más.
- * `embedded` la posiciona dentro de su contenedor (marcos de mockup) en vez de fija a la ventana y
- * usa `activeTo` como destino activo en lugar del router.
+ * Barra inferior móvil de 88px: dos destinos, acción Nuevo al centro (no es ruta) y dos destinos más.
+ * Va en flujo al pie de la columna. `embedded` (marcos de mockup) la deja visible en escritorio y usa
+ * `activeTo` como destino activo en lugar del router.
  */
 export function NavDock({ onNew, embedded = false, activeTo }: { onNew: () => void; embedded?: boolean; activeTo?: string }) {
   const [start, end] = [primaryNav.slice(0, 2), primaryNav.slice(2)];
@@ -14,8 +14,8 @@ export function NavDock({ onNew, embedded = false, activeTo }: { onNew: () => vo
     <nav
       aria-label="Navegación principal"
       className={cn(
-        "inset-x-0 bottom-0 z-40 box-border min-h-[88px] border-t border-border bg-surface px-2 pt-2 pb-5",
-        embedded ? "relative shrink-0" : "fixed lg:hidden"
+        "relative z-40 box-border min-h-[88px] shrink-0 border-t border-border bg-surface px-2 pt-2 pb-[max(1.25rem,env(safe-area-inset-bottom))]",
+        !embedded && "lg:hidden"
       )}
     >
       <ul className="grid grid-cols-5 items-center">

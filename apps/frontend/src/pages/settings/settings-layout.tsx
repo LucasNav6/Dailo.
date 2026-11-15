@@ -38,7 +38,9 @@ export function SettingsLayout() {
   const current = categories.find((category) => pathname.startsWith(category.to))
 
   return (
-    <div className="mx-auto max-w-5xl lg:grid lg:grid-cols-[16rem_1fr] lg:gap-10">
+    <div className="mx-auto w-full max-w-5xl">
+      <h1 className={cn("mb-6 font-display text-[32px] leading-[1.08] font-semibold tracking-[-0.02em]", !isIndex && "hidden lg:block")}>Configuración</h1>
+      <div className="lg:grid lg:grid-cols-[16rem_1fr] lg:gap-10">
       <nav aria-label="Configuración" className={cn("space-y-6", isIndex ? "block" : "hidden lg:block")}>
         {groups.map((group) => (
           <div key={group.title} className="space-y-2">
@@ -79,6 +81,7 @@ export function SettingsLayout() {
           <Outlet />
         </div>
       )}
+      </div>
     </div>
   )
 }
