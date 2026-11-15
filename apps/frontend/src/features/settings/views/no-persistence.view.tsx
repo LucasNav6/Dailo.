@@ -4,7 +4,6 @@ import { Button } from "@/components/atoms/button";
 import { SettingsScreen } from "@/components/layouts/settings-screen";
 import { DataActions } from "../components/data-actions";
 
-/** El navegador no garantiza guardar los datos: se invita a exportar una copia. */
 export function SettingsNoPersistenceView() {
   return (
     <SettingsScreen title="Seguridad y datos" gap={0}>

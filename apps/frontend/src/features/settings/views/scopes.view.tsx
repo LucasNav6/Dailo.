@@ -4,7 +4,6 @@ import { InlineAction } from "@/components/molecules/inline-action";
 import { ScopeList } from "../components/scope-list";
 import { SCOPES } from "../data";
 
-/** Ámbitos de la vida: lista con proyectos por ámbito y alta de uno nuevo. */
 export function SettingsScopesView() {
   return (
     <SettingsScreen title="Ámbitos de la vida">

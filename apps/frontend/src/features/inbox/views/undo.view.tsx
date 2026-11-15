@@ -3,7 +3,6 @@ import { InboxHeader } from "../components/inbox-header";
 import { InboxList } from "../components/inbox-list";
 import { INBOX_ENTRIES } from "../data";
 
-/** Tras descartar un elemento: el Inbox queda con tres y aparece "Deshacer". */
 export function InboxUndoView() {
   return (
     <>

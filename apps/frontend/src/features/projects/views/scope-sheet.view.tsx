@@ -7,7 +7,6 @@ import { ProjectNames } from "../components/project-names";
 import { ProjectsHeader } from "../components/projects-header";
 import { PROJECTS } from "../data";
 
-/** Hoja para elegir el ámbito del proyecto. */
 export function ProjectsScopeSheetView() {
   return (
     <>

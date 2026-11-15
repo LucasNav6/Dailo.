@@ -39,7 +39,6 @@ function PreferencesForm({ preferences }: { preferences: Preferences }) {
   const { theme, changeTheme } = useChangeTheme()
   const points = getPoints(preferences)
   const periods = getPeriods(preferences)
-  // Cada selector solo ofrece horas que no invaden a los puntos vecinos.
   const pointField = (index: number, label: string) => (
     <TimeSelect label={label} value={points[index]} onChange={(value) => update(withPoint(preferences, index, value))} {...pointBounds(preferences, index)} />
   )

@@ -3,7 +3,6 @@ import { Alert } from "@/components/atoms/alert";
 import { SettingsScreen } from "@/components/layouts/settings-screen";
 import { DataActions } from "../components/data-actions";
 
-/** Espacio local casi lleno: aviso, medidor en rojo y acciones para liberar. */
 export function SettingsStorageAlmostFullView() {
   return (
     <SettingsScreen title="Seguridad y datos" gap={0}>

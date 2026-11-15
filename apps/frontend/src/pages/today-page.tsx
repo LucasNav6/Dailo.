@@ -36,7 +36,6 @@ const PERIODS: { key: TimeOfDay; title: string }[] = [
 const hours = (value: string) => (value.endsWith(":00") ? value.slice(0, 2) : value);
 const loadOf = (count: number): 0 | 1 | 2 | 3 => (count === 0 ? 0 : count === 1 ? 1 : count <= 3 ? 2 : 3);
 
-/** Hoy real: esenciales, franjas del día y semana, con las tareas planificadas en IndexedDB. */
 export function TodayPage() {
   const navigate = useNavigate();
   const { tasks, isLoading } = useTasks();
@@ -159,7 +158,6 @@ export function TodayPage() {
 
   const renderSection = ({ key, title: label, range, group }: (typeof sections)[number]) => {
     const done = group.filter((task) => task.status === "completed" && !isRecent(task.id));
-    // Franja resuelta por completo: solo el resumen, como en el diseño.
     if (done.length === group.length) return <TaskSection key={key} title={label} meta={`${done.length} ${done.length === 1 ? "hecha" : "hechas"}`} />;
     return <TaskSection key={key} title={label} meta={range || undefined} tasks={group.map(item)} />;
   };

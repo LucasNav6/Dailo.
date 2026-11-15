@@ -49,10 +49,6 @@ const PERIODS: { key: TimeOfDay; label: string }[] = [
 const formatSize = (bytes: number) =>
   bytes < 1024 * 1024 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : `${(bytes / 1024 / 1024).toFixed(1).replace(".", ",")} MB`;
 
-/**
- * Campo de texto que crece con su contenido y guarda al salir. Con enlaces muestra el texto con "Enlace"
- * y pasa a edición al tocar fuera del enlace (o con el teclado).
- */
 function AutoField({ value, onCommit, label, className, placeholder }: { value: string; onCommit: (value: string) => void; label: string; className: string; placeholder?: string }) {
   const [draft, setDraft] = useState(value);
   const [editing, setEditing] = useState(false);
@@ -88,7 +84,6 @@ function AutoField({ value, onCommit, label, className, placeholder }: { value: 
   );
 }
 
-/** Calendario en popover con "Quitar"; devuelve la fecha elegida como YYYY-MM-DD. */
 function DatePopover({ label, value, onChange, children }: { label: string; value?: string; onChange: (value: string | undefined) => void; children?: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
@@ -120,7 +115,6 @@ function DatePopover({ label, value, onChange, children }: { label: string; valu
   );
 }
 
-/** Detalle de tarea real: proyecto, descripción, plan, esencial, fecha límite, subtareas y adjuntos. */
 export function TaskDetailPage() {
   const { id: projectId = "", taskId = "" } = useParams();
   const navigate = useNavigate();

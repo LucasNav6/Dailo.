@@ -6,7 +6,6 @@ import { SheetHeading } from "@/components/molecules/sheet-heading";
 import { ScopeList } from "../components/scope-list";
 import { SCOPES } from "../data";
 
-/** Menú de opciones de un ámbito: renombrar, ordenar o eliminar. */
 export function SettingsScopeOptionsView() {
   return (
     <>

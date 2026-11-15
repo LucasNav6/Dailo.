@@ -1,6 +1,5 @@
 import type { ReactNode } from "react"
 
-/** Encabezado de hoja inferior: eyebrow opcional, título en Fraunces de 22px y subtítulo de 14px. */
 function SheetHeading({ eyebrow, title, subtitle }: { eyebrow?: ReactNode; title: ReactNode; subtitle?: ReactNode }) {
   return (
     <div className="flex flex-col gap-0.5 pb-2">

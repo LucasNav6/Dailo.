@@ -3,7 +3,6 @@ import { SettingsScreen } from "@/components/layouts/settings-screen";
 import { FileCard } from "@/components/molecules/file-card";
 import { SummaryRow } from "@/components/molecules/summary-row";
 
-/** Importar copia: qué se agrega, qué queda igual y cuántos conflictos hay. */
 export function SettingsImportSummaryView() {
   return (
     <SettingsScreen title="Importar copia" gap={0}>

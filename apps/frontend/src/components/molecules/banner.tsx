@@ -6,7 +6,6 @@ type BannerProps = {
   onAction?: () => void;
 };
 
-/** Aviso persistente sobre la barra inferior (p. ej. "Hay una versión nueva de Dailo"). */
 function Banner({ message, actionLabel, onAction }: BannerProps) {
   return (
     <div

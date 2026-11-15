@@ -6,7 +6,6 @@ import { TaskRow } from "@/components/molecules/task-row";
 import { AddTask } from "../components/add-task";
 import { ProjectHeading } from "../components/project-heading";
 
-/** Al completar una tarea con subtareas pendientes: elegir si completarlas también. */
 export function ProjectsCompleteWithSubtasksView() {
   return (
     <>

@@ -7,7 +7,6 @@ import { TaskSection } from "@/components/organisms/task-section";
 import { TodayHeader } from "../components/today-header";
 import { weekDays } from "../data";
 
-/** Otro día (mañana): misma estructura que Hoy con acceso para volver. */
 export function TodayOtherDayView() {
   return (
     <>

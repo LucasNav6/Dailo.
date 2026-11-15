@@ -7,7 +7,6 @@ type NavItemProps = {
   label: string;
   Icon: RemixiconComponentType;
   ActiveIcon: RemixiconComponentType;
-  /** Fuerza el estado activo y renderiza un enlace estático (sin router); para mockups. */
   active?: boolean;
 };
 
@@ -29,7 +28,6 @@ function NavItemBody({ label, Icon, ActiveIcon, isActive }: Pick<NavItemProps, "
   )
 }
 
-/** Destino de la barra inferior: icono dentro de una píldora 56×32 que se marca al estar activo. */
 function NavItem({ to, label, Icon, ActiveIcon, active }: NavItemProps) {
   if (active !== undefined) {
     return (

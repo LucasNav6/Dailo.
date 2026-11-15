@@ -7,7 +7,6 @@ import { WeekStrip } from "@/components/molecules/week-strip";
 import { TodayHeader } from "../components/today-header";
 import { weekDays } from "../data";
 
-/** Otro día sin nada planificado. */
 export function TodayOtherDayEmptyView() {
   return (
     <>

@@ -6,7 +6,6 @@ import { DetailBar } from "@/components/molecules/detail-bar";
 import { InlineAction } from "@/components/molecules/inline-action";
 import { InlineError } from "@/components/molecules/inline-error";
 
-/** Estados de los adjuntos: guardado, guardando con progreso y rechazado por superar el límite. */
 export function ProjectsAttachmentStatesView() {
   return (
     <>

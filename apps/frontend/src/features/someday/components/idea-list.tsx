@@ -2,7 +2,6 @@ import { RiLightbulbFill } from "@remixicon/react";
 import { Button } from "@/components/atoms/button";
 import { IDEAS, type Idea } from "../data";
 
-/** Ideas sin compromiso: cada una se planifica o se descarta, nunca se tacha. */
 export function IdeaList({ ideas = IDEAS, onPlan, onDiscard }: { ideas?: (Idea & { id?: string })[]; onPlan?: (id: string) => void; onDiscard?: (id: string) => void }) {
   return (
     <ul className="mt-4">

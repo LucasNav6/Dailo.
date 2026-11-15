@@ -1,7 +1,6 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-/** Etiqueta en píldora de 36px (hora, franja del día…). `selected` la invierte a tinta sobre superficie. */
 function Chip({ className, selected = false, type = "button", ...props }: React.ComponentProps<"button"> & { selected?: boolean }) {
   return (
     <button

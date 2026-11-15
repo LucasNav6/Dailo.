@@ -10,7 +10,6 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
   );
 }
 
-/** Índice de Configuración: personalización y seguridad. */
 export function SettingsIndexView() {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-6">

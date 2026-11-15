@@ -2,9 +2,8 @@ import type { ReactNode } from "react"
 import { Link } from "react-router"
 import { RiArrowRightSLine } from "@remixicon/react"
 
-type NavCardProps = { icon: ReactNode; title: string; subtitle: string; /** Con ruta, la tarjeta entera es un enlace. */ to?: string }
+type NavCardProps = { icon: ReactNode; title: string; subtitle: string; to?: string }
 
-/** Tarjeta de navegación de Configuración: baldosa de icono, título, subtítulo y chevron. */
 function NavCard({ icon, title, subtitle, to }: NavCardProps) {
   const body = (
     <>

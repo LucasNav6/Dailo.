@@ -3,7 +3,6 @@ import { Button } from "@/components/atoms/button";
 import { Emphasis } from "@/components/atoms/emphasis";
 import { EmptyState } from "@/components/molecules/empty-state";
 
-/** Estado vacío del Inbox con la invitación a capturar. */
 export function EmptyInbox({ onCapture }: { onCapture?: () => void }) {
   return (
     <EmptyState

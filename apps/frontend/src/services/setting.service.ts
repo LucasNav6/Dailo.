@@ -29,7 +29,6 @@ export const defaultPreferences: Preferences = {
   maxEssentialTasks: 3,
 }
 
-/** Granularidad de los horarios, en minutos. */
 export const TIME_STEP = 5
 export const LAST_MINUTE_OF_DAY = 23 * 60 + 55
 
@@ -47,7 +46,6 @@ export const toMinutes = (time: string) => {
   return hours * 60 + minutes
 }
 
-/** Puntos de la rutina en orden: inicio, tres límites y cierre. */
 export const getPoints = (preferences: Preferences): string[] => [
   preferences.workday.start,
   ...preferences.periodBreaks,
@@ -64,7 +62,6 @@ export function withPoint(preferences: Preferences, index: number, value: string
   }
 }
 
-/** Rango (en minutos) que puede tomar un punto sin invadir a sus vecinos. */
 export function pointBounds(preferences: Preferences, index: number) {
   const points = getPoints(preferences)
   return {
@@ -73,7 +70,6 @@ export function pointBounds(preferences: Preferences, index: number) {
   }
 }
 
-/** Franjas derivadas: contiguas y que cubren exactamente la jornada. */
 export function getPeriods(preferences: Preferences): Record<DayPeriod, TimeRange> {
   const [start, first, second, third, end] = getPoints(preferences)
   return {
@@ -84,7 +80,6 @@ export function getPeriods(preferences: Preferences): Record<DayPeriod, TimeRang
   }
 }
 
-/** Defensa para datos no generados por la UI: los puntos deben ser válidos y crecientes. */
 export function validatePreferences(preferences: Preferences): FieldErrors {
   const errors: FieldErrors = {}
   const points = getPoints(preferences)
@@ -103,13 +98,11 @@ export function validatePreferences(preferences: Preferences): FieldErrors {
 export function validateNotificationSettings(
   settings: NotificationSettings
 ): FieldErrors {
-  // Con el recordatorio desactivado la hora no se edita, así que no bloquea el guardado.
   return !settings.inboxReminderEnabled || isTime(settings.inboxReminderTime)
     ? {}
     : { inboxReminderTime: "Indica una hora válida." }
 }
 
-/** Combina lo almacenado con los valores predeterminados, descartando lo inválido. */
 function normalizePreferences(value: unknown): Preferences {
   const stored = (value ?? {}) as Partial<Preferences>
   const candidate: Preferences = {
@@ -156,7 +149,6 @@ export const settingService = {
   getPreferences: async () =>
     normalizePreferences((await settingAdapter.get(PREFERENCES_KEY))?.value),
 
-  /** Guarda solo si es válido; devuelve los errores si no lo es. */
   savePreferences: async (preferences: Preferences): Promise<FieldErrors> => {
     const errors = validatePreferences(preferences)
     if (Object.keys(errors).length === 0)
@@ -176,6 +168,5 @@ export const settingService = {
     return errors
   },
 
-  /** Elimina todos los datos locales; los ajustes vuelven a sus valores predeterminados. */
   deleteAllData: () => clearAllData(),
 }

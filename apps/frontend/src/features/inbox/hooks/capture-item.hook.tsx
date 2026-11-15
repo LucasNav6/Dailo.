@@ -3,7 +3,6 @@ import { taskService } from "@/services/task.service"
 
 type CaptureStatus = "idle" | "saving" | "error"
 
-/** Estado de la captura rápida: una captura = un elemento de Inbox. */
 export function useCaptureItem() {
   const [text, setText] = useState("")
   const [status, setStatus] = useState<CaptureStatus>("idle")
@@ -22,7 +21,6 @@ export function useCaptureItem() {
     setStatus("idle")
   }, [])
 
-  /** Devuelve true si se guardó; ante un error conserva el texto. */
   const submit = useCallback(async () => {
     const title = text.trim()
     if (!title || saving.current) return false

@@ -30,7 +30,6 @@ import { useSetTaskDone } from "@/features/projects/hooks/set-task-done.hook";
 import { useUpdateProject } from "@/features/projects/hooks/update-project.hook";
 import type { Task } from "@/models/task.model";
 
-/** Detalle de proyecto real: tareas pendientes con subtareas, completadas plegadas y alta de tareas. */
 export function ProjectDetailPage() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
@@ -53,7 +52,6 @@ export function ProjectDetailPage() {
   const [pendingParent, setPendingParent] = useState<Task | null>(null);
 
   useEffect(() => {
-    // El estado de navegación solo abre la hoja una vez.
     if (adding) window.history.replaceState({}, "");
   }, [adding]);
 
@@ -81,7 +79,6 @@ export function ProjectDetailPage() {
 
   const own = tasks.filter((task) => task.projectId === project.id && (task.status === "active" || task.status === "completed"));
   const roots = own.filter((task) => !task.parentId).sort((a, b) => a.position - b.position);
-  // Una tarea recién completada se queda en su lugar mientras corre la animación.
   const pending = roots.filter((task) => task.status === "active" || isRecent(task.id));
   const completed = roots.filter((task) => task.status === "completed" && !isRecent(task.id)).sort((a, b) => (b.completedAt ?? "").localeCompare(a.completedAt ?? ""));
   const subtasksOf = (task: Task) => own.filter((sub) => sub.parentId === task.id).sort((a, b) => a.position - b.position);

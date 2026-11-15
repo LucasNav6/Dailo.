@@ -6,7 +6,6 @@ type SnackbarProps = {
   onAction?: () => void;
 };
 
-/** Confirmación breve y flotante ("Guardado en Inbox", "Deshacer"). Se anuncia con role=status. */
 function Snackbar({ message, actionLabel, onAction }: SnackbarProps) {
   return (
     <div

@@ -4,7 +4,6 @@ import { useRef } from "react"
 import { useCompletionEffect } from "@/lib/use-completion-effect"
 import { cn } from "@/lib/utils"
 
-/** Subtarea sangrada bajo su tarea: círculo de 18px (22px con `large`) y texto de 15px. */
 function SubtaskRow({ title, checked = false, large = false, className, onCheckedChange }: { title: string; checked?: boolean; large?: boolean; className?: string; onCheckedChange?: (checked: boolean) => void }) {
   const checkRef = useRef<HTMLButtonElement>(null)
   const animating = useCompletionEffect(checked, checkRef)

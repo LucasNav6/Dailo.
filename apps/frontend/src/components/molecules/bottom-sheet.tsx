@@ -5,13 +5,11 @@ import { cn } from "@/lib/utils"
 type BottomSheetProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** Título accesible (no visible); el título visual va dentro de `children`. */
   label: string;
   children: ReactNode;
   className?: string;
 };
 
-/** Hoja inferior real (Radix) con el aspecto del diseño: radio 16px, asa de arrastre y sin botón de cierre. */
 function BottomSheet({ open, onOpenChange, label, children, className }: BottomSheetProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

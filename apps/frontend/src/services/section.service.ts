@@ -46,7 +46,6 @@ export const sectionService = {
       return next
     }),
 
-  /** Elimina la sección; sus tareas quedan en el proyecto sin sección. */
   remove: (id: string) =>
     atomically(async () => {
       await taskAdapter.clearSection(id, new Date().toISOString())

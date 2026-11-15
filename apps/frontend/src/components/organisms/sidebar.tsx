@@ -69,7 +69,6 @@ function SidebarProvider({
 }) {
   const isMobile = useIsMobile()
   const [openMobile, _setOpenMobile] = React.useState(false)
-  // Elemento que tenía el foco al abrir el sidebar móvil, para devolverlo al cerrar.
   const mobileFocusReturnRef = React.useRef<HTMLElement | null>(null)
   const setOpenMobile = React.useCallback((value: boolean) => {
     if (value) {
@@ -80,15 +79,12 @@ function SidebarProvider({
     _setOpenMobile(value)
   }, [])
 
-  // This is the internal state of the sidebar.
-  // We use openProp and setOpenProp for control from outside the component.
   const [_open, _setOpen] = React.useState(defaultOpen)
   const open = openProp ?? _open
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
       const openState = typeof value === "function" ? value(open) : value
 
-      // Antes de volver inerte el panel colapsado, mueve el foco a un trigger visible.
       if (!openState) {
         const container = document.querySelector<HTMLElement>(
           '[data-slot="sidebar-container"]'
@@ -102,25 +98,20 @@ function SidebarProvider({
         }
       }
 
-      // Con `open` controlado el estado externo manda; sin él, actualizamos el interno
-      // y además notificamos al caller con onOpenChange.
       if (openProp === undefined) {
         _setOpen(openState)
       }
       setOpenProp?.(openState)
 
-      // This sets the cookie to keep the sidebar state.
       document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
     },
     [openProp, setOpenProp, open]
   )
 
-  // Helper to toggle the sidebar.
   const toggleSidebar = React.useCallback(() => {
     return isMobile ? setOpenMobile(!openMobile) : setOpen((open) => !open)
   }, [isMobile, openMobile, setOpen, setOpenMobile])
 
-  // Adds a keyboard shortcut to toggle the sidebar.
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
@@ -136,8 +127,6 @@ function SidebarProvider({
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [toggleSidebar])
 
-  // We add a state so that we can do data-state="expanded" or "collapsed".
-  // This makes it easier to style the sidebar with Tailwind classes.
   const state = open ? "expanded" : "collapsed"
 
   const contextValue = React.useMemo<SidebarContextProps>(
@@ -210,7 +199,6 @@ function Sidebar({
   }
 
   if (isMobile) {
-    // Radix genera el id del diálogo; no lo sobrescribimos con el recibido.
     const { id: _id, style: styleProp, ...mobileProps } = props
     return (
       <Sheet open={openMobile} onOpenChange={setOpenMobile}>
@@ -228,7 +216,6 @@ function Sidebar({
           }
           side={side}
           onCloseAutoFocus={(event) => {
-            // Radix no tiene un trigger registrado: devolvemos el foco nosotros.
             const target = mobileFocusReturnRef.current
             if (target?.isConnected) {
               event.preventDefault()
@@ -256,7 +243,6 @@ function Sidebar({
       data-side={side}
       data-slot="sidebar"
     >
-      {/* This is what handles the sidebar gap on desktop */}
       <div
         data-slot="sidebar-gap"
         className={cn(
@@ -276,7 +262,6 @@ function Sidebar({
           side === "left"
             ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
             : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
-          // Adjust the padding for floating and inset variants.
           variant === "floating" || variant === "inset"
             ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
             : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
@@ -470,7 +455,6 @@ function SidebarGroupAction({
       data-sidebar="group-action"
       className={cn(
         "absolute top-3.5 right-3 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground ring-sidebar-ring outline-hidden transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
-        // Increases the hit area of the button on mobile.
         "after:absolute after:-inset-2 md:after:hidden",
         "group-data-[collapsible=icon]:hidden",
         className
@@ -605,7 +589,6 @@ function SidebarMenuAction({
       data-sidebar="menu-action"
       className={cn(
         "absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground ring-sidebar-ring outline-hidden transition-transform peer-hover/menu-button:text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
-        // Increases the hit area of the button on mobile.
         "after:absolute after:-inset-2 md:after:hidden",
         "peer-data-[size=sm]/menu-button:top-1",
         "peer-data-[size=default]/menu-button:top-1.5",
@@ -649,7 +632,6 @@ function SidebarMenuSkeleton({
 }: React.ComponentProps<"div"> & {
   showIcon?: boolean
 }) {
-  // Random width between 50 to 90%.
   const width = React.useMemo(() => {
     return `${Math.floor(Math.random() * 40) + 50}%`
   }, [])

@@ -7,13 +7,10 @@ type DataActionsProps = {
   used: string;
   percent: number;
   critical?: boolean;
-  /** Subtítulo de "Exportar copia" (por defecto, la descripción habitual). */
   exportSubtitle?: string;
-  /** Indicador a la derecha de "Exportar copia" (p. ej. barra de progreso). */
   exportTrailing?: ReactNode;
 };
 
-/** Medidor de espacio y las cuatro acciones de datos locales: exportar, importar, archivados y eliminar. */
 export function DataActions({ used, percent, critical, exportSubtitle = "Un archivo con todos tus datos", exportTrailing }: DataActionsProps) {
   return (
     <>

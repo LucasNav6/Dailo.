@@ -10,5 +10,4 @@ export interface Section {
 export type SectionInput = Pick<Section, "projectId" | "name"> &
   Partial<Pick<Section, "position">>
 
-/** Una sección no cambia de proyecto. */
 export type SectionChanges = Partial<Omit<SectionInput, "projectId">>

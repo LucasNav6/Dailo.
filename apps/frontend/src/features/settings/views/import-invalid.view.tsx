@@ -4,7 +4,6 @@ import { Button } from "@/components/atoms/button";
 import { SettingsScreen } from "@/components/layouts/settings-screen";
 import { FileCard } from "@/components/molecules/file-card";
 
-/** Importar un archivo que no es una copia de Dailo o está dañado. */
 export function SettingsImportInvalidView() {
   return (
     <SettingsScreen title="Importar copia" gap={0}>

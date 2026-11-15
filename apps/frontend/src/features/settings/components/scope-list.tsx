@@ -2,7 +2,6 @@ import { RiMore2Line } from "@remixicon/react";
 import { IconButton } from "@/components/atoms/icon-button";
 import type { Scope } from "../data";
 
-/** Lista de ámbitos: inicial en círculo, nombre, cantidad de proyectos y menú de opciones. */
 export function ScopeList({ scopes }: { scopes: Scope[] }) {
   return (
     <ul className="flex flex-col">

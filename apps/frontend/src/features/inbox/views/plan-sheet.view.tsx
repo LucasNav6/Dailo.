@@ -10,7 +10,6 @@ import { InboxHeader } from "../components/inbox-header";
 import { InboxList } from "../components/inbox-list";
 import { INBOX_ENTRIES } from "../data";
 
-/** Hoja para planificar un elemento: día, hora, franja y si es esencial ese día. */
 export function InboxPlanSheetView() {
   return (
     <>

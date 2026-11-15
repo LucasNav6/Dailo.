@@ -6,9 +6,7 @@ import { TaskRow } from "@/components/molecules/task-row"
 export type SubtaskItem = { id: string; title: string; done: boolean; onToggle?: (done: boolean) => void };
 
 export type TaskItem = {
-  /** Contenido a la derecha (p. ej. contador de subtareas); sustituye a time/timeIcon. */
   meta?: ReactNode;
-  /** Subtareas visibles bajo la fila (cuando está desplegada). */
   subtasks?: SubtaskItem[];
   id?: string;
   onToggle?: (done: boolean) => void;
@@ -18,7 +16,6 @@ export type TaskItem = {
   timeIcon?: ReactNode;
 };
 
-/** Grupo de tareas con encabezado (franja del día, esenciales…) y su lista. Sin tareas, solo el encabezado. */
 function TaskSection({ title, meta, tasks = [] }: { title: ReactNode; meta?: ReactNode; tasks?: TaskItem[] }) {
   return (
     <>

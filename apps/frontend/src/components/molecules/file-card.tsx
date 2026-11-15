@@ -1,7 +1,6 @@
 import { RiFileLine } from "@remixicon/react"
 import { cn } from "@/lib/utils"
 
-/** Archivo elegido: baldosa de 44px con icono, nombre de 16px y detalle de 13px. */
 function FileCard({ name, detail, className }: { name: string; detail: string; className?: string }) {
   return (
     <div className={cn("flex items-center gap-3.5 py-2", className)}>

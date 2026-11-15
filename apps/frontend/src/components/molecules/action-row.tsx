@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils"
 
 type ActionRowProps = { icon: ReactNode; children: ReactNode; tone?: "default" | "danger" | "danger-soft" } & Pick<ComponentProps<"button">, "onClick">
 
-/** Acción de menú en hoja inferior: icono de 22px y etiqueta de 17px; `danger` usa el rojo fuerte y `danger-soft` el oscuro. Con `onClick` es un botón. */
 function ActionRow({ icon, children, tone = "default", onClick }: ActionRowProps) {
   const className = cn("flex min-h-[52px] w-full items-center gap-4 text-left text-[17px]", tone === "danger" ? "text-danger" : tone === "danger-soft" ? "text-danger-foreground" : "text-foreground")
   const content = (

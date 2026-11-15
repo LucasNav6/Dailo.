@@ -2,7 +2,6 @@ import { useCallback } from "react";
 import { MAX_ATTACHMENT_SIZE } from "@/models/attachment.model";
 import { attachmentService } from "@/services/attachment.service";
 
-/** Adjunta archivos a una tarea. Devuelve un mensaje de error si alguno no se pudo guardar. */
 export function useAttachFiles() {
   return useCallback(async (taskId: string, files: File[]) => {
     for (const file of files) {

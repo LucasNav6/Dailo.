@@ -4,7 +4,6 @@ import { Emphasis } from "@/components/atoms/emphasis";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { SomedayHeader } from "../components/someday-header";
 
-/** Tal vez sin ideas. */
 export function SomedayEmptyView() {
   return (
     <>

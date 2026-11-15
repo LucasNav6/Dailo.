@@ -4,7 +4,6 @@ import { RiSettings3Line } from "@remixicon/react"
 import { IconButton } from "@/components/atoms/icon-button"
 import { ScreenHeader } from "@/components/molecules/screen-header"
 
-/** Cabecera de las pantallas de lista (Inbox, Proyectos, Tal vez): contador, título y acceso a Configuración. */
 function ListHeader({ eyebrow, title }: { eyebrow: ReactNode; title: ReactNode }) {
   return (
     <ScreenHeader

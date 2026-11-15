@@ -6,14 +6,11 @@ type EmptyStateProps = {
   title: ReactNode;
   description?: ReactNode;
   action?: ReactNode;
-  /** "default": icono de 64px sin fondo. "success": icono de 36px en círculo de 64px. "danger": icono de 36px en círculo de 72px con la paleta de error. */
   tone?: "default" | "success" | "danger";
   className?: string;
-  /** Sobrescribe el ancho máximo de la descripción (por defecto 300px, 310px en "danger"). */
   descriptionClassName?: string;
 };
 
-/** Estado vacío o de error centrado: icono, título en Fraunces, texto y acciones. */
 function EmptyState({ icon, title, description, action, tone = "default", className, descriptionClassName }: EmptyStateProps) {
   return (
     <div className={cn("flex flex-1 flex-col items-center justify-center gap-3 px-6 py-4 text-center", className)}>

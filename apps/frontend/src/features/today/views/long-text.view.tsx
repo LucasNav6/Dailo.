@@ -4,7 +4,6 @@ import { TaskSection } from "@/components/organisms/task-section";
 import { TodayHeader } from "../components/today-header";
 import { weekDays } from "../data";
 
-/** Regla de textos largos: los títulos se cortan a dos líneas sin romper la fila. */
 export function TodayLongTextView() {
   return (
     <>

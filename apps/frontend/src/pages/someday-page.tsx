@@ -13,7 +13,6 @@ import { formatAge } from "@/lib/age";
 import { useDiscardIdea } from "@/features/someday/hooks/discard-idea.hook";
 import { usePlanIdea } from "@/features/someday/hooks/plan-idea.hook";
 
-/** Tal vez real: ideas guardadas que se planifican (pasan a Hoy) o se descartan. */
 export function SomedayPage() {
   const { tasks, isLoading } = useTasks("someday");
   const planIdea = usePlanIdea();

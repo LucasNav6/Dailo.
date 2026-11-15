@@ -2,7 +2,6 @@ import { ComposeSheet } from "@/components/layouts/compose-sheet";
 import { EmptyInbox } from "../components/empty-inbox";
 import { InboxHeader } from "../components/inbox-header";
 
-/** Captura rápida con título y descripción escritos. */
 export function InboxCaptureDescriptionView() {
   return (
     <>

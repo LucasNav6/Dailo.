@@ -2,7 +2,6 @@ import { cn } from "@/lib/utils"
 
 type NumberPickerProps = { options: number[]; value: number; onChange?: (value: number) => void; label?: string }
 
-/** Selector numérico en círculos de 36px (p. ej. 1–5 tareas esenciales); `value` va en tinta sobre superficie. */
 function NumberPicker({ options, value, onChange, label }: NumberPickerProps) {
   return (
     <div role="radiogroup" aria-label={label} className="flex">

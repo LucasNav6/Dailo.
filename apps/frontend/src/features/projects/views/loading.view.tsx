@@ -1,7 +1,6 @@
 import { Skeleton } from "@/components/atoms/skeleton";
 import { ProjectsHeader } from "../components/projects-header";
 
-/** Proyectos cargando: cabecera real y tres filas en esqueleto. */
 export function ProjectsLoadingView() {
   return (
     <div aria-busy="true" className="contents">

@@ -40,7 +40,6 @@ export function QuickCapture({ open, onOpenChange, onCaptured }: QuickCapturePro
     onOpenChange(false);
   };
 
-  // Solo se pide confirmación si hay texto sin guardar.
   const requestClose = (next: boolean) => {
     if (next) return onOpenChange(true);
     if (capture.status === "saving") return;
@@ -61,7 +60,6 @@ export function QuickCapture({ open, onOpenChange, onCaptured }: QuickCapturePro
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
-    // Enter guarda; Shift+Enter inserta un salto de línea.
     if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
       event.preventDefault();
       void submit();

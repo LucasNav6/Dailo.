@@ -2,10 +2,6 @@ import { useCallback } from "react";
 import { settingService } from "@/services/setting.service";
 import { taskService } from "@/services/task.service";
 
-/**
- * Marca o desmarca la tarea como esencial de su día. Respeta el máximo de esenciales por día de las
- * preferencias y devuelve un mensaje si ya se alcanzó.
- */
 export function useSetTaskEssential() {
   return useCallback(async (id: string, essential: boolean) => {
     if (essential) {

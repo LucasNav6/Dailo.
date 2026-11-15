@@ -9,7 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export { useAutoSave } from "@/features/settings/hooks/use-auto-save.hook"
 
-/** Solo informa de fallos: el guardado correcto es silencioso. */
 export function SaveStatus({ state }: { state: "idle" | "error" }) {
   if (state !== "error") return null
   return (
@@ -51,17 +50,12 @@ export function Panel({ children, className }: { children: React.ReactNode; clas
 const FULL_DAY = { min: 0, max: LAST_MINUTE_OF_DAY }
 const pad = (value: number) => String(value).padStart(2, "0")
 
-/** Horas disponibles (minutos desde medianoche) dentro de [min, max], cada TIME_STEP. */
 function slotsBetween(min: number, max: number, current: number) {
   const slots = new Set<number>([current])
   for (let time = Math.ceil(min / TIME_STEP) * TIME_STEP; time <= max; time += TIME_STEP) slots.add(time)
   return [...slots].sort((a, b) => a - b)
 }
 
-/**
- * Selector de hora en 24 h. Solo ofrece horas dentro de [min, max], de modo que
- * no se puede elegir un valor que invada a las franjas vecinas.
- */
 export function TimeSelect({
   label,
   value,
@@ -90,7 +84,6 @@ export function TimeSelect({
 
   const changeHour = (nextHour: number) => {
     const options = slots.filter((slot) => Math.floor(slot / 60) === nextHour)
-    // Si el minuto actual no existe en esa hora, se usa el más cercano permitido.
     const nearest = options.reduce((best, slot) =>
       Math.abs(slot - (nextHour * 60 + (current % 60))) < Math.abs(best - (nextHour * 60 + (current % 60))) ? slot : best
     )
@@ -129,7 +122,6 @@ export function TimeSelect({
   )
 }
 
-/** Fila de ajuste con su valor; al tocarla abre el editor de hora. */
 export function TimeRow({
   Icon,
   label,

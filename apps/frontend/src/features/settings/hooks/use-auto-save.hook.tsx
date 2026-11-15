@@ -3,7 +3,6 @@ import type { FieldErrors } from "@/models/setting.model";
 
 export type SaveState = "idle" | "error";
 
-/** Guardado automático: ejecuta `save` y expone un estado discreto y los errores por campo. */
 export function useAutoSave() {
   const [state, setState] = useState<SaveState>("idle");
   const [errors, setErrors] = useState<FieldErrors>({});

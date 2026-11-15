@@ -3,9 +3,8 @@ import { Link } from "react-router"
 import { RiArrowLeftLine } from "@remixicon/react"
 import { IconButton } from "@/components/atoms/icon-button"
 
-type BackBarProps = { title: ReactNode; backLabel: string; actions?: ReactNode; /** Ruta a la que vuelve; con ella el botón es un enlace (y se oculta en escritorio, donde hay menú lateral). */ backTo?: string }
+type BackBarProps = { title: ReactNode; backLabel: string; actions?: ReactNode; backTo?: string }
 
-/** Barra de subpantalla: botón volver de 44px y título de 20px. */
 function BackBar({ title, backLabel, actions, backTo }: BackBarProps) {
   return (
     <div className="flex items-center gap-3">

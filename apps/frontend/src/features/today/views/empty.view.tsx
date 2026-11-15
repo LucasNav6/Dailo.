@@ -8,7 +8,6 @@ import { weekDays } from "../data";
 
 type TodayEmptyStateProps = { inboxCount: number; onPlan?: () => void; onInbox?: () => void };
 
-/** Bloque "Nada planificado hoy." con sus dos acciones (lo reutiliza la pantalla real). */
 export function TodayEmptyState({ inboxCount, onPlan, onInbox }: TodayEmptyStateProps) {
   return (
     <EmptyState
@@ -25,7 +24,6 @@ export function TodayEmptyState({ inboxCount, onPlan, onInbox }: TodayEmptyState
   );
 }
 
-/** Hoy sin nada planificado. */
 export function TodayEmptyView() {
   return (
     <>

@@ -2,7 +2,6 @@ import { Snackbar } from "@/components/molecules/snackbar";
 import { SettingsScreen } from "@/components/layouts/settings-screen";
 import { DataActions } from "../components/data-actions";
 
-/** Copia lista: aviso con el nombre y tamaño del archivo y la acción de guardarlo. */
 export function SettingsExportDoneView() {
   return (
     <>

@@ -3,7 +3,6 @@ import { ProjectNames } from "../components/project-names";
 import { ProjectsHeader } from "../components/projects-header";
 import { PROJECTS } from "../data";
 
-/** Límite de 250 caracteres alcanzado en la descripción. */
 export function ProjectsLimit250View() {
   return (
     <>

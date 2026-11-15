@@ -4,14 +4,12 @@ import { Emphasis } from "@/components/atoms/emphasis";
 import { IconButton } from "@/components/atoms/icon-button";
 import { EmptyState } from "@/components/molecules/empty-state";
 
-/** La tarea abierta ya no existe (borrada desde otra pestaña o dispositivo). */
 export function ProjectsTaskNotFoundView() {
   return <TaskNotFound />;
 }
 
 type TaskNotFoundProps = { onBack?: () => void; onHome?: () => void; onProject?: () => void };
 
-/** Cuerpo de "tarea inexistente" con acciones opcionales (las usa la pantalla real). */
 export function TaskNotFound({ onBack, onHome, onProject }: TaskNotFoundProps) {
   return (
     <>

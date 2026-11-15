@@ -1,7 +1,6 @@
 import { ComposeSheet } from "@/components/layouts/compose-sheet";
 import { ProjectsHeader } from "../components/projects-header";
 
-/** Crear proyecto con nombre y descripción escritos. */
 export function ProjectsCreateDescriptionView() {
   return (
     <>

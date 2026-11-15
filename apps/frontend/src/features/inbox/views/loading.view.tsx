@@ -1,7 +1,6 @@
 import { Skeleton } from "@/components/atoms/skeleton";
 import { InboxHeader } from "../components/inbox-header";
 
-/** Inbox cargando: cabecera real y cuatro filas en esqueleto. */
 export function InboxLoadingView() {
   return (
     <div aria-busy="true" className="contents">

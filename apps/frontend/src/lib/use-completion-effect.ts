@@ -1,10 +1,6 @@
 import { useEffect, useRef, useState, type RefObject } from "react"
 import { confetti } from "./confetti"
 
-/**
- * Detecta el paso de "pendiente" a "hecha" (no en el primer render): lanza confeti desde `origin` y devuelve
- * `true` durante la animación de tachado.
- */
 export function useCompletionEffect(checked: boolean, origin: RefObject<Element | null>) {
   const previous = useRef(checked)
   const [animating, setAnimating] = useState(false)

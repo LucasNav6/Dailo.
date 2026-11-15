@@ -5,7 +5,6 @@ import { Progress } from "@/components/atoms/progress";
 import { cn } from "@/lib/utils";
 import { PROJECTS, type ProjectSummary } from "../data";
 
-/** Botón "Nuevo proyecto" y la lista con descripción y progreso; `highlighted` marca la fila con el menú abierto. */
 type ProjectListProps = {
   projects?: ProjectSummary[];
   highlighted?: number;

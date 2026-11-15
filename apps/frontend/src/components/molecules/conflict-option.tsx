@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils"
 
 type ConflictOptionProps = { label: string; title: string; detail: string; selected?: boolean };
 
-/** Opción al resolver un conflicto de importación: radio, etiqueta en mayúsculas, título y detalle. */
 function ConflictOption({ label, title, detail, selected = false }: ConflictOptionProps) {
   return (
     <div className="flex items-start gap-3.5 border-b border-border py-3.5">

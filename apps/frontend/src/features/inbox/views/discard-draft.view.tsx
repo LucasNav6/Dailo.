@@ -3,7 +3,6 @@ import { DialogOverlay } from "@/components/layouts/overlay-layout";
 import { EmptyInbox } from "../components/empty-inbox";
 import { InboxHeader } from "../components/inbox-header";
 
-/** Diálogo al cerrar la captura con texto sin guardar. */
 export function InboxDiscardDraftView() {
   return (
     <>

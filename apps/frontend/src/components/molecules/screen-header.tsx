@@ -8,7 +8,6 @@ type ScreenHeaderProps = {
   className?: string;
 };
 
-/** Cabecera de pantalla: eyebrow en mayúsculas, título en Fraunces y acciones a la derecha. */
 function ScreenHeader({ eyebrow, title, actions, className }: ScreenHeaderProps) {
   return (
     <header className={cn("flex items-start justify-between gap-2 pb-4", className)}>

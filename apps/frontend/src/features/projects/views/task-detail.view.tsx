@@ -8,7 +8,6 @@ import { InlineAction } from "@/components/molecules/inline-action";
 import { PropertyRow } from "@/components/molecules/property-row";
 import { SubtaskRow } from "@/components/molecules/subtask-row";
 
-/** Detalle de una tarea: proyecto, plan, fecha límite, subtareas y adjuntos. Sin barra inferior. */
 export function ProjectsTaskDetailView() {
   return (
     <>

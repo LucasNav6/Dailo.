@@ -21,7 +21,6 @@ import { useProjects } from "@/features/projects/hooks/list-projects.hook";
 import { useTasks } from "@/features/projects/hooks/list-tasks.hook";
 import type { Project } from "@/models/project.model";
 
-/** Proyectos real: lista con progreso, crear/editar en hoja, opciones y eliminación con confirmación. */
 export function ProjectsPage() {
   const navigate = useNavigate();
   const { projects, isLoading } = useProjects();

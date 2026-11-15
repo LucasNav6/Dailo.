@@ -7,11 +7,9 @@ type ErrorLayoutProps = {
   title: ReactNode;
   description?: ReactNode;
   onRetry?: () => void;
-  /** Acción secundaria opcional (p. ej. "Exportar una copia"). */
   secondaryAction?: ReactNode;
 };
 
-/** Vista de error a pantalla completa con reintento; mantiene la misma estructura que el resto de vistas. */
 function ErrorLayout({ title, description, onRetry, secondaryAction }: ErrorLayoutProps) {
   return (
     <div role="alert" className="flex flex-1 flex-col">

@@ -5,7 +5,6 @@ import { ProjectNames } from "../components/project-names";
 import { ProjectsHeader } from "../components/projects-header";
 import { PROJECTS } from "../data";
 
-/** Confirmación para eliminar un proyecto, con la opción de mover sus pendientes al Inbox. */
 export function ProjectsDeleteView() {
   return (
     <>

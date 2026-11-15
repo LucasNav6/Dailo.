@@ -11,7 +11,6 @@ function Fact({ icon, children }: { icon: React.ReactNode; children: React.React
   );
 }
 
-/** Seguridad y datos: dónde viven los datos y cómo borrarlos. */
 export function SettingsSecurityView() {
   return (
     <SettingsScreen title="Seguridad y datos" gap={7}>

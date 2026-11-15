@@ -6,7 +6,6 @@ import { InboxHeader } from "../components/inbox-header";
 import { InboxList } from "../components/inbox-list";
 import { INBOX_ENTRIES } from "../data";
 
-/** Menú de opciones de un elemento del Inbox. */
 export function InboxOptionsView() {
   return (
     <>

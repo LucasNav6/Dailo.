@@ -6,7 +6,6 @@ import { ProjectHeading } from "../components/project-heading";
 
 const TASKS = ["Definir la estructura de páginas", "Escribir los textos de la home", "Elegir tipografías y colores", "Maquetar el catálogo", "Publicar el blog"];
 
-/** Detalle de un proyecto con sus tareas pendientes y las completadas plegadas. */
 export function ProjectsDetailView() {
   return (
     <>

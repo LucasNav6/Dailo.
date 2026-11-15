@@ -4,7 +4,6 @@ import { Button } from "@/components/atoms/button";
 import { SettingsScreen } from "@/components/layouts/settings-screen";
 import { DataActions } from "../components/data-actions";
 
-/** Error al exportar: no se pudo crear la copia; se ofrece reintentar. */
 export function SettingsExportErrorView() {
   return (
     <SettingsScreen title="Seguridad y datos" gap={0}>

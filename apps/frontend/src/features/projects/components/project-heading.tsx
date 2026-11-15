@@ -3,7 +3,6 @@ import { Progress } from "@/components/atoms/progress";
 
 type ProjectHeadingProps = { done: number; total: number; name?: string; description?: string };
 
-/** Pone en cursiva las últimas palabras del nombre y cierra con punto: "Rediseño *del sitio.*". */
 function NameTitle({ name }: { name: string }) {
   const words = name.trim().split(/\s+/);
   const split = words.length > 2 ? words.length - 2 : words.length > 1 ? words.length - 1 : 0;
@@ -12,9 +11,7 @@ function NameTitle({ name }: { name: string }) {
   return <>{head && `${head} `}<Emphasis>{tail}.</Emphasis></>;
 }
 
-/** Encabezado del detalle de proyecto: eyebrow, título, descripción y progreso (`done` de `total`). */
 export function ProjectHeading({ done, total, name, description }: ProjectHeadingProps) {
-  // Sin `name` es la maqueta estática: usa el texto del diseño. En la app real la descripción vacía no se muestra.
   if (name === undefined) {
     name = "Rediseño del sitio";
     description = "Lanzar la nueva web con el blog y el catálogo.";

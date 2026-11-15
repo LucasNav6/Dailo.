@@ -4,14 +4,8 @@ import { NavAside } from "@/components/organisms/nav-aside";
 import { NavDock } from "@/components/organisms/nav-dock";
 import { Snackbar } from "@/components/molecules/snackbar";
 
-/** Contexto que el shell ofrece a las pantallas (p. ej. para abrir la captura desde un estado vacío). */
 export type AppOutletContext = { openCapture: () => void };
 
-/**
- * Estructura de la app: columna con el contenido desplazable y la barra inferior de 88px en flujo
- * (móvil), o aside + contenido (escritorio). Cada pantalla pinta su propia cabecera.
- */
-/** Hoja de captura que el shell abre desde "Nuevo"; la aporta la feature de Inbox. */
 export type CaptureComponent = ComponentType<{ open: boolean; onOpenChange: (open: boolean) => void; onCaptured: () => void }>;
 
 export function AppShell({ capture: Capture }: { capture: CaptureComponent }) {

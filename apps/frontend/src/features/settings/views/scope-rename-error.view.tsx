@@ -6,7 +6,6 @@ import { InlineError } from "@/components/molecules/inline-error";
 import { ScopeList } from "../components/scope-list";
 import { SCOPES } from "../data";
 
-/** Renombrar un ámbito con un nombre que ya existe. */
 export function SettingsScopeRenameErrorView() {
   return (
     <>

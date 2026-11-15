@@ -24,7 +24,6 @@ const groups: { title: string; items: Category[] }[] = [
 
 const categories = groups.flatMap((group) => group.items)
 
-/** `/settings`: en escritorio abre la primera categoría; en móvil solo muestra el menú. */
 export function SettingsIndex() {
   const isDesktop = useMediaQuery("(min-width: 1024px)")
   return isDesktop ? <Navigate to={categories[0].to} replace /> : null
@@ -41,7 +40,6 @@ export function SettingsLayout() {
     <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col">
       <h1 className={cn("mb-6 font-display text-[32px] leading-[1.08] font-semibold tracking-[-0.02em]", !isIndex && "hidden lg:block")}>Configuración</h1>
       <div className="flex min-h-0 flex-1 flex-col lg:grid lg:grid-cols-[16rem_1fr] lg:items-start lg:gap-10">
-        {/* Móvil: índice con tarjetas del diseño. */}
         {isIndex && (
           <div className="flex flex-col gap-6 lg:hidden">
             {groups.map((group) => (
@@ -58,7 +56,6 @@ export function SettingsLayout() {
           </div>
         )}
 
-        {/* Escritorio: menú lateral. */}
         <nav aria-label="Configuración" className="hidden space-y-6 lg:block">
           {groups.map((group) => (
             <div key={group.title} className="space-y-2">

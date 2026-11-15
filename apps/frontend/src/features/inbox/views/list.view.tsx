@@ -2,7 +2,6 @@ import { InboxHeader } from "../components/inbox-header";
 import { InboxList } from "../components/inbox-list";
 import { INBOX_ENTRIES } from "../data";
 
-/** Inbox con cuatro elementos pendientes. */
 export function InboxListView() {
   return (
     <>

@@ -7,7 +7,6 @@ import { TaskRow } from "@/components/molecules/task-row";
 import { AddTask } from "../components/add-task";
 import { ProjectHeading } from "../components/project-heading";
 
-/** Menú "Más opciones" desde el detalle del proyecto. */
 export function ProjectsMenuView() {
   return (
     <>

@@ -1,7 +1,6 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-/** Botón en píldora (p. ej. "Volver a hoy"): fondo seleccionado, texto de 14px. */
 function PillButton({ className, type = "button", ...props }: React.ComponentProps<"button">) {
   return (
     <button

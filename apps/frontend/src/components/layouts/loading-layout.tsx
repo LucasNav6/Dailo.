@@ -2,7 +2,6 @@ import { Skeleton } from "@/components/atoms/skeleton"
 import { SectionHeader } from "@/components/molecules/section-header"
 import { ScreenHeader } from "@/components/molecules/screen-header"
 
-/** Vista de carga: cabecera y filas esqueleto con la misma geometría que la lista real. */
 function LoadingLayout({ rows = 4, label = "Cargando" }: { rows?: number; label?: string }) {
   return (
     <div role="status" aria-busy="true" aria-label={label} className="flex flex-1 flex-col">

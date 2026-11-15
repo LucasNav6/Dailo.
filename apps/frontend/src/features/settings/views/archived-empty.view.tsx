@@ -3,7 +3,6 @@ import { Emphasis } from "@/components/atoms/emphasis";
 import { SettingsScreen } from "@/components/layouts/settings-screen";
 import { EmptyState } from "@/components/molecules/empty-state";
 
-/** Sin proyectos archivados. */
 export function SettingsArchivedEmptyView() {
   return (
     <SettingsScreen title="Archivados" gap={0}>

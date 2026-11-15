@@ -1,7 +1,6 @@
 import { Button } from "@/components/atoms/button";
 import type { ArchivedProject } from "../data";
 
-/** Lista de proyectos archivados con sus acciones de restaurar y eliminar. */
 export function ArchivedList({ projects }: { projects: ArchivedProject[] }) {
   return (
     <ul className="mt-3 flex flex-col">

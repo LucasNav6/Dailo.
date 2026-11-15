@@ -23,10 +23,8 @@ const TIMES: { value: TimeOfDay; label: string }[] = [
 
 type Props = { task: Task | null; onClose: () => void };
 
-/** Detalle para procesar un elemento de Inbox. Editar nunca lo saca de Inbox. */
 export function InboxItemDetail({ task, onClose }: Props) {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
-  // El contenido se remonta por elemento para reiniciar su estado local.
   const body = task ? <DetailForm key={task.id} task={task} onClose={onClose} /> : null;
   const onOpenChange = (open: boolean) => {
     if (!open) onClose();
@@ -81,7 +79,6 @@ function DetailForm({ task, onClose }: Props & { task: Task }) {
     }
   };
 
-  // Guarda los cambios de texto y permanece en Inbox.
   const save = async (event?: FormEvent) => {
     event?.preventDefault();
     if (!dirty || !canDecide) return;

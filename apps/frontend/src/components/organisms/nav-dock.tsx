@@ -3,11 +3,6 @@ import { NavItem } from "@/components/molecules/nav-item";
 import { primaryNav } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
-/**
- * Barra inferior móvil de 88px: dos destinos, acción Nuevo al centro (no es ruta) y dos destinos más.
- * Va en flujo al pie de la columna. `embedded` (marcos de mockup) la deja visible en escritorio y usa
- * `activeTo` como destino activo en lugar del router.
- */
 export function NavDock({ onNew, embedded = false, activeTo }: { onNew: () => void; embedded?: boolean; activeTo?: string }) {
   const [start, end] = [primaryNav.slice(0, 2), primaryNav.slice(2)];
   return (

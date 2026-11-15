@@ -5,7 +5,6 @@ import { EssentialIcon } from "../components/essential-icon";
 import { TodayHeader } from "../components/today-header";
 import { weekDays } from "../data";
 
-/** Hoy: esenciales, franjas del día y vistazo a la semana. */
 export function TodayAppView() {
   return (
     <>

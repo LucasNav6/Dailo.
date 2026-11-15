@@ -1,12 +1,10 @@
 import type { ReactNode } from "react"
 import { cn } from "@/lib/utils"
 
-/** Velo oscuro con desenfoque que cubre todo el marco de la vista. */
 function Scrim() {
   return <div className="absolute inset-0 z-50 bg-scrim backdrop-blur-[2px]" />
 }
 
-/** Hoja inferior: velo + panel pegado abajo con asa de arrastre. `className` ajusta padding y separación. */
 function SheetOverlay({ children, className, handleClassName }: { children: ReactNode; className?: string; handleClassName?: string }) {
   return (
     <>
@@ -19,7 +17,6 @@ function SheetOverlay({ children, className, handleClassName }: { children: Reac
   )
 }
 
-/** Diálogo centrado: velo + panel de 28px de radio con márgenes laterales de 24px. */
 function DialogOverlay({ children, role = "alertdialog", className }: { children: ReactNode; role?: "dialog" | "alertdialog"; className?: string }) {
   return (
     <>

@@ -44,7 +44,6 @@ export const projectService = {
       return next
     }),
 
-  /** Elimina el proyecto, sus secciones y sus tareas (con subtareas). */
   remove: (id: string) =>
     atomically(async () => {
       const tasks = await taskAdapter.findByProjectId(id)

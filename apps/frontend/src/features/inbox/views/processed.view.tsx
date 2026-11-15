@@ -4,7 +4,6 @@ import { Emphasis } from "@/components/atoms/emphasis";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { InboxHeader } from "../components/inbox-header";
 
-/** Inbox terminado de procesar: resumen de adónde fue cada idea. */
 export function InboxProcessedView() {
   return (
     <>

@@ -4,7 +4,6 @@ import { SettingsScreen } from "@/components/layouts/settings-screen";
 import { SettingRow, SettingValue } from "@/components/molecules/setting-row";
 import { SettingsSection } from "@/components/organisms/settings-section";
 
-/** Notificaciones: recordatorio de Inbox, con aviso de que la entrega aún no está disponible. */
 export function SettingsNotificationsView() {
   return (
     <SettingsScreen title="Notificaciones" gap={6}>

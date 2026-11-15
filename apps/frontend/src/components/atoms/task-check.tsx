@@ -3,7 +3,6 @@ import { Checkbox as CheckboxPrimitive } from "radix-ui"
 import { RiCheckLine } from "@remixicon/react"
 import { cn } from "@/lib/utils"
 
-/** Círculo de 22px de la tarea: vacío con borde 2px, lleno en rojo con check al completar. */
 function TaskCheck({ className, ...props }: React.ComponentProps<typeof CheckboxPrimitive.Root>) {
   return (
     <CheckboxPrimitive.Root

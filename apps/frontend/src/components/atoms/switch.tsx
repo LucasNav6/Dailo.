@@ -2,7 +2,6 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Switch as SwitchPrimitive } from "radix-ui"
 
-/** Interruptor de 44×24 con pulgar de 20px (medidas del diseño). `size="sm"` conserva la versión compacta. */
 function Switch({
   className,
   size = "default",

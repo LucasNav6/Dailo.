@@ -1,7 +1,6 @@
 import { Skeleton } from "@/components/atoms/skeleton";
 import { SomedayHeader } from "../components/someday-header";
 
-/** Tal vez cargando: cabecera real y cuatro filas en esqueleto. */
 export function SomedayLoadingView() {
   return (
     <div aria-busy="true" className="contents">

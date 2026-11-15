@@ -3,7 +3,6 @@ import { es } from "date-fns/locale";
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
-/** Antigüedad legible como en el diseño: "Hace 5 min", "Hace 2 horas", "Ayer", "Hace 2 días", "Hace 3 semanas". */
 export function formatAge(iso: string, now: Date = new Date()): string {
   const date = new Date(iso);
   const minutes = differenceInMinutes(now, date);

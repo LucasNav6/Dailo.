@@ -10,7 +10,6 @@ const DONE = [
   { title: "Armar el brief", when: "lun 9" },
 ];
 
-/** Detalle de proyecto con la sección de completadas desplegada. */
 export function ProjectsCompletedView() {
   return (
     <>

@@ -7,7 +7,6 @@ import { EssentialIcon } from "../components/essential-icon";
 import { TodayHeader } from "../components/today-header";
 import { NOVEMBER_LOADS, TODAY, weekDays } from "../data";
 
-/** Vistazo al mes: hoja inferior con calendario sobre la vista de Hoy. */
 export function TodayMonthView() {
   return (
     <>

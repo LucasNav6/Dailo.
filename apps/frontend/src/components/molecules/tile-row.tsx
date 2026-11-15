@@ -1,7 +1,6 @@
 import type { ReactNode } from "react"
 import { cn } from "@/lib/utils"
 
-/** Opción grande con icono en baldosa de 40px y etiqueta de 17px; `danger` pinta baldosa y texto en rojo. */
 function TileRow({ icon, children, tone = "default" }: { icon: ReactNode; children: ReactNode; tone?: "default" | "danger" }) {
   return (
     <div className="flex min-h-16 items-center gap-4 border-b border-border">

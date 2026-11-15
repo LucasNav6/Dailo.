@@ -8,7 +8,6 @@ import { InboxHeader } from "../components/inbox-header";
 import { InboxList } from "../components/inbox-list";
 import { INBOX_ENTRIES } from "../data";
 
-/** Hoja para mover un elemento a un proyecto existente o crear uno nuevo. */
 export function InboxMoveProjectSheetView() {
   return (
     <>

@@ -2,7 +2,6 @@ import { Progress } from "@/components/atoms/progress";
 import { SettingsScreen } from "@/components/layouts/settings-screen";
 import { DataActions } from "../components/data-actions";
 
-/** Exportando: la copia se está preparando y se muestra su progreso. */
 export function SettingsExportProgressView() {
   return (
     <SettingsScreen title="Seguridad y datos" gap={0}>

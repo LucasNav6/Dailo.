@@ -3,7 +3,6 @@ import { Button } from "@/components/atoms/button";
 import { DetailBar } from "@/components/molecules/detail-bar";
 import { ProjectHeading } from "../components/project-heading";
 
-/** Proyecto recién creado, sin tareas. */
 export function ProjectsNoTasksView() {
   return (
     <>

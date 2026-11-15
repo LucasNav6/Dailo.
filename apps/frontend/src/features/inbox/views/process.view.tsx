@@ -3,7 +3,6 @@ import { IconButton } from "@/components/atoms/icon-button";
 import { Progress } from "@/components/atoms/progress";
 import { TileRow } from "@/components/molecules/tile-row";
 
-/** Modo procesar: un elemento a la vez, con progreso y tres destinos. Sin barra inferior. */
 export function InboxProcessView() {
   return (
     <>

@@ -4,7 +4,6 @@ import { Emphasis } from "@/components/atoms/emphasis";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { ProjectsHeader } from "../components/projects-header";
 
-/** Sin proyectos todavía: invitación a crear el primero. */
 export function ProjectsEmptyView() {
   return (
     <>

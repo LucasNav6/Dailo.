@@ -1,6 +1,5 @@
 import { RiArrowDownSLine, RiArrowUpSLine } from "@remixicon/react"
 
-/** Cabecera plegable ("Completadas · 3") con borde superior y chevron según esté abierta o cerrada. */
 function CollapseHeader({ label, open, onToggle }: { label: string; open: boolean; onToggle?: () => void }) {
   return (
     <button

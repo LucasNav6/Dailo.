@@ -13,8 +13,6 @@ export const db = new Dexie("dailo") as Dexie & {
   attachments: EntityTable<Attachment, "id">
 }
 
-// Cambios de esquema futuros: agregar db.version(2).stores({...}) sin
-// modificar la versión 1. Solo se indexa lo que se consulta.
 db.version(1).stores({
   tasks: "id, status, projectId, sectionId, parentId",
   projects: "id",
@@ -26,11 +24,9 @@ db.version(2).stores({
   attachments: "id, taskId",
 })
 
-/** Agrupa varias operaciones en una transacción atómica. */
 export const atomically = <T>(operations: () => Promise<T>) =>
   db.transaction("rw", db.tasks, db.projects, db.sections, db.attachments, operations)
 
-/** Vacía todas las tablas locales en una única transacción. */
 export const clearAllData = () =>
   db.transaction("rw", db.tables, () =>
     Promise.all(db.tables.map((table) => table.clear()))

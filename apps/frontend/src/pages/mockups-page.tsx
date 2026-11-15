@@ -1,7 +1,6 @@
 import { MockupFrame } from "@/components/layouts/mockup-frame";
 import { features } from "@/features";
 
-/** Galería de mockups: cada vista de cada feature dentro de su marco de teléfono, agrupadas por feature. */
 export function MockupsPage() {
   return (
     <div className="min-h-svh bg-selected/40 px-10 py-12">

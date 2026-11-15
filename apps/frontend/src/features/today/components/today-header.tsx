@@ -4,7 +4,6 @@ import { RiCalendarLine, RiSettings3Line } from "@remixicon/react";
 import { IconButton } from "@/components/atoms/icon-button";
 import { ScreenHeader } from "@/components/molecules/screen-header";
 
-/** Cabecera de las vistas de Hoy: fecha, título y accesos a "Ver mes" y "Configuración". */
 export function TodayHeader({ eyebrow, title, onMonth }: { eyebrow: string; title: ReactNode; onMonth?: () => void }) {
   return (
     <ScreenHeader

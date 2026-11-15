@@ -6,18 +6,13 @@ const LOAD_WIDTH = { 1: "w-1.5", 2: "w-2", 3: "w-2.5" } as const;
 const WEEKDAYS = ["L", "M", "M", "J", "V", "S", "D"];
 
 type MonthCalendarProps = {
-  /** Cualquier fecha dentro del mes a mostrar. */
   month: Date;
   today: Date;
-  /** Carga de tareas (1–3) por día del mes visible. */
   loads?: Record<number, 1 | 2 | 3>;
-  /** Día elegido (marcado con borde); distinto de `today`. */
   selected?: Date;
-  /** Hace que cada día sea un botón. */
   onSelect?: (day: Date) => void;
 };
 
-/** Cuadrícula mensual lunes→domingo con días de otros meses atenuados y marca de carga por día. */
 function MonthCalendar({ month, today, loads = {}, selected, onSelect }: MonthCalendarProps) {
   const first = startOfWeek(startOfMonth(month), { weekStartsOn: 1 })
   const last = endOfWeek(endOfMonth(month), { weekStartsOn: 1 })

@@ -2,7 +2,6 @@ import { attachmentAdapter } from "@/adapters/attachment.adapter"
 import { MAX_ATTACHMENT_SIZE, type Attachment } from "@/models/attachment.model"
 
 export const attachmentService = {
-  /** Guarda un archivo en la tarea. Falla si supera el tamaño máximo. */
   add: async (taskId: string, file: File) => {
     if (file.size > MAX_ATTACHMENT_SIZE) throw new Error("File too large")
     const attachment: Attachment = {

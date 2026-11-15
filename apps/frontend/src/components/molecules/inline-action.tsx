@@ -1,7 +1,6 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-/** Acción en línea alineada con las filas de tarea ("＋ Planificar algo"): icono de 22px y texto de 15px. */
 function InlineAction({ icon, className, children, type = "button", ...props }: React.ComponentProps<"button"> & { icon: React.ReactNode }) {
   return (
     <button

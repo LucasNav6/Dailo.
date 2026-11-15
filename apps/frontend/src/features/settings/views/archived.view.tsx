@@ -2,7 +2,6 @@ import { SettingsScreen } from "@/components/layouts/settings-screen";
 import { ArchivedList } from "../components/archived-list";
 import { ARCHIVED } from "../data";
 
-/** Proyectos archivados, con restaurar y eliminar. */
 export function SettingsArchivedView() {
   return (
     <SettingsScreen title="Archivados">

@@ -9,7 +9,6 @@ import { EssentialIcon } from "../components/essential-icon";
 import { TodayHeader } from "../components/today-header";
 import { weekDays } from "../data";
 
-/** Límite de esenciales alcanzado: hoja para elegir cuál reemplazar. */
 export function TodayEssentialsFullView() {
   return (
     <>

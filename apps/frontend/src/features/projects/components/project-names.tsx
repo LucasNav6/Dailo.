@@ -1,6 +1,5 @@
 import { PROJECT_NAMES } from "../data";
 
-/** Lista simple de nombres de proyecto (la que queda detrás de hojas y diálogos). */
 export function ProjectNames() {
   return (
     <ul className="flex flex-col">

@@ -6,7 +6,6 @@ import { InlineError } from "@/components/molecules/inline-error";
 import { ArchivedList } from "../components/archived-list";
 import { ARCHIVED } from "../data";
 
-/** Al restaurar un archivado cuyo nombre ya está en uso: proponer otro nombre. */
 export function SettingsRestoreConflictView() {
   return (
     <>

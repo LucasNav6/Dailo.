@@ -4,7 +4,6 @@ import { WeekStrip } from "@/components/molecules/week-strip";
 import { TodayHeader } from "../components/today-header";
 import { weekDays } from "../data";
 
-/** Hoy cargando: cabecera y semana reales, listas en esqueleto. */
 export function TodayLoadingView() {
   return (
     <div aria-busy="true" className="contents">

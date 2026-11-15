@@ -5,12 +5,10 @@ import { cn } from "@/lib/utils"
 type ChoiceRowProps = {
   title: ReactNode;
   description?: ReactNode;
-  /** Icono propio; por defecto un radio (vacío o relleno según `selected`). */
   icon?: ReactNode;
   selected?: boolean;
 };
 
-/** Opción de hoja inferior: icono, título de 17px y descripción opcional, con 56px de alto mínimo. */
 function ChoiceRow({ title, description, icon, selected = false }: ChoiceRowProps) {
   return (
     <div className="flex min-h-14 items-center gap-4">

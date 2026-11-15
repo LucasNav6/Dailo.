@@ -14,7 +14,6 @@ export const taskAdapter = {
   update: (id: string, changes: Partial<Task>) => db.tasks.update(id, changes),
   remove: (id: string) => db.tasks.delete(id),
   removeMany: (ids: string[]) => db.tasks.bulkDelete(ids),
-  /** Deja sin sección las tareas de una sección. */
   clearSection: (sectionId: string, updatedAt: string) =>
     db.tasks
       .where("sectionId")

@@ -11,11 +11,9 @@ type ConfirmDialogProps = {
   onOpenChange: (open: boolean) => void;
   title: string;
   description?: ReactNode;
-  /** Campos y botones (apilados en columna, como en el diseño). */
   children: ReactNode;
 };
 
-/** Diálogo de confirmación real con el aspecto del diseño: título en Fraunces de 24px y acciones apiladas. */
 function ConfirmDialog({ open, onOpenChange, title, description, children }: ConfirmDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>

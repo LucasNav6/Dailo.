@@ -9,22 +9,15 @@ import { cn } from "@/lib/utils"
 
 type ComposeSheetProps = {
   placeholder: string;
-  /** Texto escrito en el campo principal; sin él se muestra el placeholder con el cursor. */
   value?: string;
-  /** Cursor al final del texto escrito (campo con foco). */
   caretAfterValue?: boolean;
-  /** Texto de la descripción; al estar presente se muestra el campo de descripción. */
   description?: string;
-  /** Ámbito elegido (chip con carpeta); solo en proyectos. */
   scope?: string;
-  /** Mensaje de error en línea bajo el campo. */
   error?: string;
-  /** Contador de caracteres ("250/250") en el color de error. */
   counter?: string;
   canSave: boolean;
 };
 
-/** Hoja de captura: campo principal de 22px, descripción, ámbito, error/contador y barra con "Guardar". */
 function ComposeSheet({ placeholder, value, caretAfterValue, description, scope, error, counter, canSave }: ComposeSheetProps) {
   const hasDescription = description !== undefined
   return (

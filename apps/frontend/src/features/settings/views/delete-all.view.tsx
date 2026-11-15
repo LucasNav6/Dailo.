@@ -3,7 +3,6 @@ import { Button } from "@/components/atoms/button";
 import { DialogOverlay } from "@/components/layouts/overlay-layout";
 import { SettingsScreen } from "@/components/layouts/settings-screen";
 
-/** Eliminar todos los datos locales: confirmación irreversible. */
 export function SettingsDeleteAllView() {
   return (
     <>

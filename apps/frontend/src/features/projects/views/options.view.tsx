@@ -6,7 +6,6 @@ import { ProjectList } from "../components/project-list";
 import { ProjectsHeader } from "../components/projects-header";
 import { PROJECTS } from "../data";
 
-/** Menú de opciones de un proyecto de la lista. */
 export function ProjectsOptionsView() {
   return (
     <>

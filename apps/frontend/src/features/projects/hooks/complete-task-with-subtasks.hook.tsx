@@ -2,7 +2,6 @@ import { useCallback } from "react";
 import type { Task } from "@/models/task.model";
 import { taskService } from "@/services/task.service";
 
-/** Completa una tarea; con `withSubtasks` también completa sus subtareas pendientes. */
 export function useCompleteTaskWithSubtasks() {
   return useCallback(async (task: Task, subtasks: Task[], withSubtasks: boolean) => {
     if (withSubtasks) {

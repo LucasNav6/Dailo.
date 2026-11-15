@@ -1,6 +1,5 @@
 import { Skeleton } from "@/components/atoms/skeleton"
 
-/** Grupo esqueleto: barra de título de 90×12 y filas con círculo y barra de ancho variable (porcentajes). */
 function SkeletonSection({ widths }: { widths: number[] }) {
   return (
     <>

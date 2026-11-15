@@ -10,7 +10,6 @@ import type {
   TimeOfDay,
 } from "@/models/task.model"
 
-/** Decisión explícita que saca un elemento de Inbox. */
 export type InboxDecision =
   | {
       type: "activate"
@@ -24,7 +23,6 @@ export type InboxDecision =
 
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/
 
-/** YYYY-MM-DD que existe en el calendario (sin zona horaria). */
 function isValidDate(value: string) {
   const match = ISO_DATE.exec(value)
   if (!match) return false
@@ -53,7 +51,6 @@ async function assertValid(task: Task) {
     if (section.projectId !== task.projectId)
       throw new Error("Section does not belong to the task project")
   }
-  // La cadena de ancestros debe existir y no volver a la propia tarea.
   for (let id = task.parentId; id; ) {
     if (id === task.id) throw new Error("Task hierarchy cannot have cycles")
     const parent = await taskAdapter.findById(id)
@@ -62,7 +59,6 @@ async function assertValid(task: Task) {
   }
 }
 
-/** Elimina las tareas indicadas y todas sus subtareas. Requiere transacción. */
 export async function removeTaskTrees(rootIds: string[]) {
   const ids = [...rootIds]
   for (let i = 0; i < ids.length; i++) {
@@ -112,11 +108,6 @@ export const taskService = {
       return next
     }),
 
-  /**
-   * Procesa un elemento de Inbox con una decisión explícita. Es la única vía
-   * por la que un elemento abandona Inbox. `edits` (título/descripción) se
-   * guardan en la misma operación.
-   */
   decide: (
     id: string,
     decision: InboxDecision,
@@ -158,13 +149,11 @@ export const taskService = {
       return next
     }),
 
-  /** Elimina la tarea y sus subtareas. */
   remove: (id: string) => atomically(() => removeTaskTrees([id])),
 
   findById: (id: string) => taskAdapter.findById(id),
   findAll: () => taskAdapter.findAll(),
   findByStatus: taskAdapter.findByStatus,
-  /** Inbox con las capturas más recientes primero. */
   findInbox: async () =>
     (await taskAdapter.findByStatus("inbox")).sort(
       (a, b) =>

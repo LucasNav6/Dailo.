@@ -4,7 +4,6 @@ import { NumberPicker } from "@/components/molecules/number-picker";
 import { SettingRow, SettingValue } from "@/components/molecules/setting-row";
 import { SettingsSection } from "@/components/organisms/settings-section";
 
-/** Preferencias: rutina diaria, franjas horarias, esenciales y apariencia. */
 export function SettingsPreferencesView() {
   return (
     <SettingsScreen title="Preferencias">

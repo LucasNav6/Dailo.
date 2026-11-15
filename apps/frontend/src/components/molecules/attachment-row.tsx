@@ -7,10 +7,6 @@ type AttachmentStatus =
   | { kind: "uploading"; progress: number; text: string }
   | { kind: "error"; text: string };
 
-/**
- * Archivo adjunto. `inline` muestra el tamaño a la derecha (detalle de tarea); `stacked` apila nombre y
- * estado (guardando con progreso o error con "Quitar") y separa filas con un borde.
- */
 function AttachmentRow({ name, status, variant = "inline" }: { name: string; status: AttachmentStatus; variant?: "inline" | "stacked" }) {
   const icon = (
     <span className="inline-flex text-subtle [&_svg]:size-[22px]">

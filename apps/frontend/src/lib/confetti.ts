@@ -1,6 +1,5 @@
 const COLORS = ["#e5472c", "#1e3329", "#3f5a4b", "#f2b84b", "#7fb069", "#dce7d5"]
 
-/** Lanza confeti desde el centro de `origin`. No hace nada si el usuario prefiere menos movimiento. */
 export function confetti(origin: Element, count = 22) {
   if (typeof window === "undefined" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
   const rect = origin.getBoundingClientRect()

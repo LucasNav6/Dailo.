@@ -6,7 +6,6 @@ import { EssentialIcon } from "@/features/today/components/essential-icon";
 import { TodayHeader } from "@/features/today/components/today-header";
 import { weekDays } from "@/features/today/data";
 
-/** Aviso persistente de que hay una versión nueva de Dailo, sobre la vista de Hoy. */
 export function GeneralUpdateBannerView() {
   return (
     <>

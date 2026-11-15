@@ -9,15 +9,11 @@ type ComposeFormProps = {
   placeholder: string;
   initialTitle?: string;
   initialDescription?: string;
-  /** Devuelve un mensaje de error para mostrar en línea, o nada si se guardó. */
   onSave: (title: string, description: string) => Promise<string | void>;
-  /** Máximo de caracteres de la descripción. */
   descriptionLimit?: number;
-  /** Oculta el botón de descripción (p. ej. subtareas). */
   withDescription?: boolean;
 };
 
-/** Formulario de captura real: campo principal de 22px, descripción opcional con contador y botón "Guardar". */
 function ComposeForm({ placeholder, initialTitle = "", initialDescription = "", onSave, descriptionLimit = 250, withDescription = true }: ComposeFormProps) {
   const [title, setTitle] = useState(initialTitle)
   const [description, setDescription] = useState(initialDescription)

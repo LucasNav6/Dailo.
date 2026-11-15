@@ -6,15 +6,11 @@ import type { InboxEntry } from "../data";
 
 type InboxListProps = {
   entries: InboxEntry[];
-  /** Fila resaltada (menú abierto). */
   highlighted?: number;
-  /** Abre el detalle del elemento `index`. */
   onOpen?: (index: number) => void;
-  /** Inicia el modo procesar. */
   onProcess?: () => void;
 };
 
-/** Botón "Procesar N" y la lista de elementos capturados con su antigüedad y menú de opciones. */
 export function InboxList({ entries, highlighted, onOpen, onProcess }: InboxListProps) {
   return (
     <>

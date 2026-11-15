@@ -4,7 +4,6 @@ import { Switch } from "@/components/atoms/switch";
 import { BackBar } from "@/components/molecules/back-bar";
 import { ConflictOption } from "@/components/molecules/conflict-option";
 
-/** Resolver un conflicto de importación: conservar el actual, el importado o ambos. */
 export function SettingsImportConflictView() {
   return (
     <>

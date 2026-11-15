@@ -4,7 +4,6 @@ import { Emphasis } from "@/components/atoms/emphasis";
 import { IconButton } from "@/components/atoms/icon-button";
 import { EmptyState } from "@/components/molecules/empty-state";
 
-/** El proyecto abierto ya no existe (borrado desde otra pestaña o dispositivo). */
 export function ProjectsNotFoundView() {
   return (
     <>
