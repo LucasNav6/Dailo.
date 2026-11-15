@@ -2,7 +2,6 @@
 @import "tw-animate-css";
 @custom-variant dark (&:is(.dark *));
 
-/* Paleta del diseño Dailo: verde tinta sobre fondo menta, acento rojo y superficies claras. */
 :root {
   --radius: 1rem;
   --radius-dock: 1rem;
@@ -43,7 +42,6 @@
   --sidebar-border: #cbd8c4;
   --sidebar-ring: #3f5a4b;
 
-  /* Tokens propios del diseño */
   --subtle: #3f5a4b;
   --surface: #fbfcfa;
   --selected: #dce7d5;
@@ -59,7 +57,6 @@
 }
 
 .dark {
-  /* Derivado de la paleta clara (mismos matices verdes); el diseño no trae pantallas oscuras. */
   --background: #121a15;
   --foreground: #eaf0e6;
 
@@ -230,8 +227,6 @@
   }
 }
 
-/* Animaciones al completar una tarea. */
-/* Línea de tachado: se dibuja de izquierda a derecha y sigue cada línea del texto. */
 .strike {
   background-image: linear-gradient(currentColor, currentColor);
   background-repeat: no-repeat;
