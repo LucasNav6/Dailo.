@@ -12,6 +12,8 @@ import { SkeletonEssentials, SkeletonSection } from "@/components/molecules/skel
 import { WeekStrip, type WeekDay } from "@/components/molecules/week-strip";
 import { SubtaskToggle } from "@/components/molecules/subtask-toggle";
 import { MonthCalendar } from "@/components/organisms/month-calendar";
+import { EssentialsDone } from "@/components/organisms/essentials-done";
+import { phraseFor } from "@/features/today/lib/done-phrases";
 import { EssentialsBox } from "@/components/organisms/essentials-box";
 import { OverdueCard } from "@/components/organisms/overdue-card";
 import { TaskSection, type TaskItem } from "@/components/organisms/task-section";
@@ -50,6 +52,7 @@ export function TodayPage() {
   const { isRecent, markCompleted } = useRecentlyCompleted();
   const [expanded, setExpanded] = useState<string[]>([]);
   const [openPast, setOpenPast] = useState<string[]>([]);
+  const [doneOpenOn, setDoneOpenOn] = useState<string | null>(null);
   const isToday = isSameDay(selected, today);
   const selectedISO = toISODate(selected);
 
@@ -215,13 +218,24 @@ export function TodayPage() {
         )
       ) : (
         <>
-          {essentials.length > 0 && (
-            <EssentialsBox
-              done={essentials.filter((task) => task.status === "completed").length}
-              max={preferences.maxEssentialTasks}
-              tasks={essentials.map(item)}
-            />
-          )}
+          {essentials.length > 0 &&
+            (essentials.every((task) => task.status === "completed" && !isRecent(task.id)) ? (
+              <EssentialsDone
+                count={essentials.length}
+                total={essentials.length}
+                lead={phraseFor(selectedISO).lead}
+                emphasis={phraseFor(selectedISO).emphasis}
+                open={doneOpenOn === selectedISO}
+                onToggle={() => setDoneOpenOn((current) => (current === selectedISO ? null : selectedISO))}
+                tasks={essentials.map(item)}
+              />
+            ) : (
+              <EssentialsBox
+                done={essentials.filter((task) => task.status === "completed").length}
+                max={preferences.maxEssentialTasks}
+                tasks={essentials.map(item)}
+              />
+            ))}
           {sections.map(renderSection)}
           {!isToday && <InlineAction icon={<RiAddLine aria-hidden />} onClick={() => navigate("/inbox")}>Planificar algo</InlineAction>}
         </>
