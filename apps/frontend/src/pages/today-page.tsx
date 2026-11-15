@@ -18,9 +18,9 @@ import { useBringOverdueToToday } from "@/features/today/hooks/bring-overdue-to-
 import { useSetTaskDone } from "@/features/today/hooks/set-task-done.hook";
 import { TodayHeader } from "@/features/today/components/today-header";
 import { TodayEmptyState } from "@/features/today/views/empty.view";
-import { useInbox } from "@/hooks/use-inbox";
-import { usePreferences } from "@/hooks/use-settings";
-import { useTasks } from "@/hooks/use-tasks";
+import { useInbox } from "@/features/inbox/hooks/list-inbox.hook";
+import { usePreferences } from "@/features/settings/hooks/get-preferences.hook";
+import { useTasks } from "@/features/projects/hooks/list-tasks.hook";
 import { longDate, overdueLabel, shortDay, toISODate, weekdayLetter, weekOf } from "@/lib/dates";
 import type { Task, TimeOfDay } from "@/models/task.model";
 

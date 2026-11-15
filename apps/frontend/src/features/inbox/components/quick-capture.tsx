@@ -1,7 +1,7 @@
 import { useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { RiArrowUpLine, RiCloseLine, RiInboxArchiveLine, RiLoader4Line } from "@remixicon/react";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import { useQuickCapture } from "@/hooks/use-quick-capture";
+import { useMediaQuery } from "@/lib/use-media-query";
+import { useCaptureItem } from "../hooks/capture-item.hook";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,7 +30,7 @@ type QuickCaptureProps = {
 
 export function QuickCapture({ open, onOpenChange, onCaptured }: QuickCaptureProps) {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
-  const capture = useQuickCapture();
+  const capture = useCaptureItem();
   const [confirmDiscard, setConfirmDiscard] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 

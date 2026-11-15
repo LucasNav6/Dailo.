@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useOutletContext } from "react-router";
-import { useInbox } from "@/hooks/use-inbox";
+import { useInbox } from "@/features/inbox/hooks/list-inbox.hook";
 import { formatAge } from "@/lib/age";
 import type { AppOutletContext } from "@/components/layouts/app-shell";
 import { PageColumn } from "@/components/layouts/page-column";

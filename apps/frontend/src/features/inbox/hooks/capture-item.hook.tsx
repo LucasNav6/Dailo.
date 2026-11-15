@@ -4,7 +4,7 @@ import { taskService } from "@/services/task.service"
 type CaptureStatus = "idle" | "saving" | "error"
 
 /** Estado de la captura rápida: una captura = un elemento de Inbox. */
-export function useQuickCapture() {
+export function useCaptureItem() {
   const [text, setText] = useState("")
   const [status, setStatus] = useState<CaptureStatus>("idle")
   const saving = useRef(false)

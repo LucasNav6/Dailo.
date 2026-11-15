@@ -8,7 +8,7 @@ import { PageColumn } from "@/components/layouts/page-column";
 import { IdeaList } from "@/features/someday/components/idea-list";
 import { SomedayHeader } from "@/features/someday/components/someday-header";
 import { SomedayLoadingView } from "@/features/someday/views/loading.view";
-import { useTasks } from "@/hooks/use-tasks";
+import { useTasks } from "@/features/projects/hooks/list-tasks.hook";
 import { formatAge } from "@/lib/age";
 import { useDiscardIdea } from "@/features/someday/hooks/discard-idea.hook";
 import { usePlanIdea } from "@/features/someday/hooks/plan-idea.hook";

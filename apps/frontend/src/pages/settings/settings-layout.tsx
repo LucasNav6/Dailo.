@@ -5,7 +5,7 @@ import {
   RiEqualizerLine,
   type RemixiconComponentType,
 } from "@remixicon/react"
-import { useMediaQuery } from "@/hooks/use-media-query"
+import { useMediaQuery } from "@/lib/use-media-query"
 import { cn } from "@/lib/utils"
 import { NavCard } from "@/components/molecules/nav-card"
 

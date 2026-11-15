@@ -1,5 +1,5 @@
 import { RiInformationLine } from "@remixicon/react"
-import { useNotificationSettings } from "@/hooks/use-settings"
+import { useNotificationSettings } from "@/features/settings/hooks/get-notification-settings.hook"
 import type { NotificationSettings } from "@/models/setting.model"
 import { Switch } from "@/components/atoms/switch"
 import { SettingsScreen } from "@/components/layouts/settings-screen"

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import { RiSideBarLine } from "@remixicon/react"
 import { Slot } from "radix-ui"
 
-import { useIsMobile } from "@/hooks/use-mobile"
+import { useIsMobile } from "@/lib/use-mobile"
 import { Button } from "@/components/atoms/button"
 import { Input } from "@/components/atoms/input"
 import { Separator } from "@/components/atoms/separator"

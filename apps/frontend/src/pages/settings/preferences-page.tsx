@@ -7,7 +7,7 @@ import {
   RiSunLine,
   type RemixiconComponentType,
 } from "@remixicon/react"
-import { usePreferences } from "@/hooks/use-settings"
+import { usePreferences } from "@/features/settings/hooks/get-preferences.hook"
 import type { Theme } from "@/lib/theme"
 import { useChangeTheme } from "@/features/settings/hooks/change-theme.hook"
 import { useUpdatePreferences } from "@/features/settings/hooks/update-preferences.hook"

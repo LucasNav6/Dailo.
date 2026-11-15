@@ -17,8 +17,8 @@ import { useCreateProject } from "@/features/projects/hooks/create-project.hook"
 import { useDeleteProject } from "@/features/projects/hooks/delete-project.hook";
 import { useUpdateProject } from "@/features/projects/hooks/update-project.hook";
 import { ProjectsLoadingView } from "@/features/projects/views/loading.view";
-import { useProjects } from "@/hooks/use-projects";
-import { useTasks } from "@/hooks/use-tasks";
+import { useProjects } from "@/features/projects/hooks/list-projects.hook";
+import { useTasks } from "@/features/projects/hooks/list-tasks.hook";
 import type { Project } from "@/models/project.model";
 
 /** Proyectos real: lista con progreso, crear/editar en hoja, opciones y eliminación con confirmación. */

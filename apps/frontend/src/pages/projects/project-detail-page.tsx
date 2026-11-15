@@ -1,6 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
-import { useLiveQuery } from "dexie-react-hooks";
 import { RiAddLine, RiArrowLeftLine, RiDeleteBinLine, RiFolderLine, RiPencilLine } from "@remixicon/react";
 import { Button } from "@/components/atoms/button";
 import { Emphasis } from "@/components/atoms/emphasis";
@@ -20,9 +19,9 @@ import { ComposeForm } from "@/components/organisms/compose-form";
 import { AddTask } from "@/features/projects/components/add-task";
 import { ProjectHeading } from "@/features/projects/components/project-heading";
 import { SubtaskToggle } from "@/features/projects/components/subtask-toggle";
-import { useTasks } from "@/hooks/use-tasks";
+import { useTasks } from "@/features/projects/hooks/list-tasks.hook";
 import { shortDay } from "@/lib/dates";
-import { projectService } from "@/services/project.service";
+import { useProject } from "@/features/projects/hooks/get-project.hook";
 import { useAddTask } from "@/features/projects/hooks/add-task.hook";
 import { useCompleteTaskWithSubtasks } from "@/features/projects/hooks/complete-task-with-subtasks.hook";
 import { useDeleteProject } from "@/features/projects/hooks/delete-project.hook";
@@ -35,7 +34,7 @@ export function ProjectDetailPage() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const project = useLiveQuery(async () => (await projectService.findById(id)) ?? null, [id]);
+  const project = useProject(id);
   const { tasks, isLoading } = useTasks();
   const addTaskToProject = useAddTask(id);
   const setTaskDone = useSetTaskDone();

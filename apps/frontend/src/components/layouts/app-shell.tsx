@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ComponentType } from "react";
 import { Outlet } from "react-router";
 import { NavAside } from "@/components/organisms/nav-aside";
 import { NavDock } from "@/components/organisms/nav-dock";
-import { QuickCapture } from "@/components/organisms/quick-capture";
 import { Snackbar } from "@/components/molecules/snackbar";
 
 /** Contexto que el shell ofrece a las pantallas (p. ej. para abrir la captura desde un estado vacío). */
@@ -12,7 +11,10 @@ export type AppOutletContext = { openCapture: () => void };
  * Estructura de la app: columna con el contenido desplazable y la barra inferior de 88px en flujo
  * (móvil), o aside + contenido (escritorio). Cada pantalla pinta su propia cabecera.
  */
-export function AppShell() {
+/** Hoja de captura que el shell abre desde "Nuevo"; la aporta la feature de Inbox. */
+export type CaptureComponent = ComponentType<{ open: boolean; onOpenChange: (open: boolean) => void; onCaptured: () => void }>;
+
+export function AppShell({ capture: Capture }: { capture: CaptureComponent }) {
   const [collapsed, setCollapsed] = useState(false);
   const [captureOpen, setCaptureOpen] = useState(false);
   const [notice, setNotice] = useState(false);
@@ -35,7 +37,7 @@ export function AppShell() {
         </main>
         <NavDock onNew={openCapture} />
       </div>
-      <QuickCapture open={captureOpen} onOpenChange={setCaptureOpen} onCaptured={() => setNotice(true)} />
+      <Capture open={captureOpen} onOpenChange={setCaptureOpen} onCaptured={() => setNotice(true)} />
       <div className="pointer-events-none fixed inset-x-4 bottom-[100px] z-[60] lg:bottom-6 lg:left-auto lg:right-6 lg:inset-x-auto">
         {notice && <Snackbar message="Guardado en Inbox" />}
       </div>

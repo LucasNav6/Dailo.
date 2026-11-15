@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router";
 import { TooltipProvider } from "@/components/atoms/tooltip";
 import { AppShell } from "@/components/layouts/app-shell";
+import { QuickCapture } from "@/features/inbox/components/quick-capture";
 import { PagePlaceholder } from "@/components/layouts/page-placeholder";
 import { allNav } from "@/lib/navigation";
 import { InboxPage } from "@/pages/inbox-page";
@@ -19,7 +20,7 @@ export default function App() {
     <TooltipProvider>
       <Routes>
         <Route path="mockups" element={<MockupsPage />} />
-        <Route element={<AppShell />}>
+        <Route element={<AppShell capture={QuickCapture} />}>
           <Route index element={<Navigate to="/today" replace />} />
           <Route path="settings" element={<SettingsLayout />}>
             <Route index element={<SettingsIndex />} />
