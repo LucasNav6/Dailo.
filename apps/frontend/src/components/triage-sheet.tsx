@@ -122,7 +122,7 @@ function Flow({ task, source, intent, onClose }: Props & { task: Task }) {
 function StepHeader({ title, onBack }: { title: string; onBack: () => void }) {
   return (
     <div className="flex items-center gap-3">
-      <Button type="button" variant="outline" size="icon" onClick={onBack} aria-label="Volver">
+      <Button type="button" variant="ghost" size="icon" onClick={onBack} aria-label="Volver">
         <RiArrowLeftLine aria-hidden />
       </Button>
       <span className="text-base font-semibold">{title}</span>
