@@ -109,7 +109,7 @@ export function ProjectDetailPage() {
     );
     return (
       <Fragment key={task.id}>
-        <TaskRow id={`task-${task.id}`} title={task.title} checked={task.status === "completed"} onCheckedChange={(done) => toggle(task, done)} className="py-2.5" meta={meta || undefined} time={task.status === "completed" && task.completedAt ? shortDay(task.completedAt.slice(0, 10)) : undefined} />
+        <TaskRow onOpen={() => navigate(`/projects/${project.id}/tasks/${task.id}`)} id={`task-${task.id}`} title={task.title} checked={task.status === "completed"} onCheckedChange={(done) => toggle(task, done)} className="py-2.5" meta={meta || undefined} time={task.status === "completed" && task.completedAt ? shortDay(task.completedAt.slice(0, 10)) : undefined} />
         {open && subs.map((sub) => (
           <SubtaskRow key={sub.id} title={sub.title} checked={sub.status === "completed"} onCheckedChange={(done) => void setTaskDone(sub.id, done)} />
         ))}

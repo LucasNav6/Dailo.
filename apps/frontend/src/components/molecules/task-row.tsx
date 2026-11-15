@@ -14,25 +14,37 @@ type TaskRowProps = {
   meta?: ReactNode
   className?: string
   id?: string
+  /** Si se define, tocar el título abre la tarea en vez de completarla. */
+  onOpen?: () => void
 };
 
 /** Fila de tarea: círculo, título (máx. 2 líneas, tachado si está hecha) y etiqueta opcional a la derecha. */
-function TaskRow({ title, checked = false, onCheckedChange, time, timeIcon, meta, className, id }: TaskRowProps) {
+function TaskRow({ title, checked = false, onCheckedChange, time, timeIcon, meta, className, id, onOpen }: TaskRowProps) {
   const checkId = id ?? `task-${title}`
   return (
     <li className={cn("flex list-none items-start gap-[15px] py-[9px] pl-[5px] text-[17px] leading-[1.35] text-foreground", className)}>
       <span className="mt-px inline-flex">
         <TaskCheck id={checkId} checked={checked} onCheckedChange={(value) => onCheckedChange?.(value === true)} aria-label={`Completar ${title}`} />
       </span>
-      <label
-        htmlFor={checkId}
-        className={cn(
-          "line-clamp-2 min-w-0 flex-1",
-          checked && "text-muted-foreground line-through decoration-wavy decoration-1"
-        )}
-      >
-        {title}
-      </label>
+      {onOpen ? (
+        <button
+          type="button"
+          onClick={onOpen}
+          className={cn("line-clamp-2 min-w-0 flex-1 rounded-lg text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50", checked && "text-muted-foreground line-through decoration-wavy decoration-1")}
+        >
+          {title}
+        </button>
+      ) : (
+        <label
+          htmlFor={checkId}
+          className={cn(
+            "line-clamp-2 min-w-0 flex-1",
+            checked && "text-muted-foreground line-through decoration-wavy decoration-1"
+          )}
+        >
+          {title}
+        </label>
+      )}
       {meta && <span className="shrink-0 self-center whitespace-nowrap">{meta}</span>}
       {!meta && (time || timeIcon) && (
         <span className="inline-flex shrink-0 items-center gap-1.5 pt-[3px] text-[13px] whitespace-nowrap text-muted-foreground [&>svg]:size-4">

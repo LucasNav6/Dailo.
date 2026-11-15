@@ -1,4 +1,5 @@
 import { atomically } from "@/adapters/database"
+import { attachmentAdapter } from "@/adapters/attachment.adapter"
 import { projectAdapter } from "@/adapters/project.adapter"
 import { sectionAdapter } from "@/adapters/section.adapter"
 import { taskAdapter } from "@/adapters/task.adapter"
@@ -68,6 +69,7 @@ export async function removeTaskTrees(rootIds: string[]) {
     const children = await taskAdapter.findByParentId(ids[i])
     ids.push(...children.map((child) => child.id))
   }
+  await attachmentAdapter.removeByTaskIds(ids)
   await taskAdapter.removeMany(ids)
 }
 

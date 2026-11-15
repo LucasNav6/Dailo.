@@ -10,6 +10,7 @@ import { NotificationsPage } from "@/pages/settings/notifications-page";
 import { PreferencesPage } from "@/pages/settings/preferences-page";
 import { ProjectDetailPage } from "@/pages/projects/project-detail-page";
 import { ProjectsPage } from "@/pages/projects/projects-page";
+import { TaskDetailPage } from "@/pages/projects/task-detail-page";
 import { TodayPage } from "@/pages/today-page";
 import { SomedayPage } from "@/pages/someday-page";
 import { SecurityPage } from "@/pages/settings/security-page";
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="inbox" element={<InboxPage />} />
           <Route path="projects" element={<ProjectsPage />} />
           <Route path="projects/:id" element={<ProjectDetailPage />} />
+          <Route path="projects/:id/tasks/:taskId" element={<TaskDetailPage />} />
           <Route path="today" element={<TodayPage />} />
           <Route path="someday" element={<SomedayPage />} />
           {allNav.filter(({ to }) => to !== "/settings" && to !== "/inbox" && to !== "/someday" && to !== "/today" && to !== "/projects").map(({ to, label }) => (

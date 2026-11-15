@@ -33,3 +33,17 @@ export function overdueLabel(value: string, today: Date = new Date()) {
   const days = differenceInCalendarDays(today, fromISODate(value));
   return days <= 1 ? "Venció ayer" : `Venció hace ${days} días`;
 }
+
+/** "Hoy", "Mañana" o "Vie 21 nov" para una fecha planificada. */
+export function dayLabel(value: string, today: Date = new Date()) {
+  const diff = differenceInCalendarDays(fromISODate(value), today);
+  if (diff === 0) return "Hoy";
+  if (diff === 1) return "Mañana";
+  return dateLabel(value);
+}
+
+/** "Vie 21 nov". */
+export function dateLabel(value: string) {
+  const text = format(fromISODate(value), "EEE d MMM", { locale: es }).replace(/\./g, "");
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}

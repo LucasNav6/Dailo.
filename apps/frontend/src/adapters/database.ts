@@ -1,5 +1,6 @@
 import Dexie, { type EntityTable } from "dexie"
 import type { Project } from "@/models/project.model"
+import type { Attachment } from "@/models/attachment.model"
 import type { Section } from "@/models/section.model"
 import type { Setting } from "@/models/setting.model"
 import type { Task } from "@/models/task.model"
@@ -9,6 +10,7 @@ export const db = new Dexie("dailo") as Dexie & {
   projects: EntityTable<Project, "id">
   sections: EntityTable<Section, "id">
   settings: EntityTable<Setting, "key">
+  attachments: EntityTable<Attachment, "id">
 }
 
 // Cambios de esquema futuros: agregar db.version(2).stores({...}) sin
@@ -20,9 +22,13 @@ db.version(1).stores({
   settings: "key",
 })
 
+db.version(2).stores({
+  attachments: "id, taskId",
+})
+
 /** Agrupa varias operaciones en una transacción atómica. */
 export const atomically = <T>(operations: () => Promise<T>) =>
-  db.transaction("rw", db.tasks, db.projects, db.sections, operations)
+  db.transaction("rw", db.tasks, db.projects, db.sections, db.attachments, operations)
 
 /** Vacía todas las tablas locales en una única transacción. */
 export const clearAllData = () =>

@@ -13,10 +13,12 @@ type ComposeFormProps = {
   onSave: (title: string, description: string) => Promise<string | void>;
   /** Máximo de caracteres de la descripción. */
   descriptionLimit?: number;
+  /** Oculta el botón de descripción (p. ej. subtareas). */
+  withDescription?: boolean;
 };
 
 /** Formulario de captura real: campo principal de 22px, descripción opcional con contador y botón "Guardar". */
-function ComposeForm({ placeholder, initialTitle = "", initialDescription = "", onSave, descriptionLimit = 250 }: ComposeFormProps) {
+function ComposeForm({ placeholder, initialTitle = "", initialDescription = "", onSave, descriptionLimit = 250, withDescription = true }: ComposeFormProps) {
   const [title, setTitle] = useState(initialTitle)
   const [description, setDescription] = useState(initialDescription)
   const [showDescription, setShowDescription] = useState(initialDescription.length > 0)
@@ -79,7 +81,7 @@ function ComposeForm({ placeholder, initialTitle = "", initialDescription = "", 
         </div>
       )}
       <div className="flex items-center gap-1.5 pt-3">
-        <IconButton
+        {withDescription && <IconButton
           aria-label="Añadir descripción"
           aria-pressed={showDescription}
           type="button"
@@ -87,7 +89,7 @@ function ComposeForm({ placeholder, initialTitle = "", initialDescription = "", 
           className={showDescription ? "bg-selected text-foreground" : title ? "text-foreground" : "text-subtle"}
         >
           <RiAlignLeft aria-hidden />
-        </IconButton>
+        </IconButton>}
         <span className="flex-1" />
         <Button type="submit" variant="ghost" disabled={!canSave} className={cn("h-11 px-2 disabled:opacity-100", canSave ? "text-foreground" : "text-faint")}>
           Guardar

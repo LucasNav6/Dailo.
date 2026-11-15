@@ -6,10 +6,17 @@ import { EmptyState } from "@/components/molecules/empty-state";
 
 /** La tarea abierta ya no existe (borrada desde otra pestaña o dispositivo). */
 export function ProjectsTaskNotFoundView() {
+  return <TaskNotFound />;
+}
+
+type TaskNotFoundProps = { onBack?: () => void; onHome?: () => void; onProject?: () => void };
+
+/** Cuerpo de "tarea inexistente" con acciones opcionales (las usa la pantalla real). */
+export function TaskNotFound({ onBack, onHome, onProject }: TaskNotFoundProps) {
   return (
     <>
       <div className="-mx-3 -mt-2 mb-2 flex items-center justify-between">
-        <IconButton aria-label="Volver" className="text-foreground">
+        <IconButton aria-label="Volver" className="text-foreground" onClick={onBack}>
           <RiArrowLeftLine aria-hidden />
         </IconButton>
         <span className="w-11" />
@@ -21,8 +28,8 @@ export function ProjectsTaskNotFoundView() {
         descriptionClassName="max-w-[310px]"
         action={
           <>
-            <Button>Ir a Hoy</Button>
-            <Button variant="ghost" className="h-11 px-2">Volver al proyecto</Button>
+            <Button onClick={onHome}>Ir a Hoy</Button>
+            <Button variant="ghost" className="h-11 px-2" onClick={onProject}>Volver al proyecto</Button>
           </>
         }
       />
