@@ -13,7 +13,12 @@ function NameTitle({ name }: { name: string }) {
 }
 
 /** Encabezado del detalle de proyecto: eyebrow, título, descripción y progreso (`done` de `total`). */
-export function ProjectHeading({ done, total, name = "Rediseño del sitio", description = "Lanzar la nueva web con el blog y el catálogo." }: ProjectHeadingProps) {
+export function ProjectHeading({ done, total, name, description }: ProjectHeadingProps) {
+  // Sin `name` es la maqueta estática: usa el texto del diseño. En la app real la descripción vacía no se muestra.
+  if (name === undefined) {
+    name = "Rediseño del sitio";
+    description = "Lanzar la nueva web con el blog y el catálogo.";
+  }
   const progress = total === 0 ? 0 : Math.round((done / total) * 100);
   return (
     <div className="flex flex-col gap-1.5">
