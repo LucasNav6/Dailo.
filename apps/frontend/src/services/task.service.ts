@@ -103,6 +103,7 @@ export const taskService = {
       }
       if (changes.status !== undefined && changes.status !== current.status) {
         next.completedAt = changes.status === "completed" ? now : undefined
+        next.deletedAt = changes.status === "discarded" ? now : undefined
       }
       await assertValid(next)
       await taskAdapter.update(id, next)
