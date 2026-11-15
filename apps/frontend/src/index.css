@@ -231,11 +231,11 @@
 }
 
 /* Animaciones al completar una tarea. */
-/* Línea de tachado: se dibuja de derecha a izquierda y sigue cada línea del texto. */
+/* Línea de tachado: se dibuja de izquierda a derecha y sigue cada línea del texto. */
 .strike {
   background-image: linear-gradient(currentColor, currentColor);
   background-repeat: no-repeat;
-  background-position: right 58%;
+  background-position: left 58%;
   background-size: 100% 1.5px;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
