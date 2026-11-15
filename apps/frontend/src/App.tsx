@@ -7,6 +7,7 @@ import { InboxPage } from "@/pages/inbox-page";
 import { MockupsPage } from "@/pages/mockups-page";
 import { NotificationsPage } from "@/pages/settings/notifications-page";
 import { PreferencesPage } from "@/pages/settings/preferences-page";
+import { TodayPage } from "@/pages/today-page";
 import { SomedayPage } from "@/pages/someday-page";
 import { SecurityPage } from "@/pages/settings/security-page";
 import { SettingsIndex, SettingsLayout } from "@/pages/settings/settings-layout";
@@ -25,8 +26,9 @@ export default function App() {
             <Route path="security" element={<SecurityPage />} />
           </Route>
           <Route path="inbox" element={<InboxPage />} />
+          <Route path="today" element={<TodayPage />} />
           <Route path="someday" element={<SomedayPage />} />
-          {allNav.filter(({ to }) => to !== "/settings" && to !== "/inbox" && to !== "/someday").map(({ to, label }) => (
+          {allNav.filter(({ to }) => to !== "/settings" && to !== "/inbox" && to !== "/someday" && to !== "/today").map(({ to, label }) => (
             <Route key={to} path={to} element={<PagePlaceholder title={label} description={`Pantalla de ${label} próximamente.`} />} />
           ))}
           <Route path="*" element={<Navigate to="/today" replace />} />

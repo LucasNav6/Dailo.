@@ -3,6 +3,8 @@ import { SectionHeader } from "@/components/molecules/section-header"
 import { TaskRow } from "@/components/molecules/task-row"
 
 export type TaskItem = {
+  id?: string;
+  onToggle?: (done: boolean) => void;
   title: string;
   done?: boolean;
   time?: ReactNode;
@@ -17,7 +19,7 @@ function TaskSection({ title, meta, tasks = [] }: { title: ReactNode; meta?: Rea
       {tasks.length > 0 && (
         <ul className="m-0 flex flex-col p-0">
           {tasks.map((task) => (
-            <TaskRow key={task.title} title={task.title} checked={task.done} time={task.time} timeIcon={task.timeIcon} />
+            <TaskRow key={task.id ?? task.title} id={task.id ? `task-${task.id}` : undefined} title={task.title} checked={task.done} onCheckedChange={task.onToggle} time={task.time} timeIcon={task.timeIcon} />
           ))}
         </ul>
       )}
