@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type RefObject } from "react"
 import { confetti } from "./confetti"
+import { playComplete } from "./sound"
 
 export function useCompletionEffect(checked: boolean, origin: RefObject<Element | null>) {
   const previous = useRef(checked)
@@ -7,6 +8,7 @@ export function useCompletionEffect(checked: boolean, origin: RefObject<Element 
 
   useEffect(() => {
     if (!previous.current && checked) {
+      playComplete()
       if (origin.current) confetti(origin.current)
       setAnimating(true)
       const timer = setTimeout(() => setAnimating(false), 600)

@@ -5,11 +5,14 @@ import {
   RiSunCloudyLine,
   RiSunFoggyLine,
   RiSunLine,
+  RiVolumeUpLine,
   type RemixiconComponentType,
 } from "@remixicon/react"
 import { usePreferences } from "@/features/settings/hooks/get-preferences.hook"
 import type { Theme } from "@/lib/theme"
 import { useChangeTheme } from "@/features/settings/hooks/change-theme.hook"
+import { useToggleSound } from "@/features/settings/hooks/toggle-sound.hook"
+import { Switch } from "@/components/atoms/switch"
 import { useUpdatePreferences } from "@/features/settings/hooks/update-preferences.hook"
 import type { DayPeriod, Preferences } from "@/models/setting.model"
 import { getPeriods, getPoints, pointBounds, withPoint, MAX_ESSENTIAL_TASKS, MIN_ESSENTIAL_TASKS, PERIODS } from "@/services/setting.service"
@@ -37,6 +40,7 @@ const ESSENTIAL_OPTIONS = Array.from({ length: MAX_ESSENTIAL_TASKS - MIN_ESSENTI
 function PreferencesForm({ preferences }: { preferences: Preferences }) {
   const { update, state } = useUpdatePreferences()
   const { theme, changeTheme } = useChangeTheme()
+  const { enabled: soundOn, toggle: toggleSound } = useToggleSound()
   const points = getPoints(preferences)
   const periods = getPeriods(preferences)
   const pointField = (index: number, label: string) => (
@@ -70,6 +74,12 @@ function PreferencesForm({ preferences }: { preferences: Preferences }) {
           <NumberPicker label="Tareas esenciales por día" options={ESSENTIAL_OPTIONS} value={preferences.maxEssentialTasks} onChange={(value) => update({ ...preferences, maxEssentialTasks: value })} />
         </div>
         <p className="ml-[38px] text-[13px] leading-[1.45] text-muted-foreground">Recomendado: 3</p>
+      </SettingsSection>
+
+      <SettingsSection title="Sonido">
+        <SettingRow icon={<RiVolumeUpLine aria-hidden />} label="Sonido al completar" comfortable>
+          <Switch aria-label="Sonido al completar" checked={soundOn} onCheckedChange={toggleSound} />
+        </SettingRow>
       </SettingsSection>
 
       <SettingsSection title="Apariencia">
