@@ -18,7 +18,7 @@ import { TaskRow } from "@/components/molecules/task-row";
 import { ComposeForm } from "@/components/organisms/compose-form";
 import { AddTask } from "@/features/projects/components/add-task";
 import { ProjectHeading } from "@/features/projects/components/project-heading";
-import { SubtaskToggle } from "@/features/projects/components/subtask-toggle";
+import { SubtaskToggle } from "@/components/molecules/subtask-toggle";
 import { useTasks } from "@/features/projects/hooks/list-tasks.hook";
 import { shortDay } from "@/lib/dates";
 import { useProject } from "@/features/projects/hooks/get-project.hook";

@@ -10,6 +10,7 @@ import { BottomSheet } from "@/components/molecules/bottom-sheet";
 import { InlineAction } from "@/components/molecules/inline-action";
 import { SkeletonSection } from "@/components/molecules/skeleton-section";
 import { WeekStrip, type WeekDay } from "@/components/molecules/week-strip";
+import { SubtaskToggle } from "@/components/molecules/subtask-toggle";
 import { MonthCalendar } from "@/components/organisms/month-calendar";
 import { OverdueCard } from "@/components/organisms/overdue-card";
 import { TaskSection, type TaskItem } from "@/components/organisms/task-section";
@@ -45,6 +46,7 @@ export function TodayPage() {
   const today = useMemo(() => new Date(), []);
   const [selected, setSelected] = useState(today);
   const [monthOpen, setMonthOpen] = useState(false);
+  const [expanded, setExpanded] = useState<string[]>([]);
   const isToday = isSameDay(selected, today);
   const selectedISO = toISODate(selected);
 
@@ -91,14 +93,43 @@ export function TodayPage() {
     ? tasks.filter((task) => task.status === "active" && !task.parentId && task.plannedDate && task.plannedDate < selectedISO)
     : [];
 
-  const item = (task: Task): TaskItem => ({
-    id: task.id,
-    title: task.title,
-    done: task.status === "completed",
-    onToggle: (done) => void setTaskDone(task.id, done),
-    time: task.essential && task.deadline ? shortDay(task.deadline) : undefined,
-    timeIcon: task.essential && task.deadline ? <EssentialIcon /> : undefined,
-  });
+  const item = (task: Task): TaskItem => {
+    const subs = tasks.filter((sub) => sub.parentId === task.id && (sub.status === "active" || sub.status === "completed")).sort((x, y) => x.position - y.position);
+    const open = expanded.includes(task.id);
+    const time = task.essential && task.deadline ? shortDay(task.deadline) : undefined;
+    const timeIcon = task.essential && task.deadline ? <EssentialIcon /> : undefined;
+    return {
+      id: task.id,
+      title: task.title,
+      done: task.status === "completed",
+      onToggle: (done) => void setTaskDone(task.id, done),
+      time,
+      timeIcon,
+      meta:
+        subs.length > 0 ? (
+          <span className="inline-flex items-center gap-2">
+            {(time || timeIcon) && (
+              <span className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground [&>svg]:size-4">
+                {timeIcon}
+                {time}
+              </span>
+            )}
+            <button
+              type="button"
+              aria-expanded={open}
+              aria-label={`Subtareas de ${task.title}`}
+              onClick={() => setExpanded((current) => (open ? current.filter((value) => value !== task.id) : [...current, task.id]))}
+              className="rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            >
+              <SubtaskToggle count={`${subs.filter((sub) => sub.status === "completed").length}/${subs.length}`} open={open} />
+            </button>
+          </span>
+        ) : undefined,
+      subtasks: open
+        ? subs.map((sub) => ({ id: sub.id, title: sub.title, done: sub.status === "completed", onToggle: (done: boolean) => void setTaskDone(sub.id, done) }))
+        : undefined,
+    };
+  };
 
   const essentials = planned.filter((task) => task.essential);
   const rest = planned.filter((task) => !task.essential);

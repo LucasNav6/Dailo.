@@ -4,7 +4,7 @@ import { SubtaskRow } from "@/components/molecules/subtask-row";
 import { TaskRow } from "@/components/molecules/task-row";
 import { AddTask } from "../components/add-task";
 import { ProjectHeading } from "../components/project-heading";
-import { SubtaskToggle } from "../components/subtask-toggle";
+import { SubtaskToggle } from "@/components/molecules/subtask-toggle";
 
 /** Detalle de proyecto con una tarea expandida que muestra sus subtareas. */
 export function ProjectsSubtasksView() {
