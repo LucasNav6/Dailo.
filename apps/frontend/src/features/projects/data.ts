@@ -1,4 +1,4 @@
-export type ProjectSummary = { name: string; description: string; pending: number; progress: number };
+export type ProjectSummary = { id?: string; name: string; description: string; pending: number; progress: number };
 
 /** Proyectos de ejemplo del diseño. */
 export const PROJECTS: ProjectSummary[] = [
