@@ -25,7 +25,12 @@ function TaskRow({ title, checked = false, onCheckedChange, time, timeIcon, meta
   const checkId = id ?? `task-${title}`
   const checkRef = useRef<HTMLSpanElement>(null)
   const animating = useCompletionEffect(checked, checkRef)
-  const doneClass = cn(checked && "text-muted-foreground line-through decoration-wavy decoration-1", animating && "anim-strike")
+  const doneClass = checked && "text-muted-foreground"
+  const text = (
+    <span className={cn(checked && "strike", animating && "strike-anim")}>
+      <LinkifiedText text={title} />
+    </span>
+  )
   return (
     <li className={cn("flex list-none items-start gap-[15px] py-[9px] pl-[5px] text-[17px] leading-[1.35] text-foreground", className)}>
       <span ref={checkRef} className={cn("mt-px inline-flex", animating && "anim-pop")}>
@@ -37,14 +42,14 @@ function TaskRow({ title, checked = false, onCheckedChange, time, timeIcon, meta
           onClick={onOpen}
           className={cn("line-clamp-2 min-w-0 flex-1 rounded-lg text-left transition-colors duration-300 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50", doneClass)}
         >
-          <LinkifiedText text={title} />
+          {text}
         </button>
       ) : (
         <label
           htmlFor={checkId}
           className={cn("line-clamp-2 min-w-0 flex-1 transition-colors duration-300", doneClass)}
         >
-          <LinkifiedText text={title} />
+          {text}
         </label>
       )}
       {meta && <span className="shrink-0 self-center whitespace-nowrap">{meta}</span>}

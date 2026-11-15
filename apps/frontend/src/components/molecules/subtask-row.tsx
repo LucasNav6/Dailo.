@@ -17,7 +17,11 @@ function SubtaskRow({ title, checked = false, large = false, className, onChecke
         aria-label={`Completar ${title}`}
         className={cn(!large && "size-[18px] [&_svg]:size-2.5", animating && "anim-pop")}
       />
-      <span className={cn("transition-colors duration-300", checked ? "text-muted-foreground line-through decoration-wavy decoration-1" : "text-foreground", animating && "anim-strike")}><LinkifiedText text={title} /></span>
+      <span className={cn("transition-colors duration-300", checked ? "text-muted-foreground" : "text-foreground")}>
+        <span className={cn(checked && "strike", animating && "strike-anim")}>
+          <LinkifiedText text={title} />
+        </span>
+      </span>
     </li>
   )
 }
