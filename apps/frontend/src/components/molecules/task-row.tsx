@@ -1,6 +1,7 @@
-import type { ReactNode } from "react"
+import { useRef, type ReactNode } from "react"
 import { LinkifiedText } from "@/components/atoms/linkified-text"
 import { TaskCheck } from "@/components/atoms/task-check"
+import { useCompletionEffect } from "@/lib/use-completion-effect"
 import { cn } from "@/lib/utils"
 
 type TaskRowProps = {
@@ -22,26 +23,26 @@ type TaskRowProps = {
 /** Fila de tarea: círculo, título (máx. 2 líneas, tachado si está hecha) y etiqueta opcional a la derecha. */
 function TaskRow({ title, checked = false, onCheckedChange, time, timeIcon, meta, className, id, onOpen }: TaskRowProps) {
   const checkId = id ?? `task-${title}`
+  const checkRef = useRef<HTMLSpanElement>(null)
+  const animating = useCompletionEffect(checked, checkRef)
+  const doneClass = cn(checked && "text-muted-foreground line-through decoration-wavy decoration-1", animating && "anim-strike")
   return (
     <li className={cn("flex list-none items-start gap-[15px] py-[9px] pl-[5px] text-[17px] leading-[1.35] text-foreground", className)}>
-      <span className="mt-px inline-flex">
+      <span ref={checkRef} className={cn("mt-px inline-flex", animating && "anim-pop")}>
         <TaskCheck id={checkId} checked={checked} onCheckedChange={(value) => onCheckedChange?.(value === true)} aria-label={`Completar ${title}`} />
       </span>
       {onOpen ? (
         <button
           type="button"
           onClick={onOpen}
-          className={cn("line-clamp-2 min-w-0 flex-1 rounded-lg text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50", checked && "text-muted-foreground line-through decoration-wavy decoration-1")}
+          className={cn("line-clamp-2 min-w-0 flex-1 rounded-lg text-left transition-colors duration-300 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50", doneClass)}
         >
           <LinkifiedText text={title} />
         </button>
       ) : (
         <label
           htmlFor={checkId}
-          className={cn(
-            "line-clamp-2 min-w-0 flex-1",
-            checked && "text-muted-foreground line-through decoration-wavy decoration-1"
-          )}
+          className={cn("line-clamp-2 min-w-0 flex-1 transition-colors duration-300", doneClass)}
         >
           <LinkifiedText text={title} />
         </label>

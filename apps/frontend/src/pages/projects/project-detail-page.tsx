@@ -20,6 +20,7 @@ import { AddTask } from "@/features/projects/components/add-task";
 import { ProjectHeading } from "@/features/projects/components/project-heading";
 import { SubtaskToggle } from "@/components/molecules/subtask-toggle";
 import { useTasks } from "@/features/projects/hooks/list-tasks.hook";
+import { useRecentlyCompleted } from "@/lib/use-recently-completed";
 import { shortDay } from "@/lib/dates";
 import { useProject } from "@/features/projects/hooks/get-project.hook";
 import { useAddTask } from "@/features/projects/hooks/add-task.hook";
@@ -41,6 +42,7 @@ export function ProjectDetailPage() {
   const completeWithSubtasks = useCompleteTaskWithSubtasks();
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
+  const { isRecent, markCompleted } = useRecentlyCompleted();
   const [expanded, setExpanded] = useState<string[]>([]);
   const [showDone, setShowDone] = useState(false);
   const [adding, setAdding] = useState(Boolean((location.state as { addTask?: boolean } | null)?.addTask));
@@ -79,16 +81,19 @@ export function ProjectDetailPage() {
 
   const own = tasks.filter((task) => task.projectId === project.id && (task.status === "active" || task.status === "completed"));
   const roots = own.filter((task) => !task.parentId).sort((a, b) => a.position - b.position);
-  const pending = roots.filter((task) => task.status === "active");
-  const completed = roots.filter((task) => task.status === "completed").sort((a, b) => (b.completedAt ?? "").localeCompare(a.completedAt ?? ""));
+  // Una tarea recién completada se queda en su lugar mientras corre la animación.
+  const pending = roots.filter((task) => task.status === "active" || isRecent(task.id));
+  const completed = roots.filter((task) => task.status === "completed" && !isRecent(task.id)).sort((a, b) => (b.completedAt ?? "").localeCompare(a.completedAt ?? ""));
   const subtasksOf = (task: Task) => own.filter((sub) => sub.parentId === task.id).sort((a, b) => a.position - b.position);
 
   const toggle = (task: Task, done: boolean) => {
     if (done && subtasksOf(task).some((sub) => sub.status === "active")) return setPendingParent(task);
+    if (done) markCompleted(task.id);
     void setTaskDone(task.id, done);
   };
 
   const completeAll = async (task: Task, withSubtasks: boolean) => {
+    markCompleted(task.id);
     await completeWithSubtasks(task, subtasksOf(task), withSubtasks);
     setPendingParent(null);
   };

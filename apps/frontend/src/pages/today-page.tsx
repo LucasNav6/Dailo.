@@ -22,6 +22,7 @@ import { TodayEmptyState } from "@/features/today/views/empty.view";
 import { useInbox } from "@/features/inbox/hooks/list-inbox.hook";
 import { usePreferences } from "@/features/settings/hooks/get-preferences.hook";
 import { useTasks } from "@/features/projects/hooks/list-tasks.hook";
+import { useRecentlyCompleted } from "@/lib/use-recently-completed";
 import { longDate, overdueLabel, shortDay, toISODate, weekdayLetter, weekOf } from "@/lib/dates";
 import type { Task, TimeOfDay } from "@/models/task.model";
 
@@ -46,6 +47,7 @@ export function TodayPage() {
   const today = useMemo(() => new Date(), []);
   const [selected, setSelected] = useState(today);
   const [monthOpen, setMonthOpen] = useState(false);
+  const { isRecent, markCompleted } = useRecentlyCompleted();
   const [expanded, setExpanded] = useState<string[]>([]);
   const isToday = isSameDay(selected, today);
   const selectedISO = toISODate(selected);
@@ -102,7 +104,10 @@ export function TodayPage() {
       id: task.id,
       title: task.title,
       done: task.status === "completed",
-      onToggle: (done) => void setTaskDone(task.id, done),
+      onToggle: (done) => {
+        if (done) markCompleted(task.id);
+        void setTaskDone(task.id, done);
+      },
       time,
       timeIcon,
       meta:
@@ -153,7 +158,7 @@ export function TodayPage() {
   ].filter((section) => section.group.length > 0);
 
   const renderSection = ({ key, title: label, range, group }: (typeof sections)[number]) => {
-    const done = group.filter((task) => task.status === "completed");
+    const done = group.filter((task) => task.status === "completed" && !isRecent(task.id));
     // Franja resuelta por completo: solo el resumen, como en el diseño.
     if (done.length === group.length) return <TaskSection key={key} title={label} meta={`${done.length} ${done.length === 1 ? "hecha" : "hechas"}`} />;
     return <TaskSection key={key} title={label} meta={range || undefined} tasks={group.map(item)} />;
