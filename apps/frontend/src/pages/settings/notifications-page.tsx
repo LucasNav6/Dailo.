@@ -1,7 +1,7 @@
 import { RiInformationLine } from "@remixicon/react"
 import { useNotificationSettings } from "@/hooks/use-settings"
 import type { NotificationSettings } from "@/models/setting.model"
-import { Switch } from "@/components/ui/switch"
+import { Switch } from "@/components/atoms/switch"
 import { Labeled, Panel, SaveStatus, Section, TimeSelect, useAutoSave } from "./settings-ui"
 
 function NotificationsForm({ settings }: { settings: NotificationSettings }) {

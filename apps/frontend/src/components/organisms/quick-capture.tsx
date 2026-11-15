@@ -11,16 +11,16 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+} from "@/components/molecules/alert-dialog";
+import { Button } from "@/components/atoms/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
-import { Textarea } from "@/components/ui/textarea";
+} from "@/components/molecules/dialog";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from "@/components/molecules/sheet";
+import { Textarea } from "@/components/atoms/textarea";
 
 type QuickCaptureProps = {
   open: boolean;

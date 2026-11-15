@@ -2,8 +2,8 @@ import { NavLink } from "react-router";
 import { RiAddLine, RiLayoutLeftLine, RiLayoutRightLine } from "@remixicon/react";
 import { cn } from "@/lib/utils";
 import { primaryNav, secondaryNav, type NavItem } from "@/lib/navigation";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Button } from "@/components/atoms/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/atoms/tooltip";
 
 function AsideLink({ to, label, Icon, ActiveIcon, collapsed }: NavItem & { collapsed: boolean }) {
   return (

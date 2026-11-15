@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from "react-router";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { AppShell } from "@/components/app-shell";
-import { PagePlaceholder } from "@/components/page-placeholder";
+import { TooltipProvider } from "@/components/atoms/tooltip";
+import { AppShell } from "@/components/layouts/app-shell";
+import { PagePlaceholder } from "@/components/layouts/page-placeholder";
 import { allNav } from "@/lib/navigation";
 import { InboxPage } from "@/pages/inbox-page";
 import { NotificationsPage } from "@/pages/settings/notifications-page";

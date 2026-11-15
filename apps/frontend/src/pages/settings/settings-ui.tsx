@@ -3,8 +3,8 @@ import { type RemixiconComponentType } from "@remixicon/react"
 import type { FieldErrors } from "@/models/setting.model"
 import { cn } from "@/lib/utils"
 import { LAST_MINUTE_OF_DAY, TIME_STEP, toMinutes } from "@/services/setting.service"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/molecules/popover"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/molecules/select"
 
 type SaveState = "idle" | "error"
 

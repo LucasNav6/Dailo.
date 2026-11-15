@@ -12,8 +12,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
+} from "@/components/molecules/alert-dialog"
+import { Button } from "@/components/atoms/button"
 import { Panel, Section } from "./settings-ui"
 
 export function SecurityPage() {

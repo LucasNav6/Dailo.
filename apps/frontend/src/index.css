@@ -1,49 +1,57 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "@fontsource-variable/geist";
-
 @custom-variant dark (&:is(.dark *));
 
-/* Paleta neutral con acento menta (#A5F3C5) provisional */
+/* Paleta del diseño Dailo: verde tinta sobre fondo menta, acento rojo y superficies claras. */
 :root {
-  --radius: 0.75rem;
-  --radius-dock: 1.5rem;
+  --radius: 1rem;
+  --radius-dock: 1rem;
 
-  --background: #ffffff;
-  --foreground: #17212b;
+  --background: #eaf0e6;
+  --foreground: #1e3329;
 
-  --card: #f1f5f9;
-  --card-foreground: #17212b;
+  --card: #fbfcfa;
+  --card-foreground: #1e3329;
 
-  --popover: #ffffff;
-  --popover-foreground: #17212b;
+  --popover: #fbfcfa;
+  --popover-foreground: #1e3329;
 
-  --primary: #14532d;
-  --primary-foreground: #ffffff;
+  --primary: #1e3329;
+  --primary-foreground: #fbfcfa;
 
-  --secondary: #e2f8ec;
-  --secondary-foreground: #14532d;
+  --secondary: #dce7d5;
+  --secondary-foreground: #1e3329;
 
-  --muted: #f1f5f9;
-  --muted-foreground: #293548;
+  --muted: #dce7d5;
+  --muted-foreground: #54675b;
 
-  --accent: #e2f8ec;
-  --accent-foreground: #14532d;
+  --accent: #dce7d5;
+  --accent-foreground: #1e3329;
 
-  --destructive: #991b1b;
+  --destructive: #7a1f0e;
 
-  --border: #94a3b8;
-  --input: #94a3b8;
-  --ring: #14532d;
+  --border: #cbd8c4;
+  --input: #cbd8c4;
+  --ring: #3f5a4b;
 
-  --sidebar: #f1f5f9;
-  --sidebar-foreground: #17212b;
-  --sidebar-primary: #14532d;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e2f8ec;
-  --sidebar-accent-foreground: #14532d;
-  --sidebar-border: #cbd5e1;
-  --sidebar-ring: #14532d;
+  --sidebar: #fbfcfa;
+  --sidebar-foreground: #1e3329;
+  --sidebar-primary: #1e3329;
+  --sidebar-primary-foreground: #fbfcfa;
+  --sidebar-accent: #dce7d5;
+  --sidebar-accent-foreground: #1e3329;
+  --sidebar-border: #cbd8c4;
+  --sidebar-ring: #3f5a4b;
+
+  /* Tokens propios del diseño */
+  --subtle: #3f5a4b;
+  --surface: #fbfcfa;
+  --selected: #dce7d5;
+  --selected-border: #cbd8c4;
+  --brand: #e5472c;
+  --brand-foreground: #ffffff;
+  --danger-soft: #fdece8;
+  --danger-foreground: #7a1f0e;
 }
 
 .dark {
@@ -82,10 +90,20 @@
   --sidebar-accent-foreground: #f8fafc;
   --sidebar-border: #293241;
   --sidebar-ring: #a5f3c5;
+
+  --subtle: #cbd5e1;
+  --surface: #202530;
+  --selected: #293241;
+  --selected-border: #64748b;
+  --brand: #e5472c;
+  --brand-foreground: #ffffff;
+  --danger-soft: #3b1d1d;
+  --danger-foreground: #fca5a5;
 }
 
 @theme inline {
-  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -117,6 +135,15 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-subtle: var(--subtle);
+  --color-surface: var(--surface);
+  --color-selected: var(--selected);
+  --color-selected-border: var(--selected-border);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-danger: var(--destructive);
 }
 
 @layer base {

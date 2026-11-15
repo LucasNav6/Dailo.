@@ -9,7 +9,7 @@ import {
 } from "@remixicon/react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/atoms/button"
 
 type Category = { to: string; label: string; description: string; Icon: RemixiconComponentType }
 

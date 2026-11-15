@@ -23,7 +23,7 @@ import {
   MIN_ESSENTIAL_TASKS,
   PERIODS,
 } from "@/services/setting.service"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/atoms/button"
 import { Labeled, Panel, SaveStatus, Section, TimeRow, TimeSelect, useAutoSave } from "./settings-ui"
 
 const THEMES: { id: Theme; label: string; Icon: RemixiconComponentType }[] = [

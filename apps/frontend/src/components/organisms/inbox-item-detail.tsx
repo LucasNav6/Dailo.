@@ -5,12 +5,12 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { useProjects } from "@/hooks/use-projects";
 import type { Task, TimeOfDay } from "@/models/task.model";
 import type { InboxDecision } from "@/services/task.service";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/atoms/button";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/molecules/dialog";
+import { Input } from "@/components/atoms/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/molecules/select";
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/molecules/sheet";
+import { Textarea } from "@/components/atoms/textarea";
 
 const NONE = "none";
 const TIMES: { value: TimeOfDay; label: string }[] = [
