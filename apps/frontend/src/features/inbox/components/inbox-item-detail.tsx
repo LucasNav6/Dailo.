@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { RiCheckLine, RiCloseLine, RiDeleteBinLine, RiLightbulbLine } from "@remixicon/react";
-import { useInbox } from "@/hooks/use-inbox";
+import { useEditItem } from "../hooks/edit-item.hook";
+import { useProcessItem } from "../hooks/process-item.hook";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useProjects } from "@/hooks/use-projects";
 import type { Task, TimeOfDay } from "@/models/task.model";
@@ -51,7 +52,8 @@ export function InboxItemDetail({ task, onClose }: Props) {
 }
 
 function DetailForm({ task, onClose }: Props & { task: Task }) {
-  const { updateTask, decide } = useInbox();
+  const editItem = useEditItem();
+  const processItem = useProcessItem();
   const { projects } = useProjects();
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description ?? "");
@@ -83,11 +85,11 @@ function DetailForm({ task, onClose }: Props & { task: Task }) {
   const save = async (event?: FormEvent) => {
     event?.preventDefault();
     if (!dirty || !canDecide) return;
-    await run(() => updateTask(task.id, edits));
+    await run(() => editItem(task.id, edits));
   };
 
   const resolve = async (decision: InboxDecision) => {
-    if (await run(() => decide(task.id, decision, edits))) onClose();
+    if (await run(() => processItem(task.id, decision, edits))) onClose();
   };
 
   const activate = () =>

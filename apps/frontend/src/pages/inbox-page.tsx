@@ -4,9 +4,9 @@ import { useInbox } from "@/hooks/use-inbox";
 import { formatAge } from "@/lib/age";
 import type { AppOutletContext } from "@/components/layouts/app-shell";
 import { PageColumn } from "@/components/layouts/page-column";
-import { InboxItemDetail } from "@/components/organisms/inbox-item-detail";
 import { EmptyInbox } from "@/features/inbox/components/empty-inbox";
 import { InboxHeader } from "@/features/inbox/components/inbox-header";
+import { InboxItemDetail } from "@/features/inbox/components/inbox-item-detail";
 import { InboxList } from "@/features/inbox/components/inbox-list";
 import { InboxLoadingView } from "@/features/inbox/views/loading.view";
 

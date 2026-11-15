@@ -10,11 +10,14 @@ import { SomedayHeader } from "@/features/someday/components/someday-header";
 import { SomedayLoadingView } from "@/features/someday/views/loading.view";
 import { useTasks } from "@/hooks/use-tasks";
 import { formatAge } from "@/lib/age";
-import { toISODate } from "@/lib/dates";
+import { useDiscardIdea } from "@/features/someday/hooks/discard-idea.hook";
+import { usePlanIdea } from "@/features/someday/hooks/plan-idea.hook";
 
 /** Tal vez real: ideas guardadas que se planifican (pasan a Hoy) o se descartan. */
 export function SomedayPage() {
-  const { tasks, isLoading, updateTask } = useTasks("someday");
+  const { tasks, isLoading } = useTasks("someday");
+  const planIdea = usePlanIdea();
+  const discardIdea = useDiscardIdea();
   const { openCapture } = useOutletContext<AppOutletContext>();
   if (isLoading) return <PageColumn><SomedayLoadingView /></PageColumn>;
 
@@ -36,8 +39,8 @@ export function SomedayPage() {
       ) : (
         <IdeaList
           ideas={ideas}
-          onPlan={(id) => void updateTask(id, { status: "active", plannedDate: toISODate(new Date()) })}
-          onDiscard={(id) => void updateTask(id, { status: "discarded" })}
+          onPlan={(id) => void planIdea(id)}
+          onDiscard={(id) => void discardIdea(id)}
         />
       )}
     </PageColumn>

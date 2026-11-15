@@ -7,31 +7,10 @@ import { SettingRow, SettingValue } from "@/components/molecules/setting-row"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/molecules/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/molecules/select"
 
-type SaveState = "idle" | "error"
-
-/** Guardado automático: ejecuta `save` y expone un estado discreto para mostrar. */
-export function useAutoSave() {
-  const [state, setState] = useState<SaveState>("idle")
-  const [errors, setErrors] = useState<FieldErrors>({})
-  const latest = useRef(0)
-
-  const run = async (save: () => Promise<FieldErrors>) => {
-    const id = ++latest.current
-    try {
-      const result = await save()
-      if (id !== latest.current) return
-      setErrors(result)
-      setState("idle")
-    } catch {
-      if (id !== latest.current) return
-      setState("error")
-    }
-  }
-  return { state, errors, run }
-}
+export { useAutoSave } from "@/features/settings/hooks/use-auto-save.hook"
 
 /** Solo informa de fallos: el guardado correcto es silencioso. */
-export function SaveStatus({ state }: { state: SaveState }) {
+export function SaveStatus({ state }: { state: "idle" | "error" }) {
   if (state !== "error") return null
   return (
     <p role="alert" className="text-sm text-destructive">

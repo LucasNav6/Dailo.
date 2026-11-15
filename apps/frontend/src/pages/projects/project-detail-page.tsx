@@ -23,8 +23,12 @@ import { SubtaskToggle } from "@/features/projects/components/subtask-toggle";
 import { useTasks } from "@/hooks/use-tasks";
 import { shortDay } from "@/lib/dates";
 import { projectService } from "@/services/project.service";
+import { useAddTask } from "@/features/projects/hooks/add-task.hook";
+import { useCompleteTaskWithSubtasks } from "@/features/projects/hooks/complete-task-with-subtasks.hook";
+import { useDeleteProject } from "@/features/projects/hooks/delete-project.hook";
+import { useSetTaskDone } from "@/features/projects/hooks/set-task-done.hook";
+import { useUpdateProject } from "@/features/projects/hooks/update-project.hook";
 import type { Task } from "@/models/task.model";
-import { deleteProject } from "./delete-project";
 
 /** Detalle de proyecto real: tareas pendientes con subtareas, completadas plegadas y alta de tareas. */
 export function ProjectDetailPage() {
@@ -32,7 +36,12 @@ export function ProjectDetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const project = useLiveQuery(async () => (await projectService.findById(id)) ?? null, [id]);
-  const { tasks, isLoading, createTask, updateTask } = useTasks();
+  const { tasks, isLoading } = useTasks();
+  const addTaskToProject = useAddTask(id);
+  const setTaskDone = useSetTaskDone();
+  const completeWithSubtasks = useCompleteTaskWithSubtasks();
+  const updateProject = useUpdateProject();
+  const deleteProject = useDeleteProject();
   const [expanded, setExpanded] = useState<string[]>([]);
   const [showDone, setShowDone] = useState(false);
   const [adding, setAdding] = useState(Boolean((location.state as { addTask?: boolean } | null)?.addTask));
@@ -77,14 +86,11 @@ export function ProjectDetailPage() {
 
   const toggle = (task: Task, done: boolean) => {
     if (done && subtasksOf(task).some((sub) => sub.status === "active")) return setPendingParent(task);
-    void updateTask(task.id, { status: done ? "completed" : "active" });
+    void setTaskDone(task.id, done);
   };
 
   const completeAll = async (task: Task, withSubtasks: boolean) => {
-    if (withSubtasks) {
-      for (const sub of subtasksOf(task)) if (sub.status === "active") await updateTask(sub.id, { status: "completed" });
-    }
-    await updateTask(task.id, { status: "completed" });
+    await completeWithSubtasks(task, subtasksOf(task), withSubtasks);
     setPendingParent(null);
   };
 
@@ -106,14 +112,14 @@ export function ProjectDetailPage() {
       <Fragment key={task.id}>
         <TaskRow id={`task-${task.id}`} title={task.title} checked={task.status === "completed"} onCheckedChange={(done) => toggle(task, done)} className="py-2.5" meta={meta || undefined} time={task.status === "completed" && task.completedAt ? shortDay(task.completedAt.slice(0, 10)) : undefined} />
         {open && subs.map((sub) => (
-          <SubtaskRow key={sub.id} title={sub.title} checked={sub.status === "completed"} onCheckedChange={(done) => void updateTask(sub.id, { status: done ? "completed" : "active" })} />
+          <SubtaskRow key={sub.id} title={sub.title} checked={sub.status === "completed"} onCheckedChange={(done) => void setTaskDone(sub.id, done)} />
         ))}
       </Fragment>
     );
   };
 
   const addTask = async (title: string, description: string) => {
-    await createTask({ title, description: description || undefined, projectId: project.id, status: "active" });
+    await addTaskToProject(title, description);
     setAdding(false);
   };
 
@@ -154,9 +160,8 @@ export function ProjectDetailPage() {
             initialTitle={project.name}
             initialDescription={project.description ?? ""}
             onSave={async (title, description) => {
-              const duplicate = (await projectService.findAll()).some((other) => other.id !== project.id && other.name.trim().toLocaleLowerCase("es") === title.toLocaleLowerCase("es"));
-              if (duplicate) return "Ya tenés un proyecto con ese nombre.";
-              await projectService.update(project.id, { name: title, description: description || undefined });
+              const error = await updateProject(project.id, title, description);
+              if (error) return error;
               setEditing(false);
             }}
           />

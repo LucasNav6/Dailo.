@@ -6,12 +6,11 @@ import { SettingsScreen } from "@/components/layouts/settings-screen"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/molecules/popover"
 import { SettingRow, SettingValue } from "@/components/molecules/setting-row"
 import { SettingsSection } from "@/components/organisms/settings-section"
-import { SaveStatus, TimeSelect, useAutoSave } from "./settings-ui"
+import { useUpdateNotificationSettings } from "@/features/settings/hooks/update-notification-settings.hook"
+import { SaveStatus, TimeSelect } from "./settings-ui"
 
 function NotificationsForm({ settings }: { settings: NotificationSettings }) {
-  const { saveSettings } = useNotificationSettings()
-  const { state, errors, run } = useAutoSave()
-  const update = (next: NotificationSettings) => void run(() => saveSettings(next))
+  const { update, state, errors } = useUpdateNotificationSettings()
 
   return (
     <SettingsScreen title="Notificaciones" gap={6} backTo="/settings">

@@ -13,20 +13,22 @@ import { SheetHeading } from "@/components/molecules/sheet-heading";
 import { ComposeForm } from "@/components/organisms/compose-form";
 import { ProjectList } from "@/features/projects/components/project-list";
 import { ProjectsHeader } from "@/features/projects/components/projects-header";
+import { useCreateProject } from "@/features/projects/hooks/create-project.hook";
+import { useDeleteProject } from "@/features/projects/hooks/delete-project.hook";
+import { useUpdateProject } from "@/features/projects/hooks/update-project.hook";
 import { ProjectsLoadingView } from "@/features/projects/views/loading.view";
 import { useProjects } from "@/hooks/use-projects";
 import { useTasks } from "@/hooks/use-tasks";
 import type { Project } from "@/models/project.model";
-import { projectService } from "@/services/project.service";
-import { deleteProject } from "./delete-project";
-
-const sameName = (a: string, b: string) => a.trim().toLocaleLowerCase("es") === b.trim().toLocaleLowerCase("es");
 
 /** Proyectos real: lista con progreso, crear/editar en hoja, opciones y eliminación con confirmación. */
 export function ProjectsPage() {
   const navigate = useNavigate();
   const { projects, isLoading } = useProjects();
   const { tasks, isLoading: loadingTasks } = useTasks();
+  const createProject = useCreateProject();
+  const updateProject = useUpdateProject();
+  const deleteProject = useDeleteProject();
   const [composing, setComposing] = useState<Project | "new" | null>(null);
   const [menuId, setMenuId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<Project | null>(null);
@@ -45,9 +47,8 @@ export function ProjectsPage() {
 
   const save = async (title: string, description: string) => {
     const editing = composing !== "new" ? composing : null;
-    if (projects.some((project) => project.id !== editing?.id && sameName(project.name, title))) return "Ya tenés un proyecto con ese nombre.";
-    if (editing) await projectService.update(editing.id, { name: title, description: description || undefined });
-    else await projectService.create({ name: title, description: description || undefined });
+    const error = editing ? await updateProject(editing.id, title, description) : await createProject(title, description);
+    if (error) return error;
     setComposing(null);
   };
 

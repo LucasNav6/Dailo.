@@ -14,6 +14,8 @@ import { MonthCalendar } from "@/components/organisms/month-calendar";
 import { OverdueCard } from "@/components/organisms/overdue-card";
 import { TaskSection, type TaskItem } from "@/components/organisms/task-section";
 import { EssentialIcon } from "@/features/today/components/essential-icon";
+import { useBringOverdueToToday } from "@/features/today/hooks/bring-overdue-to-today.hook";
+import { useSetTaskDone } from "@/features/today/hooks/set-task-done.hook";
 import { TodayHeader } from "@/features/today/components/today-header";
 import { TodayEmptyState } from "@/features/today/views/empty.view";
 import { useInbox } from "@/hooks/use-inbox";
@@ -35,7 +37,9 @@ const loadOf = (count: number): 0 | 1 | 2 | 3 => (count === 0 ? 0 : count === 1 
 /** Hoy real: esenciales, franjas del día y semana, con las tareas planificadas en IndexedDB. */
 export function TodayPage() {
   const navigate = useNavigate();
-  const { tasks, isLoading, updateTask } = useTasks();
+  const { tasks, isLoading } = useTasks();
+  const setTaskDone = useSetTaskDone();
+  const bringOverdueToToday = useBringOverdueToToday();
   const { tasks: inbox } = useInbox();
   const { preferences } = usePreferences();
   const today = useMemo(() => new Date(), []);
@@ -91,7 +95,7 @@ export function TodayPage() {
     id: task.id,
     title: task.title,
     done: task.status === "completed",
-    onToggle: (done) => void updateTask(task.id, { status: done ? "completed" : "active" }),
+    onToggle: (done) => void setTaskDone(task.id, done),
     time: task.essential && task.deadline ? shortDay(task.deadline) : undefined,
     timeIcon: task.essential && task.deadline ? <EssentialIcon /> : undefined,
   });
@@ -150,7 +154,7 @@ export function TodayPage() {
         <OverdueCard
           tasks={overdue.map((task) => ({ title: task.title, due: overdueLabel(task.plannedDate!, today) }))}
           actions={["Traer todas a hoy"]}
-          onAction={() => overdue.forEach((task) => void updateTask(task.id, { plannedDate: toISODate(today), timeOfDay: undefined }))}
+          onAction={() => void bringOverdueToToday(overdue, today)}
         />
       )}
 

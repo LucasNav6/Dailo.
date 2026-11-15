@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { RiComputerLine, RiDeleteBinLine, RiInformationLine, RiSunCloudyLine } from "@remixicon/react"
-import { deleteAllData } from "@/hooks/use-settings"
-import { useTheme } from "@/lib/theme"
+import { useDeleteAllData } from "@/features/settings/hooks/delete-all-data.hook"
 import { Button } from "@/components/atoms/button"
 import { SettingsScreen } from "@/components/layouts/settings-screen"
 import { ConfirmDialog } from "@/components/molecules/confirm-dialog"
@@ -17,18 +16,11 @@ function Fact({ icon, children }: { icon: React.ReactNode; children: React.React
 }
 
 export function SecurityPage() {
-  const { setTheme } = useTheme()
   const [open, setOpen] = useState(false)
-  const [status, setStatus] = useState<"idle" | "deleted" | "error">("idle")
+  const { deleteAll, status } = useDeleteAllData()
 
   const handleDelete = async () => {
-    try {
-      await deleteAllData()
-      setTheme("system")
-      setStatus("deleted")
-    } catch {
-      setStatus("error")
-    }
+    await deleteAll()
     setOpen(false)
   }
 
