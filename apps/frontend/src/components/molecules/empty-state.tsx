@@ -6,25 +6,28 @@ type EmptyStateProps = {
   title: ReactNode;
   description?: ReactNode;
   action?: ReactNode;
-  /** "danger" usa la paleta de error del diseño. */
-  tone?: "default" | "danger";
+  /** "default": icono de 64px sin fondo. "success": icono de 36px en círculo de 64px. "danger": icono de 36px en círculo de 72px con la paleta de error. */
+  tone?: "default" | "success" | "danger";
   className?: string;
+  /** Sobrescribe el ancho máximo de la descripción (por defecto 300px, 310px en "danger"). */
+  descriptionClassName?: string;
 };
 
-/** Estado vacío o de error centrado: icono en círculo, título en Fraunces, texto y acciones. */
-function EmptyState({ icon, title, description, action, tone = "default", className }: EmptyStateProps) {
+/** Estado vacío o de error centrado: icono, título en Fraunces, texto y acciones. */
+function EmptyState({ icon, title, description, action, tone = "default", className, descriptionClassName }: EmptyStateProps) {
   return (
     <div className={cn("flex flex-1 flex-col items-center justify-center gap-3 px-6 py-4 text-center", className)}>
-      <span
-        className={cn(
-          "grid size-[72px] place-items-center rounded-full [&>svg]:size-9",
-          tone === "danger" ? "bg-danger-soft text-danger-foreground" : "bg-selected text-foreground"
-        )}
-      >
-        {icon}
-      </span>
-      <h2 className="mt-2 font-display text-[30px] leading-[1.1] font-semibold tracking-[-0.02em] text-foreground">{title}</h2>
-      {description && <p className="max-w-[310px] text-base leading-normal text-muted-foreground">{description}</p>}
+      {tone === "danger" ? (
+        <span className="grid size-[72px] place-items-center rounded-full bg-danger-soft text-danger-foreground [&>svg]:size-9">{icon}</span>
+      ) : tone === "success" ? (
+        <span className="grid size-16 place-items-center rounded-full bg-selected text-foreground [&>svg]:size-9">{icon}</span>
+      ) : (
+        <span className="inline-flex text-muted-foreground [&>svg]:size-16">{icon}</span>
+      )}
+      <h2 className="mt-2 font-display text-[30px] leading-[1.08] font-semibold tracking-[-0.02em] text-foreground">{title}</h2>
+      {description && (
+        <p className={cn("text-base leading-normal text-muted-foreground", tone === "danger" ? "max-w-[310px]" : "max-w-[300px]", descriptionClassName)}>{description}</p>
+      )}
       {action && <div className="mt-4 flex flex-col items-center gap-1">{action}</div>}
     </div>
   )

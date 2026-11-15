@@ -4,6 +4,7 @@ import { AppShell } from "@/components/layouts/app-shell";
 import { PagePlaceholder } from "@/components/layouts/page-placeholder";
 import { allNav } from "@/lib/navigation";
 import { InboxPage } from "@/pages/inbox-page";
+import { MockupsPage } from "@/pages/mockups-page";
 import { NotificationsPage } from "@/pages/settings/notifications-page";
 import { PreferencesPage } from "@/pages/settings/preferences-page";
 import { SecurityPage } from "@/pages/settings/security-page";
@@ -13,6 +14,7 @@ export default function App() {
   return (
     <TooltipProvider>
       <Routes>
+        <Route path="mockups" element={<MockupsPage />} />
         <Route element={<AppShell />}>
           <Route index element={<Navigate to="/today" replace />} />
           <Route path="settings" element={<SettingsLayout />}>

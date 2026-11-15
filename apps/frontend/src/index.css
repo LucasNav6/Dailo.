@@ -54,6 +54,8 @@
   --danger-foreground: #7a1f0e;
   --danger-border: #f4c9bf;
   --scrim: rgb(30 51 41 / 0.45);
+  --faint: #7c8f82;
+  --switch-off: #bccdb3;
 }
 
 .dark {
@@ -104,6 +106,8 @@
   --danger-foreground: #f4c9bf;
   --danger-border: #7a1f0e;
   --scrim: rgb(0 0 0 / 0.6);
+  --faint: #6f8576;
+  --switch-off: #3f5a4b;
 }
 
 @theme inline {
@@ -151,6 +155,8 @@
   --color-danger: var(--destructive);
   --color-danger-border: var(--danger-border);
   --color-scrim: var(--scrim);
+  --color-faint: var(--faint);
+  --color-switch-off: var(--switch-off);
 }
 
 @layer base {

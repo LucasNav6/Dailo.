@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { RiErrorWarningLine } from "@remixicon/react"
+import { RiAlertLine, RiRefreshLine } from "@remixicon/react"
 import { Button } from "@/components/atoms/button"
 import { EmptyState } from "@/components/molecules/empty-state"
 
@@ -17,13 +17,14 @@ function ErrorLayout({ title, description, onRetry, secondaryAction }: ErrorLayo
     <div role="alert" className="flex flex-1 flex-col">
       <EmptyState
         tone="danger"
-        icon={<RiErrorWarningLine aria-hidden />}
+        icon={<RiAlertLine aria-hidden />}
         title={title}
         description={description}
         action={
           <>
-            {onRetry && (
-              <Button size="lg" onClick={onRetry}>
+            {(onRetry || secondaryAction) && (
+              <Button size="lg" onClick={onRetry} className="[&_svg]:size-5">
+                <RiRefreshLine aria-hidden />
                 Reintentar
               </Button>
             )}

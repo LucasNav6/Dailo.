@@ -12,11 +12,11 @@ function Snackbar({ message, actionLabel, onAction }: SnackbarProps) {
     <div
       role="status"
       aria-live="polite"
-      className="pointer-events-auto flex min-h-12 items-center gap-2 rounded-2xl bg-primary py-2 pr-2 pl-4 text-[15px] text-primary-foreground shadow-lg"
+      className="pointer-events-auto flex min-h-[52px] items-center gap-3 rounded-2xl bg-primary py-2 pr-2 pl-4 text-[15px] text-primary-foreground"
     >
-      <span>{message}</span>
+      <span className="flex-1">{message}</span>
       {actionLabel && (
-        <Button variant="ghost" className="h-9 px-3 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" onClick={onAction}>
+        <Button variant="ghost" className="h-11 px-3 text-selected hover:bg-primary-foreground/10 hover:text-selected" onClick={onAction}>
           {actionLabel}
         </Button>
       )}

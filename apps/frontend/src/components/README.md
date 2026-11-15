@@ -8,7 +8,7 @@ organizan por niveles de Atomic Design. Cada nivel solo importa de los niveles d
 | `atoms/`     | Primitivo único: botón, input, check de tarea, alerta, progreso…        | (nada del proyecto)    |
 | `molecules/` | Composición de 2+ átomos: diálogos, selects, fila de tarea, banner…     | `atoms/`               |
 | `organisms/` | Sección completa: barra inferior, cabecera, sidebar, captura rápida…    | `atoms/`, `molecules/` |
-| `layouts/`   | Estructura de una vista: shell de la app, loader, error, placeholder    | todos los anteriores   |
+| `layouts/`   | Estructura de una vista: shell, loader, error, hojas y diálogos, marco  | todos los anteriores   |
 
 Reglas:
 
