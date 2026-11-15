@@ -20,7 +20,6 @@ export function TodayOverdueView() {
         actions={["Traer todas a hoy", "Reprogramar"]}
       />
       <EssentialsBox done={1} max={3} tasks={[
-          { title: "Llamar al contador", done: true },
           { title: "Escribir los textos de la home", time: "Vie", timeIcon: <EssentialIcon /> },
           { title: "Comprar regalo para mamá" },
         ]}

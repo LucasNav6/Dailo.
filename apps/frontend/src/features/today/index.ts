@@ -1,7 +1,9 @@
 import type { Feature } from "../types";
 import { TodayAppView } from "./views/app.view";
 import { TodayEmptyView } from "./views/empty.view";
-import { TodayEssentialsDoneOpenView, TodayEssentialsDoneView } from "./views/essentials-done.view";
+import { TodayAchievedView } from "./views/achieved.view";
+import { TodayCompletedUndoView } from "./views/completed-undo.view";
+import { TodayEssentialsDoneView } from "./views/essentials-done.view";
 import { TodayEssentialsFullView } from "./views/essentials-full.view";
 import { TodayLoadingView } from "./views/loading.view";
 import { TodayLongTextView } from "./views/long-text.view";
@@ -23,7 +25,8 @@ export const todayFeature: Feature = {
     { id: "overdue", title: "Atrasadas", source: "S-02", component: TodayOverdueView, nav: "today" },
     { id: "month", title: "Vistazo al mes", source: "H-04", component: TodayMonthView, nav: "today" },
     { id: "essentials-done", title: "Esenciales listos", source: "H-05", component: TodayEssentialsDoneView, nav: "today" },
-    { id: "essentials-done-open", title: "Esenciales listos abierto", source: "H-06", component: TodayEssentialsDoneOpenView, nav: "today" },
+    { id: "completed-undo", title: "Completadas y deshacer", source: "H-06", component: TodayCompletedUndoView, nav: "today" },
+    { id: "achieved", title: "Lo lograste", source: "H-07", component: TodayAchievedView, nav: "today" },
     { id: "essentials-full", title: "Esenciales lleno", source: "D-03", component: TodayEssentialsFullView, nav: "today" },
     { id: "long-text", title: "Textos largos", source: "D-06", component: TodayLongTextView, nav: "today" },
   ],

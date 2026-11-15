@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
-import { addDays, format, isSameDay, isSameMonth } from "date-fns";
+import { addDays, format, isSameDay, isSameMonth, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { RiAddLine, RiArrowLeftLine, RiFlagLine } from "@remixicon/react";
 import { Emphasis } from "@/components/atoms/emphasis";
@@ -12,7 +12,10 @@ import { SkeletonEssentials, SkeletonSection } from "@/components/molecules/skel
 import { WeekStrip, type WeekDay } from "@/components/molecules/week-strip";
 import { SubtaskToggle } from "@/components/molecules/subtask-toggle";
 import { MonthCalendar } from "@/components/organisms/month-calendar";
+import { CompletedGroup } from "@/components/organisms/completed-group";
 import { EssentialsDone } from "@/components/organisms/essentials-done";
+import { Snackbar } from "@/components/molecules/snackbar";
+import { Achieved } from "@/features/today/components/achieved";
 import { effectiveDate, isDeadlineOnly } from "@/features/today/lib/effective-date";
 import { phraseFor } from "@/features/today/lib/done-phrases";
 import { EssentialsBox } from "@/components/organisms/essentials-box";
@@ -52,8 +55,14 @@ export function TodayPage() {
   const [monthOpen, setMonthOpen] = useState(false);
   const { isRecent, markCompleted } = useRecentlyCompleted();
   const [expanded, setExpanded] = useState<string[]>([]);
-  const [openPast, setOpenPast] = useState<string[]>([]);
-  const [doneOpenOn, setDoneOpenOn] = useState<string | null>(null);
+  const [showCompleted, setShowCompleted] = useState(false);
+  const [undoId, setUndoId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!undoId) return;
+    const timer = setTimeout(() => setUndoId(null), 6000);
+    return () => clearTimeout(timer);
+  }, [undoId]);
   const isToday = isSameDay(selected, today);
   const selectedISO = toISODate(selected);
 
@@ -112,7 +121,10 @@ export function TodayPage() {
       title: task.title,
       done: task.status === "completed",
       onToggle: (done) => {
-        if (done) markCompleted(task.id);
+        if (done) {
+          markCompleted(task.id);
+          setUndoId(task.id);
+        }
         void setTaskDone(task.id, done);
       },
       time,
@@ -143,8 +155,14 @@ export function TodayPage() {
     };
   };
 
+  const pendingTasks = planned.filter((task) => task.status === "active" || isRecent(task.id));
+  const completedTasks = planned
+    .filter((task) => task.status === "completed" && !isRecent(task.id))
+    .sort((x, y) => (y.completedAt ?? "").localeCompare(x.completedAt ?? ""));
   const essentials = planned.filter((task) => task.essential);
-  const rest = planned.filter((task) => !task.essential);
+  const essentialsDone = essentials.filter((task) => task.status === "completed").length;
+  const pendingEssentials = pendingTasks.filter((task) => task.essential);
+  const rest = pendingTasks.filter((task) => !task.essential);
   const [b1, b2, b3] = preferences.periodBreaks;
   const bounds: [string, string][] = [
     [preferences.workday.start, b1],
@@ -158,30 +176,25 @@ export function TodayPage() {
     ...PERIODS.map(({ key, title: label }, index) => {
       const [start, end] = bounds[index];
       const current = isToday && nowTime >= start && nowTime < end;
-      const ended = isToday && nowTime >= end;
       const group = rest.filter((task) => task.timeOfDay === key);
-      return { key, period: key as TimeOfDay, title: label, badge: current ? "Ahora" : undefined, ended, range: `${hours(start)}–${hours(end)}`, group };
+      return { key, period: key as TimeOfDay, title: label, badge: current ? "Ahora" : undefined, range: `${hours(start)}–${hours(end)}`, group };
     }),
-    { key: "none", period: undefined, title: "Sin franja", badge: undefined, ended: false, range: "", group: rest.filter((task) => !task.timeOfDay) },
+    { key: "none", period: undefined, title: "Sin franja", badge: undefined, range: "", group: rest.filter((task) => !task.timeOfDay) },
   ].filter((section) => section.group.length > 0);
 
-  const renderSection = ({ key, period, title: label, badge, ended, range, group }: (typeof sections)[number]) => {
-    const done = group.filter((task) => task.status === "completed" && !isRecent(task.id));
-    const foldable = ended && done.length === group.length;
-    const isOpen = openPast.includes(key);
-    return (
-      <TaskSection
-        key={key}
-        title={label}
-        period={period}
-        badge={badge}
-        meta={foldable ? `${done.length} ${done.length === 1 ? "hecha" : "hechas"}` : range || undefined}
-        collapsed={foldable ? !isOpen : undefined}
-        onToggle={foldable ? () => setOpenPast((current) => (isOpen ? current.filter((value) => value !== key) : [...current, key])) : undefined}
-        tasks={group.map(item)}
-      />
-    );
-  };
+  const renderSection = ({ key, period, title: label, badge, range, group }: (typeof sections)[number]) => (
+    <TaskSection key={key} title={label} period={period} badge={badge} meta={range || undefined} tasks={group.map(item)} />
+  );
+
+  const completedItems: TaskItem[] = completedTasks.map((task) => ({
+    id: task.id,
+    title: task.title,
+    done: true,
+    onToggle: () => void setTaskDone(task.id, false),
+    time: task.completedAt ? format(parseISO(task.completedAt), "HH:mm") : undefined,
+  }));
+
+  const achieved = isToday && planned.length > 0 && pendingTasks.length === 0 && overdue.length === 0;
 
   const goTo = (date: Date) => {
     setSelected(date);
@@ -221,26 +234,21 @@ export function TodayPage() {
         )
       ) : (
         <>
-          {essentials.length > 0 &&
-            (essentials.every((task) => task.status === "completed" && !isRecent(task.id)) ? (
-              <EssentialsDone
-                count={essentials.length}
-                total={essentials.length}
-                lead={phraseFor(selectedISO).lead}
-                emphasis={phraseFor(selectedISO).emphasis}
-                open={doneOpenOn === selectedISO}
-                onToggle={() => setDoneOpenOn((current) => (current === selectedISO ? null : selectedISO))}
-                tasks={essentials.map(item)}
-              />
-            ) : (
-              <EssentialsBox
-                done={essentials.filter((task) => task.status === "completed").length}
-                max={preferences.maxEssentialTasks}
-                tasks={essentials.map(item)}
-              />
-            ))}
-          {sections.map(renderSection)}
-          {!isToday && <InlineAction icon={<RiAddLine aria-hidden />} onClick={() => navigate("/inbox")}>Planificar algo</InlineAction>}
+          {achieved ? (
+            <Achieved total={planned.length} essentials={essentials.length} onTomorrow={() => setSelected(addDays(today, 1))} />
+          ) : (
+            <>
+              {essentials.length > 0 &&
+                (pendingEssentials.length > 0 ? (
+                  <EssentialsBox done={essentialsDone} max={preferences.maxEssentialTasks} tasks={pendingEssentials.map(item)} />
+                ) : (
+                  <EssentialsDone count={essentialsDone} total={essentials.length} lead={phraseFor(selectedISO).lead} emphasis={phraseFor(selectedISO).emphasis} />
+                ))}
+              {sections.map(renderSection)}
+              {!isToday && <InlineAction icon={<RiAddLine aria-hidden />} onClick={() => navigate("/inbox")}>Planificar algo</InlineAction>}
+            </>
+          )}
+          {completedItems.length > 0 && <CompletedGroup tasks={completedItems} open={showCompleted} onToggle={() => setShowCompleted((value) => !value)} />}
         </>
       )}
 
@@ -253,6 +261,18 @@ export function TodayPage() {
         </div>
         <MonthCalendar month={selected} today={today} selected={selected} loads={monthLoads} onSelect={goTo} />
       </BottomSheet>
+      {undoId && (
+        <div className="pointer-events-none fixed inset-x-4 bottom-[100px] z-[60] lg:bottom-6 lg:left-auto lg:inset-x-auto lg:right-6">
+          <Snackbar
+            message="Tarea completada"
+            actionLabel="Deshacer"
+            onAction={() => {
+              void setTaskDone(undoId, false);
+              setUndoId(null);
+            }}
+          />
+        </div>
+      )}
     </PageColumn>
   );
 }

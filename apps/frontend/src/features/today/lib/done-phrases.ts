@@ -1,10 +1,10 @@
 export type DonePhrase = { lead: string; emphasis: string };
 
 export const DONE_PHRASES: DonePhrase[] = [
-  { lead: "Tu día ya está", emphasis: "hecho." },
+  { lead: "Lo importante,", emphasis: "hecho." },
   { lead: "Lo esencial,", emphasis: "resuelto." },
   { lead: "Misión", emphasis: "cumplida." },
-  { lead: "Lo importante,", emphasis: "listo." },
+  { lead: "Tu día ya está", emphasis: "hecho." },
   { lead: "Ahora, a", emphasis: "respirar." },
   { lead: "Un buen día,", emphasis: "ganado." },
   { lead: "Lo difícil ya", emphasis: "pasó." },

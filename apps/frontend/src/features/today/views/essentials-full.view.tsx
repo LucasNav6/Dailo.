@@ -15,8 +15,7 @@ export function TodayEssentialsFullView() {
     <>
       <TodayHeader eyebrow="Domingo 15 nov" title={<>Tu <Emphasis>hoy.</Emphasis></>} />
       <WeekStrip days={weekDays(15)} />
-      <EssentialsBox done={3} max={3} tasks={[
-          { title: "Llamar al contador", done: true },
+      <EssentialsBox done={1} max={3} tasks={[
           { title: "Escribir los textos de la home", time: "Vie", timeIcon: <EssentialIcon /> },
           { title: "Comprar regalo para mamá" },
         ]}

@@ -17,7 +17,7 @@ export function TodayOtherDayView() {
         <RiArrowLeftLine aria-hidden />
         Volver a hoy
       </PillButton>
-      <EssentialsBox done={2} max={3} tasks={[{ title: "Enviar factura al cliente" }, { title: "Reunión de arranque", time: "10:00" }]} />
+      <EssentialsBox done={0} max={3} tasks={[{ title: "Enviar factura al cliente" }, { title: "Reunión de arranque", time: "10:00" }]} />
       <TaskSection title="Mañana" period="morning" meta="07–12" tasks={[{ title: "Definir estructura de páginas", time: "09:00" }]} />
       <TaskSection title="Tarde" period="afternoon" meta="15–19" tasks={[{ title: "Turno con el dentista", time: "17:30" }]} />
       <InlineAction icon={<RiAddLine aria-hidden />}>Planificar algo</InlineAction>
