@@ -30,6 +30,7 @@ import { useAddTask } from "@/features/projects/hooks/add-task.hook";
 import { useCompleteTaskWithSubtasks } from "@/features/projects/hooks/complete-task-with-subtasks.hook";
 import { useCreateSection } from "@/features/projects/hooks/create-section.hook";
 import { useDeleteProject } from "@/features/projects/hooks/delete-project.hook";
+import { useDeleteSubtask } from "@/features/projects/hooks/delete-subtask.hook";
 import { useDeleteSection, type DeleteSectionMode } from "@/features/projects/hooks/delete-section.hook";
 import { useProject } from "@/features/projects/hooks/get-project.hook";
 import { useSections } from "@/features/projects/hooks/list-sections.hook";
@@ -71,6 +72,7 @@ export function ProjectDetailPage() {
   const createSection = useCreateSection(id);
   const renameSection = useRenameSection();
   const deleteSection = useDeleteSection();
+  const deleteSubtask = useDeleteSubtask();
   const reorderTasks = useReorderTasks();
   const reorderSections = useReorderSections();
   const { isRecent, markCompleted } = useRecentlyCompleted();
@@ -86,6 +88,7 @@ export function ProjectDetailPage() {
   const [sectionSheet, setSectionSheet] = useState<"new" | Section | null>(null);
   const [sectionMenu, setSectionMenu] = useState<Section | null>(null);
   const [sectionDelete, setSectionDelete] = useState<Section | null>(null);
+  const [subtaskToDelete, setSubtaskToDelete] = useState<Task | null>(null);
   const [deleteMode, setDeleteMode] = useState<DeleteSectionMode>("keep");
 
   useEffect(() => {
@@ -212,7 +215,7 @@ export function ProjectDetailPage() {
           }
         />
         {open && subs.map((sub) => (
-          <SubtaskRow key={sub.id} title={sub.title} checked={sub.status === "completed"} onCheckedChange={(done) => void setTaskDone(sub.id, done)} />
+          <SubtaskRow key={sub.id} title={sub.title} checked={sub.status === "completed"} onCheckedChange={(done) => void setTaskDone(sub.id, done)} onRemove={() => setSubtaskToDelete(sub)} />
         ))}
       </Fragment>
     );
@@ -477,6 +480,16 @@ export function ProjectDetailPage() {
         </div>
         <Button variant="danger" onClick={async () => { await deleteProject(project.id, moveToInbox); navigate("/projects", { replace: true }); }}>Eliminar proyecto</Button>
         <Button variant="ghost" onClick={() => setConfirmDelete(false)}>Cancelar</Button>
+      </ConfirmDialog>
+
+      <ConfirmDialog
+        open={subtaskToDelete !== null}
+        onOpenChange={(open) => !open && setSubtaskToDelete(null)}
+        title={`¿Eliminar “${subtaskToDelete?.title ?? ""}”?`}
+        description="Se elimina la subtarea. No se puede deshacer."
+      >
+        <Button variant="danger" onClick={async () => { if (subtaskToDelete) await deleteSubtask(subtaskToDelete.id); setSubtaskToDelete(null); }}>Eliminar subtarea</Button>
+        <Button variant="ghost" onClick={() => setSubtaskToDelete(null)}>Cancelar</Button>
       </ConfirmDialog>
 
       <ConfirmDialog

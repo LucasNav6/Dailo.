@@ -28,6 +28,7 @@ import { useSections } from "@/features/projects/hooks/list-sections.hook";
 import { useMoveTaskToSection } from "@/features/projects/hooks/move-task-to-section.hook";
 import { useAddSubtask } from "@/features/projects/hooks/add-subtask.hook";
 import { useAttachFiles } from "@/features/projects/hooks/attach-file.hook";
+import { useDeleteSubtask } from "@/features/projects/hooks/delete-subtask.hook";
 import { useDeleteTask } from "@/features/projects/hooks/delete-task.hook";
 import { useEditTask } from "@/features/projects/hooks/edit-task.hook";
 import { useAttachments } from "@/features/projects/hooks/list-attachments.hook";
@@ -133,12 +134,14 @@ export function TaskDetailPage() {
   const setEssential = useSetTaskEssential();
   const addSubtask = useAddSubtask();
   const deleteTask = useDeleteTask();
+  const deleteSubtask = useDeleteSubtask();
   const attachFiles = useAttachFiles();
   const removeAttachment = useRemoveAttachment();
   const { sections } = useSections(projectId);
   const createSection = useCreateSection(projectId);
   const moveToSection = useMoveTaskToSection();
   const [moving, setMoving] = useState(false);
+  const [subtaskToDelete, setSubtaskToDelete] = useState<Task | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const [addingSubtask, setAddingSubtask] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -227,7 +230,7 @@ export function TaskDetailPage() {
       <CountHeading label="Subtareas" count={subtasks.length === 0 ? 0 : `${doneSubtasks}/${subtasks.length}`} />
       <ul className="flex flex-col">
         {subtasks.map((sub) => (
-          <SubtaskRow key={sub.id} title={sub.title} checked={sub.status === "completed"} onCheckedChange={(done) => void setTaskDone(sub.id, done)} className="pl-[5px]" />
+          <SubtaskRow key={sub.id} title={sub.title} checked={sub.status === "completed"} onCheckedChange={(done) => void setTaskDone(sub.id, done)} onRemove={() => setSubtaskToDelete(sub)} className="pl-[5px]" />
         ))}
       </ul>
       <InlineAction icon={<RiAddLine aria-hidden />} className="mt-0 gap-[13px] [&_svg]:size-[18px]" onClick={() => setAddingSubtask(true)}>Añadir subtarea</InlineAction>
@@ -281,6 +284,16 @@ export function TaskDetailPage() {
         <SheetHeading eyebrow="Tarea" title={task.title} />
         <ActionRow icon={<RiDeleteBinLine aria-hidden />} tone="danger" onClick={() => { setMenu(false); setConfirmDelete(true); }}>Eliminar tarea</ActionRow>
       </BottomSheet>
+
+      <ConfirmDialog
+        open={subtaskToDelete !== null}
+        onOpenChange={(open) => !open && setSubtaskToDelete(null)}
+        title={`¿Eliminar “${subtaskToDelete?.title ?? ""}”?`}
+        description="Se elimina la subtarea. No se puede deshacer."
+      >
+        <Button variant="danger" onClick={async () => { if (subtaskToDelete) await deleteSubtask(subtaskToDelete.id); setSubtaskToDelete(null); }}>Eliminar subtarea</Button>
+        <Button variant="ghost" onClick={() => setSubtaskToDelete(null)}>Cancelar</Button>
+      </ConfirmDialog>
 
       <ConfirmDialog
         open={confirmDelete}
