@@ -8,10 +8,11 @@ import { PillButton } from "@/components/atoms/pill-button";
 import { PageColumn } from "@/components/layouts/page-column";
 import { BottomSheet } from "@/components/molecules/bottom-sheet";
 import { InlineAction } from "@/components/molecules/inline-action";
-import { SkeletonSection } from "@/components/molecules/skeleton-section";
+import { SkeletonEssentials, SkeletonSection } from "@/components/molecules/skeleton-section";
 import { WeekStrip, type WeekDay } from "@/components/molecules/week-strip";
 import { SubtaskToggle } from "@/components/molecules/subtask-toggle";
 import { MonthCalendar } from "@/components/organisms/month-calendar";
+import { EssentialsBox } from "@/components/organisms/essentials-box";
 import { OverdueCard } from "@/components/organisms/overdue-card";
 import { TaskSection, type TaskItem } from "@/components/organisms/task-section";
 import { EssentialIcon } from "@/features/today/components/essential-icon";
@@ -48,6 +49,7 @@ export function TodayPage() {
   const [monthOpen, setMonthOpen] = useState(false);
   const { isRecent, markCompleted } = useRecentlyCompleted();
   const [expanded, setExpanded] = useState<string[]>([]);
+  const [openPast, setOpenPast] = useState<string[]>([]);
   const isToday = isSameDay(selected, today);
   const selectedISO = toISODate(selected);
 
@@ -79,9 +81,9 @@ export function TodayPage() {
         <div aria-busy="true" className="contents">
           <TodayHeader eyebrow={eyebrow} title={title} />
           <WeekStrip days={days} />
-          <SkeletonSection widths={[70, 55, 62]} />
+          <SkeletonEssentials widths={[70, 55, 62]} />
           <SkeletonSection widths={[48, 66]} />
-          <SkeletonSection widths={[58]} />
+          <SkeletonSection widths={[58]} label={60} />
         </div>
       </PageColumn>
     );
@@ -150,16 +152,29 @@ export function TodayPage() {
     ...PERIODS.map(({ key, title: label }, index) => {
       const [start, end] = bounds[index];
       const current = isToday && nowTime >= start && nowTime < end;
+      const ended = isToday && nowTime >= end;
       const group = rest.filter((task) => task.timeOfDay === key);
-      return { key, title: current ? `${label} · ahora` : label, range: `${hours(start)}–${hours(end)}`, group };
+      return { key, period: key as TimeOfDay, title: label, badge: current ? "Ahora" : undefined, ended, range: `${hours(start)}–${hours(end)}`, group };
     }),
-    { key: "none", title: "Sin franja", range: "", group: rest.filter((task) => !task.timeOfDay) },
+    { key: "none", period: undefined, title: "Sin franja", badge: undefined, ended: false, range: "", group: rest.filter((task) => !task.timeOfDay) },
   ].filter((section) => section.group.length > 0);
 
-  const renderSection = ({ key, title: label, range, group }: (typeof sections)[number]) => {
+  const renderSection = ({ key, period, title: label, badge, ended, range, group }: (typeof sections)[number]) => {
     const done = group.filter((task) => task.status === "completed" && !isRecent(task.id));
-    if (done.length === group.length) return <TaskSection key={key} title={label} meta={`${done.length} ${done.length === 1 ? "hecha" : "hechas"}`} />;
-    return <TaskSection key={key} title={label} meta={range || undefined} tasks={group.map(item)} />;
+    const foldable = ended && done.length === group.length;
+    const isOpen = openPast.includes(key);
+    return (
+      <TaskSection
+        key={key}
+        title={label}
+        period={period}
+        badge={badge}
+        meta={foldable ? `${done.length} ${done.length === 1 ? "hecha" : "hechas"}` : range || undefined}
+        collapsed={foldable ? !isOpen : undefined}
+        onToggle={foldable ? () => setOpenPast((current) => (isOpen ? current.filter((value) => value !== key) : [...current, key])) : undefined}
+        tasks={group.map(item)}
+      />
+    );
   };
 
   const goTo = (date: Date) => {
@@ -201,9 +216,9 @@ export function TodayPage() {
       ) : (
         <>
           {essentials.length > 0 && (
-            <TaskSection
-              title="Esenciales"
-              meta={`${essentials.filter((task) => task.status === "completed").length} de ${preferences.maxEssentialTasks}`}
+            <EssentialsBox
+              done={essentials.filter((task) => task.status === "completed").length}
+              max={preferences.maxEssentialTasks}
               tasks={essentials.map(item)}
             />
           )}

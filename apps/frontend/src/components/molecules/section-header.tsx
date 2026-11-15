@@ -1,12 +1,35 @@
 import type { ReactNode } from "react"
+import { RiArrowDownSLine, RiArrowRightSLine } from "@remixicon/react"
 import { cn } from "@/lib/utils"
 
-function SectionHeader({ title, meta, className }: { title: ReactNode; meta?: ReactNode; className?: string }) {
-  return (
-    <div className={cn("mt-3.5 mb-0.5 flex items-center justify-between text-[13px] font-semibold tracking-[0.06em] text-subtle uppercase", className)}>
+type SectionHeaderProps = {
+  title: ReactNode
+  meta?: ReactNode
+  icon?: ReactNode
+  badge?: ReactNode
+  open?: boolean
+  onToggle?: () => void
+  className?: string
+}
+
+function SectionHeader({ title, meta, icon, badge, open, onToggle, className }: SectionHeaderProps) {
+  const content = (
+    <>
+      {icon && <span className="grid size-7 shrink-0 place-items-center rounded-full bg-selected text-subtle">{icon}</span>}
       <span>{title}</span>
-      {meta && <span className="text-sm font-medium tracking-normal normal-case text-muted-foreground">{meta}</span>}
-    </div>
+      {badge && <span className="rounded-full bg-primary px-2 py-0.5 text-[11px] font-semibold tracking-[0.04em] text-primary-foreground uppercase">{badge}</span>}
+      <span className="flex-1" />
+      {meta && <span className="font-medium tracking-normal text-muted-foreground normal-case">{meta}</span>}
+      {open !== undefined && <span className="inline-flex text-muted-foreground [&_svg]:size-[18px]">{open ? <RiArrowDownSLine aria-hidden /> : <RiArrowRightSLine aria-hidden />}</span>}
+    </>
+  )
+  const base = cn("mt-4 mb-0.5 flex items-center gap-2.5 text-[13px] font-semibold tracking-[0.06em] text-subtle uppercase", className)
+  return onToggle ? (
+    <button type="button" aria-expanded={open} onClick={onToggle} className={cn(base, "w-full rounded-lg text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50")}>
+      {content}
+    </button>
+  ) : (
+    <div className={base}>{content}</div>
   )
 }
 

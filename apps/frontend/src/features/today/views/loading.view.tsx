@@ -1,5 +1,5 @@
 import { Emphasis } from "@/components/atoms/emphasis";
-import { SkeletonSection } from "@/components/molecules/skeleton-section";
+import { SkeletonEssentials, SkeletonSection } from "@/components/molecules/skeleton-section";
 import { WeekStrip } from "@/components/molecules/week-strip";
 import { TodayHeader } from "../components/today-header";
 import { weekDays } from "../data";
@@ -9,9 +9,9 @@ export function TodayLoadingView() {
     <div aria-busy="true" className="contents">
       <TodayHeader eyebrow="Domingo 15 nov" title={<>Tu <Emphasis>hoy.</Emphasis></>} />
       <WeekStrip days={weekDays(15, false)} />
-      <SkeletonSection widths={[70, 55, 62]} />
+      <SkeletonEssentials widths={[70, 55, 62]} />
       <SkeletonSection widths={[48, 66]} />
-      <SkeletonSection widths={[58]} />
+      <SkeletonSection widths={[58]} label={60} />
     </div>
   );
 }

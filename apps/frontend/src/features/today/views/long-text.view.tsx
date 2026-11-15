@@ -1,5 +1,6 @@
 import { Emphasis } from "@/components/atoms/emphasis";
 import { WeekStrip } from "@/components/molecules/week-strip";
+import { EssentialsBox } from "@/components/organisms/essentials-box";
 import { TaskSection } from "@/components/organisms/task-section";
 import { TodayHeader } from "../components/today-header";
 import { weekDays } from "../data";
@@ -9,10 +10,7 @@ export function TodayLongTextView() {
     <>
       <TodayHeader eyebrow="Domingo 15 nov" title={<>Tu <Emphasis>hoy.</Emphasis></>} />
       <WeekStrip days={weekDays(15)} />
-      <TaskSection
-        title="Esenciales"
-        meta="2 de 3"
-        tasks={[
+      <EssentialsBox done={2} max={3} tasks={[
           {
             title: "Preparar la presentación del rediseño completo del sitio para el comité de dirección y enviar el borrador al equipo comercial antes del jueves a primera hora",
             time: "Vie",
@@ -24,7 +22,7 @@ export function TodayLongTextView() {
           { title: "Comprar regalo" },
         ]}
       />
-      <TaskSection title="Tarde" meta="15–19" tasks={[{ title: "Reunión", time: "16:00" }]} />
+      <TaskSection title="Tarde" period="afternoon" meta="15–19" tasks={[{ title: "Reunión", time: "16:00" }]} />
     </>
   );
 }

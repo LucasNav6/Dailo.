@@ -4,6 +4,7 @@ import { SheetOverlay } from "@/components/layouts/overlay-layout";
 import { ChoiceRow } from "@/components/molecules/choice-row";
 import { SheetHeading } from "@/components/molecules/sheet-heading";
 import { WeekStrip } from "@/components/molecules/week-strip";
+import { EssentialsBox } from "@/components/organisms/essentials-box";
 import { TaskSection } from "@/components/organisms/task-section";
 import { EssentialIcon } from "../components/essential-icon";
 import { TodayHeader } from "../components/today-header";
@@ -14,16 +15,13 @@ export function TodayEssentialsFullView() {
     <>
       <TodayHeader eyebrow="Domingo 15 nov" title={<>Tu <Emphasis>hoy.</Emphasis></>} />
       <WeekStrip days={weekDays(15)} />
-      <TaskSection
-        title="Esenciales"
-        meta="3 de 3"
-        tasks={[
+      <EssentialsBox done={3} max={3} tasks={[
           { title: "Llamar al contador", done: true },
           { title: "Escribir los textos de la home", time: "Vie", timeIcon: <EssentialIcon /> },
           { title: "Comprar regalo para mamá" },
         ]}
       />
-      <TaskSection title="Mediodía · ahora" meta="12–15" tasks={[{ title: "Revisar presupuesto", time: "13:30" }]} />
+      <TaskSection title="Mediodía" period="midday" badge="Ahora" meta="12–15" tasks={[{ title: "Revisar presupuesto", time: "13:30" }]} />
       <SheetOverlay className="gap-1 pb-6">
         <SheetHeading title="Ya tenés 3 esenciales" subtitle="Elegí cuál reemplazar con “Revisar presupuesto”" />
         <ChoiceRow title="Llamar al contador" />
