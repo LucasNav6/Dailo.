@@ -1,98 +1,103 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "@fontsource-variable/geist";
+@import "@fontsource-variable/fraunces";
+@import "@fontsource-variable/fraunces/wght-italic.css";
+@import "@fontsource-variable/dm-sans";
 
 @custom-variant dark (&:is(.dark *));
 
-/* Paleta neutral con acento menta (#A5F3C5) provisional */
+/* Sistema de diseño de Dailo: sage (superficies), forest (tinta), tomato (atención). */
 :root {
-  --radius: 0.75rem;
-  --radius-dock: 1.5rem;
+  /* primitivos */
+  --sage-50: #eef3ea;
+  --sage-100: #eaf0e6;
+  --sage-200: #dce7d5;
+  --sage-300: #cbd8c4;
+  --sage-400: #bccdb3;
+  --surface: #fbfcfa;
+  --field-bg: #ffffff;
+  --forest-900: #1e3329;
+  --forest-700: #3f5a4b;
+  --forest-600: #54675b;
+  --field: #7c8f82;
+  --tomato: #e5472c;
+  --tomato-deep: #c93a20;
+  --tomato-50: #fdece8;
 
-  --background: #ffffff;
-  --foreground: #17212b;
-
-  --card: #f1f5f9;
-  --card-foreground: #17212b;
-
-  --popover: #ffffff;
-  --popover-foreground: #17212b;
-
-  --primary: #14532d;
-  --primary-foreground: #ffffff;
-
-  --secondary: #e2f8ec;
-  --secondary-foreground: #14532d;
-
-  --muted: #f1f5f9;
-  --muted-foreground: #293548;
-
-  --accent: #e2f8ec;
-  --accent-foreground: #14532d;
-
-  --destructive: #991b1b;
-
-  --border: #94a3b8;
-  --input: #94a3b8;
-  --ring: #14532d;
-
-  --sidebar: #f1f5f9;
-  --sidebar-foreground: #17212b;
-  --sidebar-primary: #14532d;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e2f8ec;
-  --sidebar-accent-foreground: #14532d;
-  --sidebar-border: #cbd5e1;
-  --sidebar-ring: #14532d;
+  /* semánticos de shadcn (ring = verde oscuro) */
+  --radius: 1rem;
+  --background: var(--sage-100);
+  --foreground: var(--forest-900);
+  --card: var(--surface);
+  --card-foreground: var(--forest-900);
+  --popover: var(--surface);
+  --popover-foreground: var(--forest-900);
+  --primary: var(--forest-900);
+  --primary-foreground: var(--surface);
+  --secondary: var(--sage-200);
+  --secondary-foreground: var(--forest-900);
+  --muted: var(--sage-200);
+  --muted-foreground: var(--forest-600);
+  --accent: var(--tomato-50);
+  --accent-foreground: var(--forest-900);
+  --destructive: var(--tomato-deep);
+  --border: var(--sage-300);
+  --input: var(--field);
+  --ring: var(--forest-900);
+  --brand: var(--tomato);
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--forest-900);
+  --sidebar-primary: var(--forest-900);
+  --sidebar-primary-foreground: var(--surface);
+  --sidebar-accent: var(--sage-200);
+  --sidebar-accent-foreground: var(--forest-900);
+  --sidebar-border: var(--sage-300);
+  --sidebar-ring: var(--forest-900);
 }
 
 .dark {
-  --background: #181c24;
-  --foreground: #f8fafc;
-
-  --card: #202530;
-  --card-foreground: #f8fafc;
-
-  --popover: #202530;
-  --popover-foreground: #f8fafc;
-
-  --primary: #a5f3c5;
-  --primary-foreground: #181c24;
-
-  --secondary: #293241;
-  --secondary-foreground: #f8fafc;
-
-  --muted: #293241;
-  --muted-foreground: #cbd5e1;
-
-  --accent: #293241;
-  --accent-foreground: #f8fafc;
-
-  --destructive: #fca5a5;
-
-  --border: #64748b;
-  --input: #64748b;
-  --ring: #a5f3c5;
-
-  --sidebar: #181c24;
-  --sidebar-foreground: #f8fafc;
-  --sidebar-primary: #a5f3c5;
-  --sidebar-primary-foreground: #181c24;
-  --sidebar-accent: #293241;
-  --sidebar-accent-foreground: #f8fafc;
-  --sidebar-border: #293241;
-  --sidebar-ring: #a5f3c5;
+  --background: #0f1714;
+  --foreground: #e6ede4;
+  --card: #16201b;
+  --card-foreground: #e6ede4;
+  --popover: #16201b;
+  --popover-foreground: #e6ede4;
+  --primary: #e6ede4;
+  --primary-foreground: #0f1714;
+  --secondary: #1e2e25;
+  --secondary-foreground: #e6ede4;
+  --muted: #1e2e25;
+  --muted-foreground: #9bb0a2;
+  --accent: #2a1a17;
+  --accent-foreground: #e6ede4;
+  --destructive: #ff7a60;
+  --border: #2a3a31;
+  --input: #5e7568;
+  --field-bg: #0f1714;
+  --ring: #bccdb3;
+  --brand: #ff6a4d;
+  --sidebar: #16201b;
+  --sidebar-foreground: #e6ede4;
+  --sidebar-primary: #e6ede4;
+  --sidebar-primary-foreground: #0f1714;
+  --sidebar-accent: #1e2e25;
+  --sidebar-accent-foreground: #e6ede4;
+  --sidebar-border: #2a3a31;
+  --sidebar-ring: #bccdb3;
 }
 
 @theme inline {
-  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --font-sans: "DM Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces Variable", ui-serif, Georgia, serif;
+  --radius-sm: calc(var(--radius) - 8px);
+  --radius-md: calc(var(--radius) - 4px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --radius-dock: var(--radius-dock);
+  --radius-2xl: calc(var(--radius) + 12px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand: var(--brand);
+  --color-field-bg: var(--field-bg);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
@@ -140,7 +145,7 @@
   transition: background-color 180ms ease-out, color 180ms ease-out, transform 180ms ease-out;
 
   &:hover {
-    background-color: color-mix(in oklab, var(--accent), transparent 50%);
+    background-color: color-mix(in oklab, var(--secondary), transparent 50%);
     color: var(--foreground);
   }
   &:focus-visible {
@@ -151,11 +156,9 @@
     transform: scale(0.96);
   }
   &[aria-current="page"] {
-    background-color: var(--accent);
-    color: var(--accent-foreground);
-  }
-  &[aria-current="page"] svg {
-    color: var(--primary);
+    background-color: var(--secondary);
+    color: var(--foreground);
+    font-weight: 600;
   }
 }
 

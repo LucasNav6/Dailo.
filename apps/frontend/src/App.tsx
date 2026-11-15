@@ -1,9 +1,13 @@
 import { Navigate, Route, Routes } from "react-router";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ToastProvider } from "@/components/toast";
 import { AppShell } from "@/components/app-shell";
-import { PagePlaceholder } from "@/components/page-placeholder";
-import { allNav } from "@/lib/navigation";
 import { InboxPage } from "@/pages/inbox-page";
+import { SomedayPage } from "@/pages/someday-page";
+import { TodayPage } from "@/pages/today-page";
+import { TrashPage } from "@/pages/trash-page";
+import { ProjectDetailPage } from "@/pages/project-detail-page";
+import { ProjectsPage } from "@/pages/projects-page";
 import { NotificationsPage } from "@/pages/settings/notifications-page";
 import { PreferencesPage } from "@/pages/settings/preferences-page";
 import { SecurityPage } from "@/pages/settings/security-page";
@@ -12,6 +16,7 @@ import { SettingsIndex, SettingsLayout } from "@/pages/settings/settings-layout"
 export default function App() {
   return (
     <TooltipProvider>
+      <ToastProvider>
       <Routes>
         <Route element={<AppShell />}>
           <Route index element={<Navigate to="/today" replace />} />
@@ -21,13 +26,16 @@ export default function App() {
             <Route path="notifications" element={<NotificationsPage />} />
             <Route path="security" element={<SecurityPage />} />
           </Route>
+          <Route path="today" element={<TodayPage />} />
           <Route path="inbox" element={<InboxPage />} />
-          {allNav.filter(({ to }) => to !== "/settings" && to !== "/inbox").map(({ to, label }) => (
-            <Route key={to} path={to} element={<PagePlaceholder description={`Pantalla de ${label} próximamente.`} />} />
-          ))}
+          <Route path="someday" element={<SomedayPage />} />
+          <Route path="trash" element={<TrashPage />} />
+          <Route path="projects" element={<ProjectsPage />} />
+          <Route path="projects/:projectId" element={<ProjectDetailPage />} />
           <Route path="*" element={<Navigate to="/today" replace />} />
         </Route>
       </Routes>
+      </ToastProvider>
     </TooltipProvider>
   );
 }

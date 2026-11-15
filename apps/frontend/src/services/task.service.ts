@@ -8,6 +8,7 @@ import type {
   TaskInput,
   TimeOfDay,
 } from "@/models/task.model"
+import { ValidationError } from "./errors"
 
 /** Decisión explícita que saca un elemento de Inbox. */
 export type InboxDecision =
@@ -37,7 +38,7 @@ function isValidDate(value: string) {
 }
 
 async function assertValid(task: Task) {
-  if (!task.title) throw new Error("Task title is required")
+  if (!task.title) throw new ValidationError("Task title is required")
   if (task.timeOfDay && !task.plannedDate)
     throw new Error("A time of day requires a planned date")
   for (const date of [task.plannedDate, task.deadline]) {
@@ -71,6 +72,25 @@ export async function removeTaskTrees(rootIds: string[]) {
   await taskAdapter.removeMany(ids)
 }
 
+/** Los ids de la tarea y de todos sus descendientes. */
+async function collectTree(rootId: string) {
+  const ids = [rootId]
+  for (let i = 0; i < ids.length; i++) {
+    const children = await taskAdapter.findByParentId(ids[i])
+    ids.push(...children.map((child) => child.id))
+  }
+  return ids
+}
+
+export interface PlanInput {
+  title: string
+  description?: string
+  projectId: string
+  deadline?: string
+  /** Subtareas opcionales, cada una con su deadline. Los títulos vacíos se ignoran. */
+  subtasks?: { title: string; deadline?: string }[]
+}
+
 export const taskService = {
   create: (input: TaskInput) =>
     atomically(async () => {
@@ -81,6 +101,7 @@ export const taskService = {
         position: Date.now(),
         ...input,
         title: input.title.trim(),
+        description: input.description?.trim() || undefined,
         id: crypto.randomUUID(),
         createdAt: now,
         updatedAt: now,
@@ -88,6 +109,51 @@ export const taskService = {
       await assertValid(task)
       await taskAdapter.create(task)
       return task
+    }),
+
+  /** Subtarea activa: hereda proyecto y sección de su tarea madre. */
+  createSubtask: (parentId: string, input: Pick<TaskInput, "title">) =>
+    atomically(async () => {
+      const parent = await taskAdapter.findById(parentId)
+      if (!parent) throw new Error(`Parent task not found: ${parentId}`)
+      return taskService.create({
+        title: input.title,
+        parentId,
+        projectId: parent.projectId,
+        sectionId: parent.sectionId,
+        status: "active",
+      })
+    }),
+
+  /** Mueve una tarea (y sus subtareas) a una sección de su proyecto, o a ninguna. */
+  moveToSection: (id: string, sectionId: string | undefined) =>
+    atomically(async () => {
+      const task = await taskAdapter.findById(id)
+      if (!task) throw new Error(`Task not found: ${id}`)
+      const now = new Date().toISOString()
+      for (const taskId of await collectTree(id)) {
+        const current = (await taskAdapter.findById(taskId)) as Task
+        const next: Task = { ...current, sectionId, updatedAt: now }
+        await assertValid(next)
+        await taskAdapter.update(taskId, next)
+      }
+    }),
+
+  /** Completa o reactiva una tarea. */
+  setCompleted: (id: string, completed: boolean) =>
+    taskService.update(id, { status: completed ? "completed" : "active" }),
+
+  /** Descarte lógico (recuperable) de la tarea y sus subtareas. */
+  discard: (id: string) =>
+    atomically(async () => {
+      if (!(await taskAdapter.findById(id))) throw new Error(`Task not found: ${id}`)
+      const now = new Date().toISOString()
+      for (const taskId of await collectTree(id))
+        await taskAdapter.update(taskId, {
+          status: "discarded",
+          deletedAt: now,
+          updatedAt: now,
+        })
     }),
 
   update: (id: string, changes: TaskChanges) =>
@@ -101,6 +167,8 @@ export const taskService = {
         title: changes.title === undefined ? current.title : changes.title.trim(),
         updatedAt: now,
       }
+      if (typeof changes.description === "string")
+        next.description = changes.description.trim() || undefined
       if (changes.status !== undefined && changes.status !== current.status) {
         next.completedAt = changes.status === "completed" ? now : undefined
       }
@@ -144,6 +212,7 @@ export const taskService = {
         case "complete":
           next.status = "completed"
           next.completedAt = now
+          next.completedFromInbox = true
           break
         case "discard":
           next.status = "discarded"
@@ -155,16 +224,131 @@ export const taskService = {
       return next
     }),
 
+  /**
+   * Planificar: un elemento de Inbox o Tal vez pasa a un proyecto como tarea
+   * activa, con deadline opcional y subtareas (cada una con el suyo).
+   */
+  plan: (id: string, input: PlanInput) =>
+    atomically(async () => {
+      const current = await taskAdapter.findById(id)
+      if (!current) throw new Error(`Task not found: ${id}`)
+      if (current.status !== "inbox" && current.status !== "someday")
+        throw new Error(`Task cannot be planned from ${current.status}: ${id}`)
+      if (!input.projectId) throw new ValidationError("Project is required")
+      const next: Task = {
+        ...current,
+        title: input.title.trim(),
+        description: input.description?.trim() || undefined,
+        projectId: input.projectId,
+        sectionId: undefined,
+        deadline: input.deadline || undefined,
+        status: "active",
+        updatedAt: new Date().toISOString(),
+      }
+      await assertValid(next)
+      await taskAdapter.update(id, next)
+      // Posiciones crecientes: varias subtareas pueden crearse en el mismo ms.
+      const base = Date.now()
+      for (const [index, subtask] of (input.subtasks ?? []).entries()) {
+        if (!subtask.title.trim()) continue
+        await taskService.create({
+          position: base + index,
+          title: subtask.title,
+          parentId: id,
+          projectId: input.projectId,
+          deadline: subtask.deadline || undefined,
+          status: "active",
+        })
+      }
+      return next
+    }),
+
+  /** Vuelve una tarea al estado indicado (deshacer / restaurar descartadas). */
+  restore: (id: string, status: "inbox" | "someday" | "active" = "inbox") =>
+    atomically(async () => {
+      const current = await taskAdapter.findById(id)
+      if (!current) throw new Error(`Task not found: ${id}`)
+      const next: Task = {
+        ...current,
+        status,
+        completedAt: undefined,
+        deletedAt: undefined,
+        completedFromInbox: undefined,
+        updatedAt: new Date().toISOString(),
+      }
+      await taskAdapter.update(id, next)
+      return next
+    }),
+
+  /** Elige el checkpoint (franja) de una tarea de hoy; la planifica para ese día. */
+  setTimeOfDay: (id: string, timeOfDay: TimeOfDay | undefined, date: string) =>
+    taskService.update(id, { timeOfDay, plannedDate: date }),
+
+  /** Tilda o destilda un elemento de Inbox "hecho ahora" sin sacarlo de Inbox. */
+  toggleInboxCompletion: (id: string) =>
+    atomically(async () => {
+      const current = await taskAdapter.findById(id)
+      if (!current) throw new Error(`Task not found: ${id}`)
+      const now = new Date().toISOString()
+      if (current.status === "inbox") {
+        const next: Task = {
+          ...current,
+          status: "completed",
+          completedAt: now,
+          completedFromInbox: true,
+          updatedAt: now,
+        }
+        await taskAdapter.update(id, next)
+        return next
+      }
+      if (current.status === "completed" && current.completedFromInbox) {
+        const next: Task = {
+          ...current,
+          status: "inbox",
+          completedAt: undefined,
+          completedFromInbox: undefined,
+          updatedAt: now,
+        }
+        await taskAdapter.update(id, next)
+        return next
+      }
+      throw new Error(`Task cannot be toggled from ${current.status}: ${id}`)
+    }),
+
   /** Elimina la tarea y sus subtareas. */
   remove: (id: string) => atomically(() => removeTaskTrees([id])),
 
   findById: (id: string) => taskAdapter.findById(id),
   findAll: () => taskAdapter.findAll(),
   findByStatus: taskAdapter.findByStatus,
-  /** Inbox con las capturas más recientes primero. */
-  findInbox: async () =>
-    (await taskAdapter.findByStatus("inbox")).sort(
+  /** Tareas de un día (YYYY-MM-DD): planificadas o con deadline ese día. */
+  findForDay: async (date: string) =>
+    (await taskAdapter.findAll())
+      .filter(
+        (task) =>
+          (task.status === "active" || task.status === "completed") &&
+          (task.plannedDate === date || task.deadline === date)
+      )
+      .sort((a, b) => a.position - b.position),
+  /** Tal vez: lo movido más recientemente primero. */
+  findSomeday: async () =>
+    (await taskAdapter.findByStatus("someday")).sort((a, b) =>
+      b.updatedAt.localeCompare(a.updatedAt)
+    ),
+  /** Descartadas: las más recientes primero. */
+  findDiscarded: async () =>
+    (await taskAdapter.findByStatus("discarded")).sort((a, b) =>
+      (b.deletedAt ?? "").localeCompare(a.deletedAt ?? "")
+    ),
+  /** Inbox: pendientes y las marcadas como hechas desde Inbox (tachadas), más recientes primero. */
+  findInbox: async () => {
+    const [pending, done] = await Promise.all([
+      taskAdapter.findByStatus("inbox"),
+      taskAdapter.findByStatus("completed"),
+    ])
+    return [...pending, ...done.filter((task) => task.completedFromInbox)].sort(
       (a, b) =>
         b.createdAt.localeCompare(a.createdAt) || b.position - a.position
-    ),
+    )
+  },
 }

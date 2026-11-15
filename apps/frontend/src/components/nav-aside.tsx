@@ -41,7 +41,7 @@ export function NavAside({ collapsed, onToggle, onNew }: { collapsed: boolean; o
   return (
     <aside className={cn("hidden shrink-0 flex-col bg-sidebar text-sidebar-foreground transition-[width] lg:flex", collapsed ? "w-18" : "w-64")}>
       <div className={cn("flex h-16 items-center px-4", collapsed ? "justify-center" : "justify-between")}>
-        {!collapsed && <span className="text-xl font-semibold">Dailo</span>}
+        {!collapsed && <span className="font-serif text-xl font-semibold tracking-tight">Dailo</span>}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon" onClick={onToggle} aria-expanded={!collapsed} aria-label={toggleLabel}>

@@ -1,40 +1,73 @@
 import { useState } from "react";
-import { RiInboxArchiveLine } from "@remixicon/react";
+import { useOutletContext } from "react-router";
 import { useInbox } from "@/hooks/use-inbox";
-import { InboxItemDetail } from "@/components/inbox-item-detail";
+import { useToast } from "@/components/toast";
+import { PageHeader } from "@/components/page-header";
+import { InboxRow } from "@/components/inbox-row";
+import { TriageSheet, type TriageIntent } from "@/components/triage-sheet";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/wrappers/empty-state";
+import { LoadingView } from "@/components/wrappers/loading-view";
+import { RiAddLine } from "@remixicon/react";
+import type { ShellContext } from "@/lib/shell-context";
+
+type Target = { id: string; intent?: TriageIntent };
 
 export function InboxPage() {
-  const { tasks, isLoading } = useInbox();
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  // Si el elemento sale de Inbox, el detalle se cierra solo.
-  const selected = tasks.find((task) => task.id === selectedId) ?? null;
+  const { tasks, isLoading, toggle, discard, restore } = useInbox();
+  const { openCapture } = useOutletContext<ShellContext>();
+  const notify = useToast();
+  const [target, setTarget] = useState<Target | null>(null);
+  // Si el elemento deja de estar pendiente, el triage se cierra solo.
+  const selected = tasks.find((task) => task.id === target?.id && task.status === "inbox") ?? null;
+  const pending = tasks.filter((task) => task.status === "inbox").length;
 
-  if (isLoading) return null;
+  if (isLoading) return <LoadingView label="Cargando Inbox…" />;
+
+  const act = async (action: () => Promise<unknown>, message: string, undo?: () => Promise<unknown>) => {
+    try {
+      await action();
+      notify({ message, actionLabel: undo ? "Deshacer" : undefined, onAction: () => void undo?.() });
+    } catch {
+      notify({ message: "No se pudo guardar. Probá de nuevo." });
+    }
+  };
 
   return (
     <>
+      <PageHeader eyebrow={`Inbox · ${pending === 1 ? "1 pendiente" : `${pending} pendientes`}`} title="Vaciá tu" em="mente." />
+
       {tasks.length === 0 ? (
-        <div className="flex flex-col items-center gap-2 py-16 text-center text-muted-foreground">
-          <RiInboxArchiveLine className="size-8" aria-hidden />
-          <p className="font-medium text-foreground">Tu Inbox está vacío</p>
-          <p className="text-sm">Lo que captures con + aparece acá para procesarlo después.</p>
-        </div>
+        <EmptyState
+          title="Inbox en"
+          em="cero."
+          description="Vaciaste tu mente. Mañana empezás liviano."
+          action={
+            <Button type="button" onClick={openCapture}>
+              <RiAddLine aria-hidden />
+              Capturar algo
+            </Button>
+          }
+        />
       ) : (
-        <ul className="flex max-w-2xl flex-col divide-y rounded-xl border">
+        <ul className="flex flex-col">
           {tasks.map((task) => (
-            <li key={task.id}>
-              <button
-                type="button"
-                onClick={() => setSelectedId(task.id)}
-                className="w-full px-4 py-3 text-left text-sm outline-none hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-inset"
-              >
-                <span className="line-clamp-2 whitespace-pre-line">{task.title}</span>
-              </button>
-            </li>
+            <InboxRow
+              key={task.id}
+              task={task}
+              onOpen={() => setTarget({ id: task.id })}
+              onToggle={() =>
+                void act(() => toggle(task.id), `Tachada: ${task.title}`, () => toggle(task.id))
+              }
+              onPlan={() => setTarget({ id: task.id, intent: "plan" })}
+              onSomeday={() => setTarget({ id: task.id, intent: "someday" })}
+              onDiscard={() => void act(() => discard(task.id), `Descartada: ${task.title}`, () => restore(task.id, "inbox"))}
+            />
           ))}
         </ul>
       )}
-      <InboxItemDetail task={selected} onClose={() => setSelectedId(null)} />
+
+      <TriageSheet task={selected} source="inbox" intent={target?.intent} onClose={() => setTarget(null)} />
     </>
   );
 }
