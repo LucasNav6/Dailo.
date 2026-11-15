@@ -3,6 +3,7 @@ import { type RemixiconComponentType } from "@remixicon/react"
 import type { FieldErrors } from "@/models/setting.model"
 import { cn } from "@/lib/utils"
 import { LAST_MINUTE_OF_DAY, TIME_STEP, toMinutes } from "@/services/setting.service"
+import { SettingRow, SettingValue } from "@/components/molecules/setting-row"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/molecules/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/molecules/select"
 
@@ -149,7 +150,7 @@ export function TimeSelect({
   )
 }
 
-/** Fila compacta: icono, nombre y valor como chip. Al tocarla abre el editor. */
+/** Fila de ajuste con su valor; al tocarla abre el editor de hora. */
 export function TimeRow({
   Icon,
   label,
@@ -163,22 +164,20 @@ export function TimeRow({
 }) {
   return (
     <Popover>
-        <PopoverTrigger asChild>
-          <button
-            type="button"
-            aria-label={`${label}, ${summary}. Editar`}
-            className="flex min-h-14 w-full items-center gap-3 rounded-xl bg-background px-3 text-left outline-none transition-colors hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50"
-          >
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-primary">
-              <Icon className="size-5" aria-hidden />
-            </span>
-            <span className="flex-1 text-sm font-medium">{label}</span>
-            <span className="rounded-lg border border-border/20 bg-card px-2.5 py-1 text-sm tabular-nums">{summary}</span>
-          </button>
-        </PopoverTrigger>
-        <PopoverContent align="end" className="w-auto space-y-3">
-          {children}
-        </PopoverContent>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          aria-label={`${label}, ${summary}. Editar`}
+          className="w-full rounded-xl text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        >
+          <SettingRow icon={<Icon aria-hidden />} label={label}>
+            <SettingValue>{summary}</SettingValue>
+          </SettingRow>
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-auto space-y-3">
+        {children}
+      </PopoverContent>
     </Popover>
   )
 }

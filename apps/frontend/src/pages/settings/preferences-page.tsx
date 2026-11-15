@@ -1,30 +1,21 @@
 import {
-  RiCheckboxBlankCircleLine,
-  RiCheckboxCircleFill,
+  RiCheckLine,
   RiComputerLine,
-  RiFlagLine,
   RiMoonLine,
-  RiPaletteLine,
+  RiSunCloudyLine,
+  RiSunFoggyLine,
   RiSunLine,
-  RiTimeLine,
-  RiCalendarScheduleLine,
-  RiCloudyLine,
   type RemixiconComponentType,
 } from "@remixicon/react"
 import { usePreferences } from "@/hooks/use-settings"
 import { useTheme, type Theme } from "@/lib/theme"
 import type { DayPeriod, Preferences } from "@/models/setting.model"
-import {
-  getPeriods,
-  getPoints,
-  pointBounds,
-  withPoint,
-  MAX_ESSENTIAL_TASKS,
-  MIN_ESSENTIAL_TASKS,
-  PERIODS,
-} from "@/services/setting.service"
-import { Button } from "@/components/atoms/button"
-import { Labeled, Panel, SaveStatus, Section, TimeRow, TimeSelect, useAutoSave } from "./settings-ui"
+import { getPeriods, getPoints, pointBounds, withPoint, MAX_ESSENTIAL_TASKS, MIN_ESSENTIAL_TASKS, PERIODS } from "@/services/setting.service"
+import { SettingsScreen } from "@/components/layouts/settings-screen"
+import { NumberPicker } from "@/components/molecules/number-picker"
+import { SettingRow } from "@/components/molecules/setting-row"
+import { SettingsSection } from "@/components/organisms/settings-section"
+import { Labeled, SaveStatus, TimeRow, TimeSelect, useAutoSave } from "./settings-ui"
 
 const THEMES: { id: Theme; label: string; Icon: RemixiconComponentType }[] = [
   { id: "system", label: "Sistema", Icon: RiComputerLine },
@@ -33,113 +24,79 @@ const THEMES: { id: Theme; label: string; Icon: RemixiconComponentType }[] = [
 ]
 
 const PERIOD_ICONS: Record<DayPeriod, RemixiconComponentType> = {
-  morning: RiSunLine,
-  noon: RiCloudyLine,
-  afternoon: RiTimeLine,
+  morning: RiSunFoggyLine,
+  noon: RiSunLine,
+  afternoon: RiSunCloudyLine,
   night: RiMoonLine,
 }
 
-const ESSENTIAL_OPTIONS = Array.from(
-  { length: MAX_ESSENTIAL_TASKS - MIN_ESSENTIAL_TASKS + 1 },
-  (_, index) => MIN_ESSENTIAL_TASKS + index
-)
+const ESSENTIAL_OPTIONS = Array.from({ length: MAX_ESSENTIAL_TASKS - MIN_ESSENTIAL_TASKS + 1 }, (_, index) => MIN_ESSENTIAL_TASKS + index)
 
 function PreferencesForm({ preferences }: { preferences: Preferences }) {
   const { savePreferences } = usePreferences()
   const { theme, setTheme } = useTheme()
   const { state, run } = useAutoSave()
 
-  const update = (next: Preferences) => {
-    void run(() => savePreferences(next))
-  }
+  const update = (next: Preferences) => void run(() => savePreferences(next))
   const points = getPoints(preferences)
   const periods = getPeriods(preferences)
-  const setPoint = (index: number, value: string) => update(withPoint(preferences, index, value))
   // Cada selector solo ofrece horas que no invaden a los puntos vecinos.
   const pointField = (index: number, label: string) => (
-    <TimeSelect label={label} value={points[index]} onChange={(value) => setPoint(index, value)} {...pointBounds(preferences, index)} />
+    <TimeSelect label={label} value={points[index]} onChange={(value) => update(withPoint(preferences, index, value))} {...pointBounds(preferences, index)} />
   )
 
   return (
-    <div>
-      <Section title="Rutina diaria" Icon={RiCalendarScheduleLine} description="Tu jornada empieza con la mañana y termina con la noche.">
-        <Panel className="space-y-2 p-2">
-          <TimeRow Icon={RiSunLine} label="Inicio del día" summary={points[0]}>
-            {pointField(0, "Inicio del día")}
-          </TimeRow>
-          <TimeRow Icon={RiMoonLine} label="Cierre del día" summary={points[4]}>
-            {pointField(4, "Cierre del día")}
-          </TimeRow>
-        </Panel>
-      </Section>
+    <SettingsScreen title="Preferencias" backTo="/settings">
+      <SettingsSection title="Rutina diaria">
+        <TimeRow Icon={RiSunLine} label="Inicio del día" summary={points[0]}>
+          {pointField(0, "Inicio del día")}
+        </TimeRow>
+        <TimeRow Icon={RiMoonLine} label="Cierre del día" summary={points[4]}>
+          {pointField(4, "Cierre del día")}
+        </TimeRow>
+      </SettingsSection>
 
-      <Section title="Franjas horarias" Icon={RiTimeLine} description="Cubren toda la jornada, una a continuación de otra. Al mover un límite se ajusta la franja contigua.">
-        <Panel className="space-y-2 p-2">
-          {PERIODS.map(({ id, label }, index) => (
-            <TimeRow key={id} Icon={PERIOD_ICONS[id]} label={label} summary={`${periods[id].start} – ${periods[id].end}`}>
-              <Labeled label="Inicio">{pointField(index, `${label}, inicio`)}</Labeled>
-              <Labeled label="Fin">{pointField(index + 1, `${label}, fin`)}</Labeled>
-            </TimeRow>
-          ))}
-        </Panel>
+      <SettingsSection title="Franjas horarias" hint="Una a continuación de otra. Al mover un límite se ajusta la contigua.">
+        {PERIODS.map(({ id, label }, index) => (
+          <TimeRow key={id} Icon={PERIOD_ICONS[id]} label={label} summary={`${periods[id].start} – ${periods[id].end}`}>
+            <Labeled label="Inicio">{pointField(index, `${label}, inicio`)}</Labeled>
+            <Labeled label="Fin">{pointField(index + 1, `${label}, fin`)}</Labeled>
+          </TimeRow>
+        ))}
         <SaveStatus state={state} />
-      </Section>
+      </SettingsSection>
 
-      <Section title="Planificación esencial" Icon={RiFlagLine}>
-        <Panel>
-          <div role="group" aria-labelledby="essential-label" className="space-y-3">
-            <p id="essential-label" className="text-sm font-medium">
-              Tareas esenciales por día
-            </p>
-            <div className="grid grid-cols-5 gap-2">
-              {ESSENTIAL_OPTIONS.map((value) => (
-                <Button
-                  key={value}
-                  type="button"
-                  variant={preferences.maxEssentialTasks === value ? "default" : "outline"}
-                  aria-pressed={preferences.maxEssentialTasks === value}
-                  onClick={() => update({ ...preferences, maxEssentialTasks: value })}
-                  className="h-12 text-base"
-                >
-                  {value}
-                </Button>
-              ))}
-            </div>
-            <p className="rounded-lg bg-muted p-3 text-sm">
-              <strong>Recomendado:</strong> 3 tareas para reducir la sobrecarga y cumplir tu día sin estrés.
-            </p>
-          </div>
-        </Panel>
-      </Section>
-
-      <Section title="Apariencia" Icon={RiPaletteLine}>
-        <div role="radiogroup" aria-label="Tema" className="space-y-2">
-          {THEMES.map(({ id, label, Icon }) => {
-            const selected = theme === id
-            return (
-              <button
-                key={id}
-                type="button"
-                role="radio"
-                aria-checked={selected}
-                onClick={() => setTheme(id)}
-                className={`flex min-h-14 w-full items-center gap-3 rounded-2xl border px-4 text-left text-sm font-medium outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 ${
-                  selected ? "border-primary bg-accent text-accent-foreground" : "border-border/20 bg-card hover:bg-accent/50"
-                }`}
-              >
-                <Icon className="size-5" aria-hidden />
-                <span className="flex-1">{label}</span>
-                {selected ? (
-                  <RiCheckboxCircleFill className="size-6 text-primary" aria-hidden />
-                ) : (
-                  <RiCheckboxBlankCircleLine className="size-6 text-muted-foreground" aria-hidden />
-                )}
-              </button>
-            )
-          })}
+      <SettingsSection title="Planificación esencial">
+        <div className="flex min-h-11 items-center justify-between">
+          <span className="text-[15px]">Tareas esenciales</span>
+          <NumberPicker label="Tareas esenciales por día" options={ESSENTIAL_OPTIONS} value={preferences.maxEssentialTasks} onChange={(value) => update({ ...preferences, maxEssentialTasks: value })} />
         </div>
-      </Section>
-    </div>
+        <p className="ml-[38px] text-[13px] leading-[1.45] text-muted-foreground">Recomendado: 3</p>
+      </SettingsSection>
+
+      <SettingsSection title="Apariencia">
+        <div role="radiogroup" aria-label="Tema" className="flex flex-col">
+          {THEMES.map(({ id, label, Icon }) => (
+            <button
+              key={id}
+              type="button"
+              role="radio"
+              aria-checked={theme === id}
+              onClick={() => setTheme(id)}
+              className="rounded-xl text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            >
+              <SettingRow icon={<Icon aria-hidden />} label={label}>
+                {theme === id && (
+                  <span className="inline-flex text-foreground [&_svg]:size-[22px]">
+                    <RiCheckLine aria-hidden />
+                  </span>
+                )}
+              </SettingRow>
+            </button>
+          ))}
+        </div>
+      </SettingsSection>
+    </SettingsScreen>
   )
 }
 

@@ -1,7 +1,5 @@
-import { Link, Navigate, NavLink, Outlet, useLocation } from "react-router"
+import { Navigate, NavLink, Outlet, useLocation } from "react-router"
 import {
-  RiArrowLeftLine,
-  RiArrowRightSLine,
   RiNotification3Line,
   RiShieldLine,
   RiEqualizerLine,
@@ -9,7 +7,7 @@ import {
 } from "@remixicon/react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/atoms/button"
+import { NavCard } from "@/components/molecules/nav-card"
 
 type Category = { to: string; label: string; description: string; Icon: RemixiconComponentType }
 
@@ -36,51 +34,55 @@ export function SettingsLayout() {
   const { pathname } = useLocation()
   const isIndex = pathname.replace(/\/$/, "") === "/settings"
   const current = categories.find((category) => pathname.startsWith(category.to))
+  const isDesktop = useMediaQuery("(min-width: 1024px)")
+  if (isIndex && isDesktop) return <Navigate to={categories[0].to} replace />
 
   return (
-    <div className="mx-auto w-full max-w-5xl">
+    <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col">
       <h1 className={cn("mb-6 font-display text-[32px] leading-[1.08] font-semibold tracking-[-0.02em]", !isIndex && "hidden lg:block")}>Configuración</h1>
-      <div className="lg:grid lg:grid-cols-[16rem_1fr] lg:gap-10">
-      <nav aria-label="Configuración" className={cn("space-y-6", isIndex ? "block" : "hidden lg:block")}>
-        {groups.map((group) => (
-          <div key={group.title} className="space-y-2">
-            <h2 className="px-1 text-xs font-semibold lg:px-3 uppercase tracking-wide text-muted-foreground">{group.title}</h2>
-            <ul className="space-y-2 lg:space-y-0.5">
-              {group.items.map(({ to, label, description, Icon }) => (
-                <li key={to}>
-                  <NavLink to={to} className="nav-link min-h-16 !rounded-2xl border border-border/20 bg-card lg:min-h-10 lg:border-transparent lg:bg-transparent">
-                    <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted lg:size-auto lg:bg-transparent">
-                      <Icon className="size-5" aria-hidden />
-                    </span>
-                    <span className="flex flex-1 flex-col">
-                      <span className="text-base font-medium text-foreground lg:text-sm">{label}</span>
-                      <span className="text-sm text-muted-foreground lg:hidden">{description}</span>
-                    </span>
-                    <RiArrowRightSLine className="size-5 lg:hidden" aria-hidden />
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
+      <div className="flex min-h-0 flex-1 flex-col lg:grid lg:grid-cols-[16rem_1fr] lg:items-start lg:gap-10">
+        {/* Móvil: índice con tarjetas del diseño. */}
+        {isIndex && (
+          <div className="flex flex-col gap-6 lg:hidden">
+            {groups.map((group) => (
+              <section key={group.title} className="flex flex-col gap-2.5">
+                <h2 className="text-[13px] font-semibold tracking-[0.06em] text-subtle uppercase">{group.title}</h2>
+                <ul className="flex flex-col gap-2.5">
+                  {group.items.map(({ to, label, description, Icon }) => (
+                    <NavCard key={to} to={to} icon={<Icon aria-hidden />} title={label} subtitle={description} />
+                  ))}
+                </ul>
+              </section>
+            ))}
+            <p className="text-center text-sm text-muted-foreground">Dailo v{__APP_VERSION__}</p>
           </div>
-        ))}
-        <p className="px-3 pt-4 text-center text-sm text-muted-foreground lg:text-left">Dailo v{__APP_VERSION__}</p>
-      </nav>
+        )}
 
-      {isIndex && <Outlet />}
-      {!isIndex && current && (
-        <div className="min-w-0 max-w-xl">
-          <div className="mb-4 flex items-center gap-2 lg:hidden">
-            <Button asChild variant="ghost" size="icon" aria-label="Volver a Configuración">
-              <Link to="/settings">
-                <RiArrowLeftLine aria-hidden />
-              </Link>
-            </Button>
-            <h2 className="text-xl font-semibold">{current.label}</h2>
+        {/* Escritorio: menú lateral. */}
+        <nav aria-label="Configuración" className="hidden space-y-6 lg:block">
+          {groups.map((group) => (
+            <div key={group.title} className="space-y-2">
+              <h2 className="px-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">{group.title}</h2>
+              <ul className="space-y-0.5">
+                {group.items.map(({ to, label, Icon }) => (
+                  <li key={to}>
+                    <NavLink to={to} className="nav-link min-h-10">
+                      <Icon className="size-5" aria-hidden />
+                      <span className="text-sm font-medium text-foreground">{label}</span>
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+          <p className="px-3 pt-4 text-sm text-muted-foreground">Dailo v{__APP_VERSION__}</p>
+        </nav>
+
+        {!isIndex && current && (
+          <div className="flex min-h-0 min-w-0 max-w-xl flex-1 flex-col">
+            <Outlet />
           </div>
-          <h2 className="mb-4 hidden text-xl font-semibold lg:block">{current.label}</h2>
-          <Outlet />
-        </div>
-      )}
+        )}
       </div>
     </div>
   )
