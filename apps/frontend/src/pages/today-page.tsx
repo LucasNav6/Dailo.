@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { addDays, format, isSameDay, isSameMonth } from "date-fns";
 import { es } from "date-fns/locale";
-import { RiAddLine, RiArrowLeftLine } from "@remixicon/react";
+import { RiAddLine, RiArrowLeftLine, RiFlagLine } from "@remixicon/react";
 import { Emphasis } from "@/components/atoms/emphasis";
 import { PillButton } from "@/components/atoms/pill-button";
 import { PageColumn } from "@/components/layouts/page-column";
@@ -13,6 +13,7 @@ import { WeekStrip, type WeekDay } from "@/components/molecules/week-strip";
 import { SubtaskToggle } from "@/components/molecules/subtask-toggle";
 import { MonthCalendar } from "@/components/organisms/month-calendar";
 import { EssentialsDone } from "@/components/organisms/essentials-done";
+import { effectiveDate, isDeadlineOnly } from "@/features/today/lib/effective-date";
 import { phraseFor } from "@/features/today/lib/done-phrases";
 import { EssentialsBox } from "@/components/organisms/essentials-box";
 import { OverdueCard } from "@/components/organisms/overdue-card";
@@ -60,8 +61,9 @@ export function TodayPage() {
   const countByDay = useMemo(() => {
     const map = new Map<string, number>();
     for (const task of tasks) {
-      if (task.plannedDate && (task.status === "active" || task.status === "completed")) {
-        map.set(task.plannedDate, (map.get(task.plannedDate) ?? 0) + 1);
+      const date = effectiveDate(task);
+      if (date && !task.parentId && (task.status === "active" || task.status === "completed")) {
+        map.set(date, (map.get(date) ?? 0) + 1);
       }
     }
     return map;
@@ -93,17 +95,18 @@ export function TodayPage() {
   }
 
   const planned = tasks.filter(
-    (task) => task.plannedDate === selectedISO && (task.status === "active" || task.status === "completed") && !task.parentId
+    (task) => effectiveDate(task) === selectedISO && (task.status === "active" || task.status === "completed") && !task.parentId
   );
   const overdue = isToday
-    ? tasks.filter((task) => task.status === "active" && !task.parentId && task.plannedDate && task.plannedDate < selectedISO)
+    ? tasks.filter((task) => task.status === "active" && !task.parentId && (effectiveDate(task) ?? selectedISO) < selectedISO)
     : [];
 
   const item = (task: Task): TaskItem => {
     const subs = tasks.filter((sub) => sub.parentId === task.id && (sub.status === "active" || sub.status === "completed")).sort((x, y) => x.position - y.position);
     const open = expanded.includes(task.id);
-    const time = task.essential && task.deadline ? shortDay(task.deadline) : undefined;
-    const timeIcon = task.essential && task.deadline ? <EssentialIcon /> : undefined;
+    const deadlineOnly = isDeadlineOnly(task);
+    const time = deadlineOnly ? "Límite" : task.essential && task.deadline ? shortDay(task.deadline) : undefined;
+    const timeIcon = deadlineOnly ? <RiFlagLine aria-hidden /> : task.essential && task.deadline ? <EssentialIcon /> : undefined;
     return {
       id: task.id,
       title: task.title,
@@ -204,7 +207,7 @@ export function TodayPage() {
 
       {overdue.length > 0 && (
         <OverdueCard
-          tasks={overdue.map((task) => ({ title: task.title, due: overdueLabel(task.plannedDate!, today) }))}
+          tasks={overdue.map((task) => ({ title: task.title, due: overdueLabel(effectiveDate(task)!, today) }))}
           actions={["Traer todas a hoy"]}
           onAction={() => void bringOverdueToToday(overdue, today)}
         />
