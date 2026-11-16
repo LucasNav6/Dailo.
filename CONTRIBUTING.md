@@ -1,72 +1,97 @@
 # Guía de contribución
 
-Este documento está escrito para que un agente (o una persona) pueda contribuir al proyecto
-siguiendo las mismas reglas. Léelo completo antes de tocar código.
+Esta guía es para quien contribuye al proyecto. Léela completa antes de crear una rama o tocar código.
 
 ## 1. Reglas generales
 
 1. **Nunca se programa directamente en `main`.** Todo cambio entra por una rama propia.
-2. **Toda rama se crea desde `main`.** Está prohibido crear una rama a partir de otra rama
-   (de otra `feature/`, de otra `hotfix/` o de cualquier otra).
-3. **Una rama = una historia de usuario o un error.** No mezcles trabajo de varias historias.
-4. **No se agregan tests**, salvo que el código sea core (ver sección 5).
+2. **Toda rama se crea desde `main`.** Está prohibido crear una rama a partir de otra rama.
+3. **Una rama = una historia de usuario atómica.** Si una historia tiene varias partes que
+   pueden entregarse por separado, son varias ramas y varios Pull Requests. El proyecto usa
+   *screaming architecture* (el código se organiza por feature), así que cada historia toca
+   su propia carpeta y no deberían aparecer conflictos entre ramas.
+4. **No se agregan tests dentro de una `feature/` ni de una `hotfix/`.** Los tests tienen su
+   propia rama `test/` (ver sección 5).
 
-## 2. Flujo de trabajo
+## 2. Configuración inicial (una vez por clon)
+
+El proyecto usa [git-flow-next](https://github.com/gittower/git-flow-next) para no escribir
+los comandos a mano. La configuración se guarda en `.gitflow`, que se versiona con el repo.
 
 ```bash
-git checkout main
-git pull origin main
-git checkout -b feature/user-can-integrate-a-calendar
-# ... cambios y commits ...
-git push -u origin feature/user-can-integrate-a-calendar
+git flow init --defaults --shared
+
+# main es la rama base de producción; todas las ramas nacen de main
+git config gitflow.branch.main.type base
+git config gitflow.branch.feature.parent main
+git config gitflow.branch.feature.startPoint main
+
+# Tipo "test": tests aislados en su propia rama
+git config gitflow.branch.test.type topic
+git config gitflow.branch.test.parent main
+git config gitflow.branch.test.startPoint main
+git config gitflow.branch.test.prefix test/
+git config gitflow.branch.test.tag false
 ```
 
-1. Actualiza `main` desde `origin`.
-2. Crea la rama **desde `main`**.
-3. Implementa solo lo que describe la historia o el error.
-4. Haz los commits siguiendo la sección 4.
-5. Sube la rama con `git push -u origin <rama>`.
-6. No abras un Pull Request salvo que se pida explícitamente. Si se pide, usa la plantilla
-   `.github/pull_request_template.md`.
+> Los comandos de configuración se tomaron de la documentación de git-flow-next y todavía
+> no se han probado en este repositorio.
 
-## 3. Nombres de rama
+## 3. Flujo de trabajo
 
-Formato:
+Cada tipo de rama tiene su par de comandos `start` y `finish`:
 
-- `feature/nombre-descriptivo-del-feature`
-- `hotfix/nombre-descriptivo-del-error`
+| Rama     | Convención                          | Ejemplo               | Comandos                                              |
+|----------|-------------------------------------|-----------------------|-------------------------------------------------------|
+| Test     | `test/<nombre-descriptivo>`         | `test/add-task-visible` | `git flow test start` / `git flow test finish`      |
+| Feature  | `feature/<nombre-descriptivo>`      | `feature/auth-oauth`  | `git flow feature start` / `git flow feature finish`  |
+| Release  | `release/v<mayor>.<menor>.<patch>`  | `release/v0.1.0`      | `git flow release start` / `git flow release finish`  |
+| Hotfix   | `hotfix/v<mayor>.<menor>.<patch>`   | `hotfix/v0.1.1`       | `git flow hotfix start` / `git flow hotfix finish`    |
 
-Reglas:
+Ejemplo de ciclo completo:
 
-- Solo minúsculas, palabras separadas por guiones.
-- El nombre de un **feature** es una historia de usuario: describe lo que **el usuario puede
-  hacer**, empezando por `user-can-...`.
-- El nombre de un **hotfix** describe lo que **el usuario espera** y hoy no se cumple,
-  empezando por `user-expect-...`.
+```bash
+# 1. Test primero: se escribe el test que describe la función core
+git flow test start add-task-visible
+# ... commits de test: test: It expect ... when ... ...
+git flow test finish add-task-visible        # se fusiona en main
 
-Ejemplos:
+# 2. Feature: se implementa lo necesario para que el test pase
+git flow feature start auth-oauth
+# ... commits de feature ...
+git flow feature finish auth-oauth           # se fusiona en main, la rama se elimina
 
-- `feature/user-can-integrate-a-calendar`
-- `hotfix/user-expect-view-all-task-done-when-completed`
+# 3. Release: cuando hay suficiente para una versión
+git flow release start v0.1.0
+# ... solo ajustes finales, sin features nuevas ...
+git flow release finish v0.1.0               # se fusiona en main, tag v0.1.0
 
-El segundo ejemplo nació porque la funcionalidad se definió de una manera, pero no funcionaba
-como el usuario lo esperaba. Por eso el nombre del hotfix recoge esa expectativa incumplida.
+# 4. Hotfix: corrección urgente sobre una versión publicada
+git flow hotfix start v0.1.1
+# ... commits de hotfix ...
+git flow hotfix finish v0.1.1                # se fusiona en main, tag v0.1.1
+```
+
+Reglas del flujo:
+
+- Las ramas `feature/` no llevan versión; la versión la pone el `release/`.
+- Los `release/` y `hotfix/` llevan versión semántica con prefijo `v`.
+- No abras un Pull Request salvo que se pida explícitamente. Si se pide, usa la plantilla
+  `.github/pull_request_template.md`.
 
 ## 4. Commits
 
-Formatos:
-
-| Tipo     | Formato                                            |
-|----------|----------------------------------------------------|
-| feature  | `feat(scope): mensaje como historia de usuario`    |
-| hotfix   | `hotfix(scope): mensaje del comportamiento correcto del sistema` |
-| test     | `test: It expect ... when ...` (solo código core)  |
+| Rama               | Formato                                                             |
+|--------------------|---------------------------------------------------------------------|
+| `feature/`         | `feat(scope): mensaje como historia de usuario`                     |
+| `hotfix/`          | `hotfix(scope): mensaje del comportamiento correcto del sistema`    |
+| `test/`            | `test: It expect ... when ...`                                      |
 
 Ejemplos:
 
 - `feat(hook): The user can list the available calendars`
 - `hotfix(hook): The system return a list and the done status.`
-- `test: It expect the calendar list to be empty when the user has no calendars`
+- `test: It expect the task to be visible when the user adds it`
 
 Reglas:
 
@@ -74,17 +99,29 @@ Reglas:
 - Un commit representa un cambio lógico completo.
 - Los commits de `feat` y `hotfix` describen el resultado para el usuario, no los detalles de
   implementación.
-- Un test va en su propio commit con formato `test:`; nunca se mezcla con un commit de feature
-  o hotfix.
 
 ## 5. Tests
 
-- Por defecto **no se agregan tests**.
-- Solo se agregan tests para código **core**, es decir, la lógica central cuyo fallo rompe el
-  flujo principal de la aplicación. Si el cambio no es core, no añadas tests.
-- No se sobrecarga el proyecto: un test por comportamiento importante, no por cada línea ni por
-  cada variante trivial.
-- Los tests viven en `src/specs/` y se nombran `archivo-a-testear.spec.ts`.
+Los tests **no viven en las ramas de feature ni de hotfix**. Se crean aparte, en una rama
+`test/`, y se fusionan en `main` antes de implementar la funcionalidad.
+
+Qué es código core: una función sin la cual el usuario no puede operar. Ejemplo: agregar una
+tarea y verla. Si el cambio no es core, no se agregan tests.
+
+Flujo obligatorio (test-first):
+
+1. Se crea la rama `test/` y se escribe primero el test que describe la necesidad.
+2. Se fusiona en `main`.
+3. Se crea la `feature/` o `hotfix/` y se implementa el código que hace pasar el test.
+
+Reglas sobre los specs:
+
+- Una `feature/` o `hotfix/` **no puede crear, modificar ni borrar specs**.
+- Un spec nunca se "corrige" para que pase. Si el test falla, el problema está en el código.
+- Los specs garantizan la calidad al modificar el código: que un test pase no garantiza que el
+  código esté bien; garantiza que sigue cumpliendo lo que el test describe.
+- No se sobrecarga el proyecto: un test por comportamiento core, no por cada variante trivial.
+- Los specs viven en `src/specs/` y se nombran `archivo-a-testear.spec.ts`.
 
 ## 6. Estructura de carpetas
 
@@ -93,7 +130,7 @@ Estructura objetivo (los archivos nuevos deben crearse ya en estas rutas):
 ```
 src/
 ├── specs/
-│   └── archivo-a-testear.spec.ts     # tests (solo core, ver sección 5)
+│   └── archivo-a-testear.spec.ts     # tests core (ver sección 5)
 ├── feature/
 │   └── nombre-de-la-feature/         # código propio de una feature
 └── shared/
@@ -119,10 +156,12 @@ Reglas:
   - `layouts/`: estructura de vistas, puede usar todos los anteriores.
 - Los tests reflejan el archivo que prueban: `src/specs/<archivo>.spec.ts`.
 
-## 7. Checklist antes de terminar
+## 7. Checklist antes de abrir o fusionar una rama
 
-- [ ] La rama es `feature/...` o `hotfix/...` y fue creada desde `main`.
-- [ ] Ningún commit se hizo directamente en `main`.
+- [ ] La rama fue creada desde `main` con `git flow <tipo> start`.
+- [ ] Ninguna rama fue creada desde otra rama.
+- [ ] La rama corresponde a una sola historia de usuario atómica.
 - [ ] Los commits siguen el formato de la sección 4.
-- [ ] No hay tests, salvo que el código sea core.
+- [ ] Si hay test, nació en su propia rama `test/` y fue fusionado antes.
+- [ ] La `feature/` o `hotfix/` no toca specs.
 - [ ] Los archivos nuevos están en la estructura de la sección 6.
