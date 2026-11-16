@@ -119,32 +119,51 @@ Reglas de los specs:
 - Que un test pase no garantiza que el código sea correcto; solo garantiza que cumple lo que el
   test describe. Por eso se escriben pocos tests, sobre comportamiento core, y no por cada caso
   trivial.
-- Los specs viven en `src/specs/` y se nombran `archivo-a-testear.spec.ts`.
+- Los specs viven en `src/specs/` y se nombran `archivo-a-testear.spec.ts`. Hoy la carpeta está vacía: todavía no se definió el código core.
 
 ## 7. Estructura de carpetas
 
-Estructura objetivo. Los archivos nuevos se crean ya en estas rutas.
+Estructura obligatoria. Los archivos nuevos se crean ya en estas rutas. El código del frontend vive en `apps/frontend/src/`.
 
 ```
 src/
-├── specs/
-│   └── archivo-a-testear.spec.ts     # solo en test/ (sección 6)
-├── feature/
-│   └── nombre-de-la-feature/         # código de una sola feature
+├── features/
+│   └── <feature>/              tasks, projects, agenda, inbox, maybe, settings
+│       ├── pages/              pantallas: solo visual y sus estados
+│       ├── views/              piezas visuales
+│       ├── modals/             diálogos y hojas
+│       ├── hooks/              toda la lógica
+│       ├── store/              estado (zustand)
+│       ├── adapters/           traductores hacia servicios externos, con caché
+│       ├── services/           llamadas externas, un service por cada adapter
+│       ├── libs/               funciones puras de la feature
+│       ├── README.md
+│       └── index.ts            API pública de la feature
+├── specs/                      solo en ramas test/ (sección 6)
 └── shared/
+    ├── components/             atoms/ molecules/ organisms/ layouts/
     ├── hooks/
-    ├── components/
-    │   ├── atoms/
-    │   ├── molecules/
-    │   ├── organisms/
-    │   └── layouts/
     ├── libs/
     ├── models/
-    └── ...
+    ├── services/
+    └── store/
 ```
 
-- Lo que usa una sola feature va en `src/feature/<nombre-de-la-feature>/`.
-- Lo que usan dos o más features va en `src/shared/`.
+Reglas:
+
+- Cada feature es una funcionalidad del modelo de negocio. Si algo lo usan dos o más features, va en `src/shared/`.
+- `pages/`, `views/` y `modals/` son solo visuales: no tienen lógica bajo ningún contexto. La lógica vive en `hooks/`.
+- Flujo de datos: `hook → adapter → service → adapter → hook`.
+  - El hook decide si necesita el backend y llama al adapter.
+  - El adapter devuelve la respuesta cacheada si existe. Si no, convierte el input al formato del service.
+  - El service hace solo la llamada y devuelve la respuesta tal cual.
+  - El adapter traduce la respuesta al lenguaje del frontend.
+  - Si falla, el hook avisa con un toast y corta la ejecución (degradación elegante).
+- Cada adapter tiene un service con el mismo nombre (`add-task.adapter.ts` y `add-task.service.ts`).
+- Nombres de archivo: `<nombre>.page.tsx`, `<nombre>.view.tsx`, `<nombre>.modal.tsx`, `<acción>.hook.ts`, `<nombre>.store.ts`, `<acción>.adapter.ts`, `<acción>.service.ts`.
+- Una feature importa de otra solo desde su `index.ts`. Las pages no se exportan: las importa el router desde `App.tsx`.
+- Todas las carpetas tienen un `README.md` con su regla de uso. Una carpeta nueva se crea con su README.
+- El código no lleva comentarios.
 - Componentes en Atomic Design; cada nivel solo importa de niveles inferiores:
   - `atoms/`: primitivos, sin dependencias del proyecto.
   - `molecules/`: composición de atoms.

@@ -1,50 +1,112 @@
-import { RiCheckLine, RiComputerLine, RiMoonLine, RiSunCloudyLine, RiSunFoggyLine, RiSunLine } from "@remixicon/react";
-import { SettingsScreen } from "@/components/layouts/settings-screen";
-import { NumberPicker } from "@/components/molecules/number-picker";
-import { SettingRow, SettingValue } from "@/components/molecules/setting-row";
-import { SettingsSection } from "@/components/organisms/settings-section";
+import {
+  RiCheckLine,
+  RiComputerLine,
+  RiMoonLine,
+  RiSunCloudyLine,
+  RiSunFoggyLine,
+  RiSunLine,
+  RiVolumeUpLine,
+  type RemixiconComponentType,
+} from "@remixicon/react"
+import { Switch } from "@/shared/components/atoms/switch"
+import { SettingsScreen } from "@/shared/components/layouts/settings-screen"
+import { NumberPicker } from "@/shared/components/molecules/number-picker"
+import { SettingRow } from "@/shared/components/molecules/setting-row"
+import { SettingsSection } from "@/shared/components/organisms/settings-section"
+import type { Theme } from "@/shared/libs/theme"
+import type { DayPeriod } from "@/shared/models/setting.model"
+import type { PreferencesScreen } from "../hooks/preferences-screen.hook"
+import { MAX_ESSENTIAL_TASKS, MIN_ESSENTIAL_TASKS, PERIODS } from "../libs/preferences"
+import { SaveStatusView } from "./save-status.view"
+import { LabeledView, TimeRowView } from "./time-row.view"
+import { TimeSelectView } from "./time-select.view"
 
-export function SettingsPreferencesView() {
+const THEMES: { id: Theme; label: string; Icon: RemixiconComponentType }[] = [
+  { id: "system", label: "Sistema", Icon: RiComputerLine },
+  { id: "light", label: "Claro", Icon: RiSunLine },
+  { id: "dark", label: "Oscuro", Icon: RiMoonLine },
+]
+
+const PERIOD_ICONS: Record<DayPeriod, RemixiconComponentType> = {
+  morning: RiSunFoggyLine,
+  noon: RiSunLine,
+  afternoon: RiSunCloudyLine,
+  night: RiMoonLine,
+}
+
+const ESSENTIAL_OPTIONS = Array.from(
+  { length: MAX_ESSENTIAL_TASKS - MIN_ESSENTIAL_TASKS + 1 },
+  (_, index) => MIN_ESSENTIAL_TASKS + index
+)
+
+export function PreferencesView({ screen }: { screen: PreferencesScreen }) {
+  const { points, periods, state, theme, soundOn } = screen
   return (
-    <SettingsScreen title="Preferencias">
+    <SettingsScreen title="Preferencias" backTo="/settings">
       <SettingsSection title="Rutina diaria">
-        <SettingRow icon={<RiSunLine aria-hidden />} label="Inicio del día">
-          <SettingValue>07:00</SettingValue>
-        </SettingRow>
-        <SettingRow icon={<RiMoonLine aria-hidden />} label="Cierre del día">
-          <SettingValue>22:00</SettingValue>
-        </SettingRow>
+        <TimeRowView Icon={RiSunLine} label="Inicio del día" summary={points[0]}>
+          <TimeSelectView label="Inicio del día" model={screen.timeField(0)} />
+        </TimeRowView>
+        <TimeRowView Icon={RiMoonLine} label="Cierre del día" summary={points[4]}>
+          <TimeSelectView label="Cierre del día" model={screen.timeField(4)} />
+        </TimeRowView>
       </SettingsSection>
+
       <SettingsSection title="Franjas horarias" hint="Una a continuación de otra. Al mover un límite se ajusta la contigua.">
-        <SettingRow icon={<RiSunFoggyLine aria-hidden />} label="Mañana">
-          <SettingValue>07:00 – 12:00</SettingValue>
-        </SettingRow>
-        <SettingRow icon={<RiSunLine aria-hidden />} label="Mediodía">
-          <SettingValue>12:00 – 15:00</SettingValue>
-        </SettingRow>
-        <SettingRow icon={<RiSunCloudyLine aria-hidden />} label="Tarde">
-          <SettingValue>15:00 – 19:00</SettingValue>
-        </SettingRow>
-        <SettingRow icon={<RiMoonLine aria-hidden />} label="Noche">
-          <SettingValue>19:00 – 22:00</SettingValue>
-        </SettingRow>
+        {PERIODS.map(({ id, label }, index) => (
+          <TimeRowView key={id} Icon={PERIOD_ICONS[id]} label={label} summary={`${periods[id].start} – ${periods[id].end}`}>
+            <LabeledView label="Inicio">
+              <TimeSelectView label={`${label}, inicio`} model={screen.timeField(index)} />
+            </LabeledView>
+            <LabeledView label="Fin">
+              <TimeSelectView label={`${label}, fin`} model={screen.timeField(index + 1)} />
+            </LabeledView>
+          </TimeRowView>
+        ))}
+        <SaveStatusView state={state} />
       </SettingsSection>
+
       <SettingsSection title="Planificación esencial">
         <div className="flex min-h-11 items-center justify-between">
           <span className="text-[15px]">Tareas esenciales</span>
-          <NumberPicker options={[1, 2, 3, 4, 5]} value={3} />
+          <NumberPicker
+            label="Tareas esenciales por día"
+            options={ESSENTIAL_OPTIONS}
+            value={screen.maxEssentialTasks}
+            onChange={screen.changeMaxEssential}
+          />
         </div>
         <p className="ml-[38px] text-[13px] leading-[1.45] text-muted-foreground">Recomendado: 3</p>
       </SettingsSection>
-      <SettingsSection title="Apariencia">
-        <SettingRow icon={<RiComputerLine aria-hidden />} label="Sistema">
-          <span className="inline-flex text-foreground [&_svg]:size-[22px]">
-            <RiCheckLine aria-hidden />
-          </span>
+
+      <SettingsSection title="Sonido">
+        <SettingRow icon={<RiVolumeUpLine aria-hidden />} label="Sonido al completar" comfortable>
+          <Switch aria-label="Sonido al completar" checked={soundOn} onCheckedChange={screen.toggleSound} />
         </SettingRow>
-        <SettingRow icon={<RiSunLine aria-hidden />} label="Claro" />
-        <SettingRow icon={<RiMoonLine aria-hidden />} label="Oscuro" />
+      </SettingsSection>
+
+      <SettingsSection title="Apariencia">
+        <div role="radiogroup" aria-label="Tema" className="flex flex-col">
+          {THEMES.map(({ id, label, Icon }) => (
+            <button
+              key={id}
+              type="button"
+              role="radio"
+              aria-checked={theme === id}
+              onClick={() => screen.changeTheme(id)}
+              className="rounded-xl text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            >
+              <SettingRow icon={<Icon aria-hidden />} label={label}>
+                {theme === id && (
+                  <span className="inline-flex text-foreground [&_svg]:size-[22px]">
+                    <RiCheckLine aria-hidden />
+                  </span>
+                )}
+              </SettingRow>
+            </button>
+          ))}
+        </div>
       </SettingsSection>
     </SettingsScreen>
-  );
+  )
 }
