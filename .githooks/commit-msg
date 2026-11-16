@@ -1,0 +1,40 @@
+#!/bin/sh
+# Valida el mensaje del commit según el tipo de rama. Ver CONTRIBUTING.md, sección 5.
+
+msg_file="$1"
+subject=$(head -n 1 "$msg_file")
+branch=$(git symbolic-ref --short -q HEAD)
+
+# Commits que genera git (merges de git flow, reverts) no se validan.
+case "$subject" in
+  "Merge "*|"Revert "*) exit 0 ;;
+esac
+
+case "$branch" in
+  feature/*)
+    pattern='^feat\([a-z0-9-]+\): .+'
+    example='feat(hook): The user can list the available calendars' ;;
+  hotfix/*)
+    pattern='^hotfix\([a-z0-9-]+\): .+'
+    example='hotfix(hook): The system returns a list and the done status.' ;;
+  test/*)
+    pattern='^test: It expect .+ when .+'
+    example='test: It expect the task to be visible when the user adds it' ;;
+  release/*)
+    pattern='^chore\(release\): .+'
+    example='chore(release): prepare v0.1.0' ;;
+  *)
+    echo "commit rechazado: la rama '$branch' no sigue la convención (feature/, test/, release/, hotfix/)."
+    echo "  Ver CONTRIBUTING.md, sección 3."
+    exit 1 ;;
+esac
+
+if ! printf '%s\n' "$subject" | grep -Eq "$pattern"; then
+  echo "commit rechazado: el mensaje no cumple el formato de la rama '$branch'."
+  echo "  Recibido: $subject"
+  echo "  Ejemplo:  $example"
+  echo "  Ver CONTRIBUTING.md, sección 5."
+  exit 1
+fi
+
+exit 0

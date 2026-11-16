@@ -3,6 +3,7 @@
   "private": true,
   "packageManager": "pnpm@10.28.0",
   "scripts": {
+    "prepare": "git config include.path ../.gitflow; git config core.hooksPath .githooks",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "check": "turbo run check"

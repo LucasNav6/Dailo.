@@ -1,0 +1,42 @@
+[gitflow]
+	version = 1.0
+	initialized = true
+[gitflow "branch.main"]
+	type = base
+	upstreamstrategy = none
+	downstreamstrategy = none
+	autoupdate = false
+[gitflow "branch.feature"]
+	type = topic
+	parent = main
+	startpoint = main
+	upstreamstrategy = merge
+	downstreamstrategy = rebase
+	autoupdate = false
+	prefix = feature/
+[gitflow "branch.test"]
+	type = topic
+	parent = main
+	startpoint = main
+	upstreamstrategy = merge
+	downstreamstrategy = merge
+	autoupdate = false
+	prefix = test/
+[gitflow "branch.release"]
+	type = topic
+	parent = main
+	startpoint = main
+	upstreamstrategy = merge
+	downstreamstrategy = merge
+	autoupdate = false
+	prefix = release/
+	tag = true
+[gitflow "branch.hotfix"]
+	type = topic
+	parent = main
+	startpoint = main
+	upstreamstrategy = merge
+	downstreamstrategy = merge
+	autoupdate = false
+	prefix = hotfix/
+	tag = true
