@@ -4,7 +4,7 @@ import {
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogTitle,
-} from "@/components/molecules/alert-dialog"
+} from "@/shared/components/molecules/alert-dialog"
 
 type ConfirmDialogProps = {
   open: boolean;

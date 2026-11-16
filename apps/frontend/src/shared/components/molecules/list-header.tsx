@@ -1,8 +1,8 @@
 import type { ReactNode } from "react"
 import { Link } from "react-router"
 import { RiSettings3Line } from "@remixicon/react"
-import { IconButton } from "@/components/atoms/icon-button"
-import { ScreenHeader } from "@/components/molecules/screen-header"
+import { IconButton } from "@/shared/components/atoms/icon-button"
+import { ScreenHeader } from "@/shared/components/molecules/screen-header"
 
 function ListHeader({ eyebrow, title }: { eyebrow: ReactNode; title: ReactNode }) {
   return (

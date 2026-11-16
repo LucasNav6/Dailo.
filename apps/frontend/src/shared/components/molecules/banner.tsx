@@ -1,4 +1,4 @@
-import { Button } from "@/components/atoms/button"
+import { Button } from "@/shared/components/atoms/button"
 
 type BannerProps = {
   message: string;

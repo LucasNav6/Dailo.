@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/molecules/sheet"
-import { cn } from "@/lib/utils"
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/shared/components/molecules/sheet"
+import { cn } from "@/shared/libs/utils"
 
 type BottomSheetProps = {
   open: boolean;

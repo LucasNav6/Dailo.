@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type RefObject } from "react"
-import { confetti } from "./confetti"
-import { playComplete } from "./sound"
+import { confetti } from "@/shared/libs/confetti"
+import { playComplete } from "@/shared/libs/sound"
 
 export function useCompletionEffect(checked: boolean, origin: RefObject<Element | null>) {
   const previous = useRef(checked)

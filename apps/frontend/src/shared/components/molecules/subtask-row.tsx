@@ -1,9 +1,9 @@
 import { RiDeleteBinLine } from "@remixicon/react"
-import { LinkifiedText } from "@/components/atoms/linkified-text"
-import { TaskCheck } from "@/components/atoms/task-check"
+import { LinkifiedText } from "@/shared/components/atoms/linkified-text"
+import { TaskCheck } from "@/shared/components/atoms/task-check"
 import { useRef } from "react"
-import { useCompletionEffect } from "@/lib/use-completion-effect"
-import { cn } from "@/lib/utils"
+import { useCompletionEffect } from "@/shared/hooks/use-completion-effect.hook"
+import { cn } from "@/shared/libs/utils"
 
 function SubtaskRow({ title, checked = false, large = false, className, onCheckedChange, onRemove }: { title: string; checked?: boolean; large?: boolean; className?: string; onCheckedChange?: (checked: boolean) => void; onRemove?: () => void }) {
   const checkRef = useRef<HTMLButtonElement>(null)

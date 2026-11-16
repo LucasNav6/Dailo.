@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/libs/utils"
 
 function Scrim() {
   return <div className="absolute inset-0 z-50 bg-scrim backdrop-blur-[2px]" />

@@ -1,6 +1,6 @@
-import { Skeleton } from "@/components/atoms/skeleton"
-import { SectionHeader } from "@/components/molecules/section-header"
-import { ScreenHeader } from "@/components/molecules/screen-header"
+import { Skeleton } from "@/shared/components/atoms/skeleton"
+import { SectionHeader } from "@/shared/components/molecules/section-header"
+import { ScreenHeader } from "@/shared/components/molecules/screen-header"
 
 function LoadingLayout({ rows = 4, label = "Cargando" }: { rows?: number; label?: string }) {
   return (

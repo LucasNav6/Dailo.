@@ -1,6 +1,6 @@
 import { RiFileLine } from "@remixicon/react"
-import { Button } from "@/components/atoms/button"
-import { Progress } from "@/components/atoms/progress"
+import { Button } from "@/shared/components/atoms/button"
+import { Progress } from "@/shared/components/atoms/progress"
 
 type AttachmentStatus =
   | { kind: "size"; text: string }

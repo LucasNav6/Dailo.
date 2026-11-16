@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { RiArrowDownSLine, RiArrowRightSLine } from "@remixicon/react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/libs/utils"
 
 type SectionHeaderProps = {
   title: ReactNode

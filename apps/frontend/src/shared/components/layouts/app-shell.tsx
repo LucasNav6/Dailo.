@@ -1,8 +1,8 @@
-import { useEffect, useState, type ComponentType } from "react";
+import { useState, type ComponentType } from "react";
 import { Outlet } from "react-router";
-import { NavAside } from "@/components/organisms/nav-aside";
-import { NavDock } from "@/components/organisms/nav-dock";
-import { Snackbar } from "@/components/molecules/snackbar";
+import { NavAside } from "@/shared/components/organisms/nav-aside";
+import { NavDock } from "@/shared/components/organisms/nav-dock";
+import { useNotify } from "@/shared/hooks/toast.hook";
 
 export type AppOutletContext = { openCapture: () => void };
 
@@ -11,14 +11,8 @@ export type CaptureComponent = ComponentType<{ open: boolean; onOpenChange: (ope
 export function AppShell({ capture: Capture }: { capture: CaptureComponent }) {
   const [collapsed, setCollapsed] = useState(false);
   const [captureOpen, setCaptureOpen] = useState(false);
-  const [notice, setNotice] = useState(false);
+  const notify = useNotify();
   const openCapture = () => setCaptureOpen(true);
-
-  useEffect(() => {
-    if (!notice) return;
-    const timer = setTimeout(() => setNotice(false), 2500);
-    return () => clearTimeout(timer);
-  }, [notice]);
 
   return (
     <div className="flex h-svh bg-background">
@@ -31,10 +25,7 @@ export function AppShell({ capture: Capture }: { capture: CaptureComponent }) {
         </main>
         <NavDock onNew={openCapture} />
       </div>
-      <Capture open={captureOpen} onOpenChange={setCaptureOpen} onCaptured={() => setNotice(true)} />
-      <div className="pointer-events-none fixed inset-x-4 bottom-[100px] z-[60] lg:bottom-6 lg:left-auto lg:right-6 lg:inset-x-auto">
-        {notice && <Snackbar message="Guardado en Inbox" />}
-      </div>
+      <Capture open={captureOpen} onOpenChange={setCaptureOpen} onCaptured={() => notify("Guardado en Inbox")} />
     </div>
   );
 }

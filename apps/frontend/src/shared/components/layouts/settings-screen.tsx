@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
-import { BackBar } from "@/components/molecules/back-bar"
-import { cn } from "@/lib/utils"
+import { BackBar } from "@/shared/components/molecules/back-bar"
+import { cn } from "@/shared/libs/utils"
 
 const GAP = { 0: "gap-0", 4: "gap-4", 6: "gap-6", 7: "gap-7" } as const
 

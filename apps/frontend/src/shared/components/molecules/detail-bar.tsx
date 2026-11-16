@@ -1,6 +1,6 @@
 import { RiArrowLeftLine, RiMore2Line } from "@remixicon/react"
-import { IconButton } from "@/components/atoms/icon-button"
-import { cn } from "@/lib/utils"
+import { IconButton } from "@/shared/components/atoms/icon-button"
+import { cn } from "@/shared/libs/utils"
 
 function DetailBar({ withMore = true, className, onBack, onMore }: { withMore?: boolean; className?: string; onBack?: () => void; onMore?: () => void }) {
   return (

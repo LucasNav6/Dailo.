@@ -1,8 +1,8 @@
 import { Fragment, type ReactNode } from "react"
-import { PeriodIcon, type Period } from "@/components/atoms/period-icon"
-import { SectionHeader } from "@/components/molecules/section-header"
-import { SubtaskRow } from "@/components/molecules/subtask-row"
-import { TaskRow } from "@/components/molecules/task-row"
+import { PeriodIcon, type Period } from "@/shared/components/atoms/period-icon"
+import { SectionHeader } from "@/shared/components/molecules/section-header"
+import { SubtaskRow } from "@/shared/components/molecules/subtask-row"
+import { TaskRow } from "@/shared/components/molecules/task-row"
 
 export type SubtaskItem = { id: string; title: string; done: boolean; onToggle?: (done: boolean) => void };
 

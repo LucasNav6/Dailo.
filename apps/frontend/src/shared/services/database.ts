@@ -1,9 +1,9 @@
 import Dexie, { type EntityTable } from "dexie"
-import type { Project } from "@/models/project.model"
-import type { Attachment } from "@/models/attachment.model"
-import type { Section } from "@/models/section.model"
-import type { Setting } from "@/models/setting.model"
-import type { Task } from "@/models/task.model"
+import type { Project } from "@/shared/models/project.model"
+import type { Attachment } from "@/shared/models/attachment.model"
+import type { Section } from "@/shared/models/section.model"
+import type { Setting } from "@/shared/models/setting.model"
+import type { Task } from "@/shared/models/task.model"
 
 export const db = new Dexie("dailo") as Dexie & {
   tasks: EntityTable<Task, "id">

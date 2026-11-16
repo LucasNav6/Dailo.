@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/libs/utils"
 
 type NumberPickerProps = { options: number[]; value: number; onChange?: (value: number) => void; label?: string }
 

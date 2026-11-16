@@ -1,8 +1,8 @@
 import { useRef, type ReactNode } from "react"
-import { LinkifiedText } from "@/components/atoms/linkified-text"
-import { TaskCheck } from "@/components/atoms/task-check"
-import { useCompletionEffect } from "@/lib/use-completion-effect"
-import { cn } from "@/lib/utils"
+import { LinkifiedText } from "@/shared/components/atoms/linkified-text"
+import { TaskCheck } from "@/shared/components/atoms/task-check"
+import { useCompletionEffect } from "@/shared/hooks/use-completion-effect.hook"
+import { cn } from "@/shared/libs/utils"
 
 type TaskRowProps = {
   title: string

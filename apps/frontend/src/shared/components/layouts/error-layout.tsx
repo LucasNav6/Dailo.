@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 import { RiAlertLine, RiRefreshLine } from "@remixicon/react"
-import { Button } from "@/components/atoms/button"
-import { EmptyState } from "@/components/molecules/empty-state"
+import { Button } from "@/shared/components/atoms/button"
+import { EmptyState } from "@/shared/components/molecules/empty-state"
 
 type ErrorLayoutProps = {
   title: ReactNode;

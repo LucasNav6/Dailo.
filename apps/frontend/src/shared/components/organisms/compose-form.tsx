@@ -1,9 +1,9 @@
 import { useState, type FormEvent } from "react"
 import { RiAlignLeft } from "@remixicon/react"
-import { Button } from "@/components/atoms/button"
-import { IconButton } from "@/components/atoms/icon-button"
-import { InlineError } from "@/components/molecules/inline-error"
-import { cn } from "@/lib/utils"
+import { Button } from "@/shared/components/atoms/button"
+import { IconButton } from "@/shared/components/atoms/icon-button"
+import { InlineError } from "@/shared/components/molecules/inline-error"
+import { cn } from "@/shared/libs/utils"
 
 type ComposeFormProps = {
   placeholder: string;

@@ -1,11 +1,11 @@
 import { RiAlignLeft, RiFolderLine } from "@remixicon/react"
-import { Button } from "@/components/atoms/button"
-import { Caret } from "@/components/atoms/caret"
-import { Chip } from "@/components/atoms/chip"
-import { IconButton } from "@/components/atoms/icon-button"
-import { InlineError } from "@/components/molecules/inline-error"
-import { SheetOverlay } from "@/components/layouts/overlay-layout"
-import { cn } from "@/lib/utils"
+import { Button } from "@/shared/components/atoms/button"
+import { Caret } from "@/shared/components/atoms/caret"
+import { Chip } from "@/shared/components/atoms/chip"
+import { IconButton } from "@/shared/components/atoms/icon-button"
+import { InlineError } from "@/shared/components/molecules/inline-error"
+import { SheetOverlay } from "@/shared/components/layouts/overlay-layout"
+import { cn } from "@/shared/libs/utils"
 
 type ComposeSheetProps = {
   placeholder: string;

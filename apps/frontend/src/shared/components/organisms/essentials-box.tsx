@@ -1,5 +1,5 @@
 import { RiStarLine } from "@remixicon/react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/libs/utils"
 import { TaskList, type TaskItem } from "./task-section"
 
 type EssentialsBoxProps = { done: number; max: number; tasks: TaskItem[] }

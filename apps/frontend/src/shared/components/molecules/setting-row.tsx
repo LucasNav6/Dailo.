@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/libs/utils"
 
 function SettingRow({ icon, label, children, comfortable = false, className }: { icon?: ReactNode; label: ReactNode; children?: ReactNode; comfortable?: boolean; className?: string }) {
   return (

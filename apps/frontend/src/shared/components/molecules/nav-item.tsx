@@ -1,6 +1,6 @@
 import { NavLink } from "react-router"
 import type { RemixiconComponentType } from "@remixicon/react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/libs/utils"
 
 type NavItemProps = {
   to: string;

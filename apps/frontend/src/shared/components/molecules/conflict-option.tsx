@@ -1,5 +1,5 @@
 import { RiCircleLine, RiRecordCircleLine } from "@remixicon/react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/libs/utils"
 
 type ConflictOptionProps = { label: string; title: string; detail: string; selected?: boolean };
 

@@ -1,5 +1,5 @@
 import type { ComponentProps, ReactNode } from "react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/libs/utils"
 
 type ActionRowProps = { icon: ReactNode; children: ReactNode; tone?: "default" | "danger" | "danger-soft" } & Pick<ComponentProps<"button">, "onClick">
 

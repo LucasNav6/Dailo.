@@ -1,6 +1,6 @@
 import { addDays, endOfMonth, endOfWeek, format, getDate, isSameDay, isSameMonth, startOfMonth, startOfWeek } from "date-fns"
 import { es } from "date-fns/locale"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/libs/utils"
 
 const LOAD_WIDTH = { 1: "w-1.5", 2: "w-2", 3: "w-2.5" } as const;
 const WEEKDAYS = ["L", "M", "M", "J", "V", "S", "D"];

@@ -1,5 +1,5 @@
-import { Skeleton } from "@/components/atoms/skeleton"
-import { cn } from "@/lib/utils"
+import { Skeleton } from "@/shared/components/atoms/skeleton"
+import { cn } from "@/shared/libs/utils"
 
 function SkeletonRows({ widths }: { widths: number[] }) {
   return (

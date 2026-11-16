@@ -1,7 +1,7 @@
 import { RiAddLine } from "@remixicon/react";
-import { NavItem } from "@/components/molecules/nav-item";
-import { primaryNav } from "@/lib/navigation";
-import { cn } from "@/lib/utils";
+import { NavItem } from "@/shared/components/molecules/nav-item";
+import { primaryNav } from "@/shared/libs/navigation";
+import { cn } from "@/shared/libs/utils";
 
 export function NavDock({ onNew, embedded = false, activeTo }: { onNew: () => void; embedded?: boolean; activeTo?: string }) {
   const [start, end] = [primaryNav.slice(0, 2), primaryNav.slice(2)];

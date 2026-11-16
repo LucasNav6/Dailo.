@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { RiErrorWarningLine } from "@remixicon/react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/libs/utils"
 
 function InlineError({ children, tone = "default" }: { children: ReactNode; tone?: "default" | "muted" }) {
   return (

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 import { Link } from "react-router"
 import { RiArrowLeftLine } from "@remixicon/react"
-import { IconButton } from "@/components/atoms/icon-button"
+import { IconButton } from "@/shared/components/atoms/icon-button"
 
 type BackBarProps = { title: ReactNode; backLabel: string; actions?: ReactNode; backTo?: string }
 

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/libs/utils"
 
 function ListRow({ icon, title, subtitle, danger = false, trailing }: { icon: ReactNode; title: string; subtitle?: string; danger?: boolean; trailing?: ReactNode }) {
   return (

@@ -1,4 +1,4 @@
-import { Progress } from "@/components/atoms/progress"
+import { Progress } from "@/shared/components/atoms/progress"
 
 function StorageMeter({ used, total, percent, critical = false }: { used: string; total: string; percent: number; critical?: boolean }) {
   return (

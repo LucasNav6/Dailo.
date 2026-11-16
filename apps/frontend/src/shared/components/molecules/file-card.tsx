@@ -1,5 +1,5 @@
 import { RiFileLine } from "@remixicon/react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/libs/utils"
 
 function FileCard({ name, detail, className }: { name: string; detail: string; className?: string }) {
   return (

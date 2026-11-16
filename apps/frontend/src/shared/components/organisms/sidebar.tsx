@@ -2,28 +2,28 @@
 
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/libs/utils"
 import { RiSideBarLine } from "@remixicon/react"
 import { Slot } from "radix-ui"
 
-import { useIsMobile } from "@/lib/use-mobile"
-import { Button } from "@/components/atoms/button"
-import { Input } from "@/components/atoms/input"
-import { Separator } from "@/components/atoms/separator"
+import { useIsMobile } from "@/shared/hooks/use-mobile.hook"
+import { Button } from "@/shared/components/atoms/button"
+import { Input } from "@/shared/components/atoms/input"
+import { Separator } from "@/shared/components/atoms/separator"
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@/components/molecules/sheet"
-import { Skeleton } from "@/components/atoms/skeleton"
+} from "@/shared/components/molecules/sheet"
+import { Skeleton } from "@/shared/components/atoms/skeleton"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/atoms/tooltip"
+} from "@/shared/components/atoms/tooltip"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7

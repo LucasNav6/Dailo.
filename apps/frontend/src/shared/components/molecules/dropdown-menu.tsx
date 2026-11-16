@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/libs/utils"
 import { RiArrowRightSLine, RiCheckFill, RiCircleFill } from "@remixicon/react"
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui"
 

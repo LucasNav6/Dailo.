@@ -1,5 +1,5 @@
 import * as React from "react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/libs/utils"
 import {
   RiArrowDownSLine,
   RiArrowLeftSLine,
@@ -11,7 +11,7 @@ import {
   type DayButton,
 } from "react-day-picker"
 
-import { Button, buttonVariants } from "@/components/atoms/button"
+import { Button, buttonVariants } from "@/shared/components/atoms/button"
 
 function Calendar({
   className,

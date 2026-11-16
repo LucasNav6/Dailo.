@@ -1,5 +1,5 @@
 import * as React from "react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/libs/utils"
 
 function InlineAction({ icon, className, children, type = "button", ...props }: React.ComponentProps<"button"> & { icon: React.ReactNode }) {
   return (

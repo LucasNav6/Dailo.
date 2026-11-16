@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/libs/utils"
 
 function TileRow({ icon, children, tone = "default" }: { icon: ReactNode; children: ReactNode; tone?: "default" | "danger" }) {
   return (
